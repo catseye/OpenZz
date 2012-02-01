@@ -1,0 +1,303 @@
+
+<para>Of course Zz is a program, but it is also available as a C library (libzz.a).  If you want to use the Zz library you must provide the main program, some related routines, and your C-Procedures.  In this environment you can define your 'hard coded' syntax and moreover you can attach your C routines directly to the syntactical rules.</para>
+
+<para>E.g., suppose you have a valuable routine able to print an important sentence like:</para>
+
+<screen>
+hello() 
+{ 
+  printf("Hello World!\n"); 
+}
+</screen>
+
+<para>And now you want to create a program that calls the routine when the user types 'say hello'.</para>
+
+<para>The main program is the following:</para>
+
+<screen>
+main() 
+{ 
+  extern void hello(); 
+  kernel(); 
+  zkernel(); 
+  usrkernel(); 
+  zz_parse_tt(); 
+}
+</screen>
+
+<para>Where 'usrkernel' is a routine the user provided which describes the syntax attached to the C-Procedure.</para>
+
+<para>A possible form for the usrkernel() routine of our example is the following:</para>
+
+<screen>
+usrkernel() 
+{
+  zOpen("stat");
+  zKeyword("say hello"); 
+  zCall(hello);
+  ZClose(); 
+}
+</screen>
+
+<para>And, of course, a tool is available that produces this file automatically from the C-prototyping of the C-Procedures.</para>
+
+<para>You have to compile the main program and the subroutine and link them with the libzz.a library.  Now you can try:</para>
+
+<screen>
+zz> say hello 
+Hello World! 
+</screen>
+
+<para>And you can also use the Zz features:</para>
+
+<screen>
+zz> /for i = 0 to 5 { 
+.. say hello 
+.. }
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+</screen>
+
+<para>Here follows a list of the routines you can use in your C-program to build your application.</para>
+
+<screen> <!-- FIXME - should be a table -->
+kernel();	load the Zz base syntax. 
+zkernel();	load the Zz metasyntax. 
+zz_set_output(filename);	write outputs to the file filename. 
+zz_set_output(0);	write outputs to the stdout. 
+zz_set_prompt(prompt);	set prompt for interactive sessions 
+zz_set_default_extension();	set default extension for zz files (default: .zz) 
+ret=zz_parse_tt();	parse stdin 
+ret=zz_parse_file(filename);	parse file 
+ret=zz_parse_string(string);	parse string; 
+print_error_count();	Print a report about errors occurred during parsing phase.
+</screen>
+
+<para>N.B. It is possible to parse more than one source in the same program.  e.g.,</para>
+
+<screen>
+main()
+{ 
+  kernel();
+  zkernel();
+  usrkernel(); 
+  zz_parse_file("configuration"); 
+  zz_parse_tt(); 
+} 
+</screen>
+
+<para>This is able to read syntax definitions from configuration.zz and then use them during parsing of stdin.</para>
+ 
+<sect1><title>Syntax definitions</title>
+
+<para>You define a rule using the following routine calls:</para>
+
+<screen>
+zOpen(sintname);
+zKeyword(terminalbead);
+zMatch(nonterminalbead);
+zCall(procedure); or zCallFun(procedure,returnedtype)
+zClose();
+
+sintname :string. the name of the sintagma 
+procedure: address of the C-Procedure 
+returnedtype: string. name of the tag associated to the returned value 
+terminalbead: string. terminal bead. 
+nonterminalbead: string. name of the non terminal to be matched (e.g.: "int"). 
+
+Examples: 
+
+dump_ident(name) 
+char *name; 
+{ 
+  printf("dump: %s\n",name); 
+} 
+
+usrkernel() 
+{ 
+  zOpen("stat"); 
+  zKeyword("dump"); 
+  zMatch("ident"); 
+  zCall(dump_ident); 
+  zClose(); 
+}
+
+main() 
+{ 
+  kernel();zkernel();userkernel(); 
+  zz_parse_tt(); 
+}
+</screen>
+
+</sect1>
+
+<sect1><title>Parameter passing</title>
+
+<para>The parameter passing between Zz and C-Procedures is quite simple.  The syntactical rule linked with the C-Procedure consists of terminal beads and nonterminal beads.  When the rule is reduced (and before the C-Procedure is invoked) each nonterminal bead has an associated value.  Those values (in their order) build the argument list of the C-Procedure.  In the C-code the arguments of the procedure have to be declared according with the types expected (e.g. int for non terminal int^, char* for nonterminal ident, qstring, and so forth).</para>
+
+<para>The C-Procedure may be invoked as 'Zz procedure' (i.e. linked to a rule of the form: /stat -> .... ) or as 'Zz function' (i.e. linked to a rule of the form: /something_else -> ....).  In the last case you want to specify the 'Zz type' of the value returned.</para>
+
+<para>In other words when the C-Procedure has returned a value as 12345 Zz should be able to interpret the number as an integer value or as the address of a string or something else.</para>
+
+<para>This is accomplished by the tag associated to the function.</para>
+
+<para>E.g. let us define a C-Procedure implementing a Zz _function:</para>
+
+<screen>
+test() 
+{ 
+  return "goofie"; 
+} 
+
+usrkernel() 
+{ 
+  zOpen("$arg");zKeyword("test()"); 
+  zCallFun(test,"qstring");zClose(); 
+}
+</screen>
+
+<para>We compile, link and run the 'usrZz '.  Now, to check the result of our test, we define a Zz type discriminator: </para>
+
+<screen>
+zz> /stat -> which ident^name { 
+  /print "ident=",name 
+}
+zz> /stat -> which qstring^string...{ 
+  /print "qstring=",string 
+} 
+zz> /stat -> which int^num {/print "int=",num} 
+</screen>
+
+<para>Now you can try:</para>
+
+<screen>
+zz> /x = test() 
+zz> which x 
+qstring=goofie 
+</screen>
+
+<para>If you change the tag (inside userkernel(): "qstring") you will obtain different behavior.</para>
+
+<para>Note: You can use as 'tag' the identifier you prefer.  For instance you can associate to the function 'test' the tag "myobject".  If you do this you also have to provide specific procedures able to handle "myobject"s.  Only those procedures will be able to handle the value returned by 'test'.</para>
+
+<para>Let us suppose that you have a SCP function: fopen and a SCP procedure (let us ignore the return value) fputs having the same parameters of the C-language:</para>
+
+<screen>
+zz> /filepointer = fopen ("my_file", "w") 
+zz> fputs ("hello world!", file_pointer) 
+</screen>
+
+<para>Formally a SCP procedure not returning a value is used like a Zz statement with the same format of a C routine call.</para>
+
+<para>A SCP procedure returning a value is called within an expression with the same format as above.</para>
+
+<sect2><title>A little problem: the float.</title>
+
+<para>This version of Zz uses 4bytes for representing integer and float.  This creates a little problem when passing float, because C compilers cast to double the float arguments.  So if you write a C-Procedure with some float argument this will go wrong.  A similar problem arises for the returned value.</para>
+
+<para>The solution up to now is to declare the C-Procedure as returning and/or accepting long integer and converting the values into/from float inside the procedure using the following trick:</para>
+
+<screen>
+gasp(ix) 
+long ix; 
+{ 
+  float x,y; 
+  long iy; 
+  x = *(float*)&ix; 
+  .... 
+  iy= *(long int*)&y; 
+  return iy; 
+} 
+</screen>
+
+</sect2>
+
+<sect2><title>Utilities available inside the C-Procedures</title>
+
+<userinput>
+filename = get_source_file();
+</userinput>
+
+<para>Get the name of the current file (for interactive session return 'stdin').</para>
+
+<userinput>
+name = get_source_name(); 
+</userinput>
+
+<para>Get the name of the current source (for interactive session return 'stdin').</para>
+
+<userinput>
+get_source_line();
+</userinput>
+
+<para>Get current line number.</para>
+
+<userinput>
+fprintf_source_position(chan,flag);
+</userinput>
+
+<para>Write the current line with an arrow marking the current position and write down the current line number, the current file and so forth.</para>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Zz kit</title>
+<para>In this paragraph we describe the environment to develop a Zz application.  You need to customize mainly three files.  The names of these files are free, let's call them: ua.c, sua.zz and main.c.</para>
+
+<para>You need access to the Zz kernel object library, to the Zz include files and to decl.hz.</para>
+
+<para>You need the files containing the C-Procedures needed for your application.</para>
+
+<para>You will describe all the procedures using UCP mechanism within: ua.c, all the soft C-Procedures have to be described within sua.zz and main.c is the main program of your application, within main.c you invoke Zz (Zz is a C callable routine).</para>
+
+<sect2><title>main.c</title>
+
+<para>Before invoke Zz your application as to call kernel(), this routine initializes the environment that Zz need. The Zz routine has following prototype:</para>
+
+<screen>
+void zz(char* file_in,char* file_ext,char* file_out);
+</screen>
+
+<para>It is possible to use default values (if the parameter is zero): default file_in is stdin, default file_out is stdout, default file_ext is ".zz".</para>
+
+<para>Example:</para>
+
+<screen>
+main() 
+{
+  kernel(); 
+  zz(0,0,0); /* uses all defaults */ 
+}
+</screen>
+
+</sect2>
+
+<sect2><title>Declare simple C-Procedures</title>
+
+<para>The SCP mechanism is quite naive: the user has to write a file (say sua.zz) with the ANSI standard prototype of his functions and subroutines, like in the following example:</para>
+
+<screen>
+/include "hzlib:decl.hz"
+begin 
+  int fopen( char * file_spec, char *a_mode); 
+  void fputs ( char *buffer, int file_ptr); 
+end
+</screen>
+
+<para>Zz is able to read this file and produces a C source file.  The command can be the following:</para>
+
+<screen>
+$ zz +C sua.zz sua.c 
+</screen>
+
+<para>The file "sua.c" will contain the description of the syntax to invoke the user procedures and the appropriate calls.  This file has to be linked with the Zz kernel and with the file[s] containing the user C procedures (the example doesn't require anything more because fopen and fputs are in the standard C libraries).  The resulting executable program will be a configured version of Zz including the Soft user C-Procedures.</para>
+
+</sect2>
+
+</sect1>

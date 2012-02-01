@@ -1,0 +1,403 @@
+
+<para>It is possible to use Zz in a lot of different contexts, although usually it is used to define Command Language Interpreter and Compilers.  Some of us are using Zz to design innovative graphical user interfaces or Protocol Adaptive Networks.</para>
+
+<para>All the Zz applications benefits of the dynamic feature which makes the user able to dynamically redefine and to extend the language or the protocol recognized by its application.</para>
+
+<para>In this document we avoid giving too much formal specification in the tutorial guide.  Within this informal context it is possible to say that the Zz "recognizes" a wider class of grammar than say a classic LR parser.</para>
+
+<para>It is impossible at a pure syntactic level to introduce in a classic static parser the concept of declared variable or declared routine.  In a classic compiler this dirty job (or part of it) is devolved to the semantic.</para>
+
+<para>Of course this is a major problem for new languages like ADA or C++ that try to introduce something like a limited degree of growth in the syntax (new objects, strong type checking etc...).</para>
+
+<para>This chapter will show, using some examples, how to imagine the, Zz based, new compilers.</para>
+
+<para>This appendix examines some examples that are by themselves a part of the work of a compiler writer. The problem we explicitly solve in few lines are: variable, record and types declaration, subroutine and cycles implementation. We leave to the user imagination the assembly language format or the user routines to write the object code and any kind of optimization.</para>
+
+<sect1><title>Variable and dynamic syntax</title>
+
+<para>Almost all languages have the variable concept.  A variable is basically a name with some information attached to it (e.g. the address) a standard compiler could attach to the variable name also the type.  Zz has only to remember the address because of its capability of dynamically insert a name in the proper grammar rule.</para>
+
+<para>To define a variable means to modify (in the variable scope) the grammar accepted by the compiler.  All humans (at least the compiler writers!) knows: when I define the real variable ``goofie'', the terminal goofie will be accepted (apart from the scope rules) where the compiler accepts a real variable and, for instance, the compiler could use there the variable address (eg: 0x1234).</para>
+
+<para>Zz is able to understand this concept, the proper way to explain it is:</para>
+
+<userinput>
+/real_var -> "goofie" {/return 0x1234} 
+</userinput>
+
+<para>The language syntactic rules to handle the variables have to be inserted yet.  Now the simplest way to manage a real_var is to introduce a very simple I/O operation like a "write" (of course write means to generate the proper assembler code):</para>
+
+<userinput>
+ stat -> write real_var^v {
+   /print "GOSUB write_real_var #",v 
+</userinput>
+
+<para>After all Zz is ready to accept this statement:</para>
+
+<screen>
+write goofie 
+</screen>
+
+<para>And emits on the standard output device:</para>
+
+<screen>
+GOSUB write_real_var #0x1234 
+</screen>
+
+<para>Of course a lot of operations have to be defined to handle properly a "real_var"; we will show something in the following.</para>
+
+<para>Let us imagine that a real_var needs 4 bytes and we use a Zz internal register (a Zz variable ) to manage the memory allocation.  The Zz variable we use (say "curr_address") has to be initialized to the proper value and the variable declaration of goofie has to follow the following schema:</para>
+
+<screen>
+/curr_addr = 0xA0000
+/addr = cur_address
+/cur_address := cur_address+1
+/real_var -> goofie {/return addr}
+</screen>
+
+<para>NOTE. addr (having the meaning of local variable) is defined using = and it is immediately replaced while cur_address is defined using :=.  So doing the above defined syntactical rule, the first time, has the meaning of:</para>
+
+<screen>
+/real_var -> goofie { /return 0xA0000 }
+</screen>
+
+<para>To declare a new variable the right sequence could be:</para>
+
+<screen>
+/addr = cur_address 
+/cur_address := cur_address+1 
+real_var -> tommy { /return addr } 
+</screen>
+
+<para>And tommy is allocated at 0xA0001, of course this way to declare a variable is quite unfriendly.</para>
+
+</sect1>
+
+
+<sect1><title>A statement to declare a variable</title>
+
+<para>To allow the variable declaration with a more conventional statement we have to introduce a statement capable to define a new syntax rule.</para>
+
+<para>As an example it is possible to introduce this code:</para>
+
+<screen>
+stat -> real ident^var_name {
+  /addr = cur_address 
+  /cur_address := cur_address+1 
+  /real_var > var_name { 
+    /return addr 
+  } 
+}
+ 
+/cur_address:= 0x1000 
+</screen>
+
+<para>Creating the statement:</para>
+
+<screen>
+real var_name 
+</screen>
+
+<para>and the programmer can write as an example:</para>
+
+<screen>
+real alfred 
+real barbara 
+</screen>
+
+<para>Zz then inserts the rules:</para>
+
+<screen>
+/real_var -> alfred {/return 0x1000} 
+/real_var -> barbara {/return 0x1001} 
+</screen>
+
+</sect1>
+
+
+<sect1><title>Statement to define a new variable type</title>
+
+<para>Using another level of indirect declaration of syntax rules we can insert new variable types; this is the code:</para>
+
+<screen>
+stat -> type ident^type_name { 
+  /var = type_name&amp;_var
+  /stat -> type_name ident^var_name { 
+    /addr = cur_address 
+    /cur_address := cur_address+1 
+    /var -> var_name { 
+      /return addr 
+    } 
+  } 
+}
+
+/cur_address := 0x1000 
+</screen>
+
+<para>This introduces the new statement with the general format:</para>
+
+<screen>
+type custom_type 
+</screen>
+
+<para>NOTE. In the above listed schema a new sintagma name is created using the string concatenation operator "&amp;".  As an example the new created type angle uses the new sintagma angle_var.  This trick will be used often in the following.</para>
+
+<para>We can try the new statement defining the type angle:</para>
+
+<screen>
+type angle 
+angle teta 
+</screen>
+
+<para>Zz does this work for you:</para>
+
+<screen>
+stat -> angle ident^varname { 
+  /addr = cur_address 
+  /cur_address := cur_address + 1 
+  /angle_var -> var_name { 
+    /return addr 
+  } 
+}
+
+angle teta 
+</screen>
+
+<para>This will create the rule:</para>
+
+<screen>
+/angle_var > teta {/return 0x1000} 
+</screen>
+
+</sect1>
+
+
+<sect1><title>A more realistic example</title>
+
+<para>The above defined statement to declare a variable is quite simplified.  The first required improvements will allow to declare a variable list in order to accept:</para>
+
+<screen>
+real a,b,c,d 
+</screen>
+
+<para>and could be useful to specify the memory occupation of any type.</para>
+
+<screen>
+stat -> type ident^typename num_e^typesize {
+  /var = typename&amp;_var 
+  stat -> typename identlist^varnamelst { 
+    /foreach varname in varnamelst { 
+      /addr = cur_address 
+      /cur_address:=...
+        cur_address+typesize
+      /var -> varname { /return addr }
+    }
+  }
+}
+
+/cur_address := 0x1000 
+</screen>
+
+<para>NOTE. identlist is a predefined sintagma matching a comma separated list of identifiers.</para>
+
+<para>The allowed statements are:</para>
+
+<screen>
+type custom_type custom_type_size 
+custom_type list_of_variable 
+</screen>
+
+<para>Examples:</para>
+
+<screen>
+type complex 2 
+type real 1 
+real x,y,z 
+complex a,b,c 
+</screen>
+
+<para>Zz automatically inserts the rules:</para>
+
+<screen>
+/real_var -> x { /return 1000 } 
+/real_var -> y { /return 1001 } 
+/real_var -> z { /return 1002 } 
+/complex_var -> alfa { /return 1004 } 
+/complex_var -> beta { /return 1006 } 
+/complex_var -> gamma { /return 1008 } 
+</screen>
+
+</sect1>
+
+
+<sect1><title>Structures</title>
+
+<para>Using the mechanism of type we can create objects with arbitrary name and size.  To define structures we need something to extract a part of a variable.</para>
+
+<para>As an example:</para>
+
+<screen>
+type bad_struct 3 
+bad_struct a,b 
+</screen>
+
+<para>This declares two variable of three items each but it is impossible to access an item within the variable.</para>
+
+<para>We need rules of this kind:</para>
+
+<screen>
+/real_var -> structured_var^v .x { /return v+0 } 
+/real_var -> structured_var^v .y { /return v+1 } 
+/real_var -> structured_var^v .z { /return v+2 } 
+</screen>
+
+<para>so doing an item of something structured is usable as a real variable.</para>
+
+<para>In the following paragraph we'll show how to automatically create the above mentioned rules.  The user syntax could be the following:</para>
+
+<screen>
+record record_type 
+custom_type item_list 
+endrecord 
+</screen>
+
+<para>As an example:</para>
+
+<screen>
+record point 
+real x,y,z 
+endrecord 
+</screen>
+
+<para>and to declare a struct and to access an item...</para>
+
+<screen>
+point position 
+write position.x 
+</screen>
+
+<para>We want that the syntax to declare the record fields is the same used to declare a variable; of course we need an offset to access items within a record.  It is possible to say that we have an address within the record (say cur_offset)...</para>
+
+<screen>
+stat -> type ident^typename num_e^typesize { 
+  /var = typename&amp;_var 
+
+  stat -> typename identlist^varnamelist { 
+    /foreach varname in varnamelist { 
+      /addr = cur_address 
+      /cur_address := cur_address + typesize 
+      /var -> varname { /return addr } 
+    }
+  } 
+
+  /record_stat> typename identlist^fieldnamelist { 
+    /foreach fieldname in fieldnamelist { 
+      /addr = cur_offset 
+      /cur_offset := cur_offset + typesize 
+      /var -> cur_record_var^v "." fieldname {/return v+addr} 
+    }
+  }
+}
+</screen>
+
+<para>In the above example a variable declaration is a good statement (stat) 
+while a record_stat allows declaration of record fields. 
+In the example we suppose: cur_offset initilized to 0 and 
+cur_record_var initialized to the name (the syntagma) of the record 
+we are declaring (e.g. if we declare a record, say our_record, then 
+cur_record_var has the value of our_record_var)</para>
+
+<para>Now we create the syntax of the statement record. We have to 
+initialize cur_offset, to accept record_stat and to invoke type with 
+record name and length.</para>
+
+<screen>
+/record_head -> ident^record_name { 
+  /cur_offset := 0;
+  /cur_record_var := record_name&amp;_var
+  /return record_name
+} 
+/record_body -> record_stat^$ "\n"
+/record_body -> record_body^$ record_stat^$ "\n" 
+/stat -> record record_head^record_name "\n"
+record_body^$ end record{ 
+  type record_name cur_offset 
+} 
+</screen>
+
+<para>Now we can try our master piece:</para>
+
+<screen>
+record point 
+real x,y,z 
+endrecord 
+</screen>
+
+<para>This does automatically something like:</para>
+
+<screen>
+/real_var -> point_var^v ".x" { /return v+0 } 
+/real_var -> point_var^v ".y" { /return v+1 } 
+/real_var -> point_var^v ".z" { /return v+2 }
+type point 3 
+</screen>
+
+<para>Of course we can use our new described record and declare a variable of that kind:</para>
+
+<screen>
+point position,speed 
+</screen>
+
+<para>We can access the whole record as well as a single item:</para>
+
+<screen>
+write position.y 
+</screen>
+
+<para>with this line Zz reduces the following rules:</para>
+
+<screen>
+/point_var -> position { /return1000 } 
+!!valore: 1000 
+/real_var -> point_var^v.y { /return v+1 } 
+!!valore: 1001 
+/stat -> write real_var^v { /print ... } 
+</screen>
+
+</sect1>
+
+
+<sect1><title>From SOA to RPN</title>
+
+<para>Let's imagine that our target language is able to understand a stack 
+oriented assembler. Our assembler accepts instructions operating 
+over variable address: PUSH, ADD, MOVE, etc... We would like to 
+introduce conventional expressions:</para>
+
+<screen>
+zz> /$arg -> real_var^$ : pass 
+zz> /stat -> real_var^ris"="expr^a{/print "move to", ris} 
+zz> /expr -> term^t 
+zz> /expr -> expr^e "+" term^t { /print "add" } 
+zz> /expr -> expr^e "" term^t { /print "sub" } 
+zz> /term -> fact^f 
+zz> /term -> term^t "*" fact^f { /print "add" } 
+zz> /term -> term^t "/" fact^f { /print "div" } 
+zz> /fact -> real_var^num { /print "push ", num }
+zz> /fact -> "(" expr^e ")" 
+zz> /fact -> "" fact^f { /print "change sign" } 
+</screen>
+
+<para>Now we can try ( using the declaration defined above ):</para>
+
+<screen>
+zz> type real 1 
+zz> real a,b,c 
+zz> a=b+c 
+push real_var:1001 
+push real_var:1002 
+add 
+move to real_var:1000
+</screen>
+
+</sect1>

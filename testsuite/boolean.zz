@@ -1,0 +1,176 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+
+!! Basic integer boolean operators (==, != ...) are tested in the 'math.zz' file
+
+!! Boolean logic test cases
+!! December/2001
+
+!! REFERENCE OUTPUT:
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!!OK 
+!! END OUTPUT
+
+!! BASIC "IF" COMMAND TEST
+/if 1==1   { /print "OK" }
+/if (1==1) { /print "OK" }
+
+!! BASIC "IF-ELSE" COMMAND TEST
+/if 1==1   { /print "OK" } else { /print "ERROR" }
+/if (1==1) { /print "OK" } else { /print "ERROR" }
+
+!! The "if" and "if-else" commands are two seperate commands (in kernal.c)
+!! however they use the same "cond_e" expression for their logical evaluation,
+!! so we can assume that using "if-else" is also valid for the plain "if" 
+!! command.
+
+!!!!!!!!!!!!!!!!!!!
+!! BASIC && TEST !!
+!!!!!!!!!!!!!!!!!!!
+!! TRUE && TRUE
+/if 1==1    && 1==1	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  && 1==1	{ /print "OK" } else { /print "ERROR" }
+/if 1==1    && (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  && (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if ((1==1) && (1==1))	{ /print "OK" } else { /print "ERROR" }
+
+!! TRUE && FALSE
+/if 1==1    && 1==0	{ /print "ERROR" } else { /print "OK" }
+/if (1==1)  && 1==0	{ /print "ERROR" } else { /print "OK" }
+/if 1==1    && (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if (1==1)  && (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if ((1==1) && (1==0))	{ /print "ERROR" } else { /print "OK" }
+
+!! FALSE && TRUE
+/if 1==0    && 1==1	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  && 1==1	{ /print "ERROR" } else { /print "OK" }
+/if 1==0    && (1==1)	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  && (1==1)	{ /print "ERROR" } else { /print "OK" }
+/if ((1==0) && (1==1))	{ /print "ERROR" } else { /print "OK" }
+
+!! FALSE && FALSE
+/if 1==0    && 1==0	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  && 1==0	{ /print "ERROR" } else { /print "OK" }
+/if 1==0    && (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  && (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if ((1==0) && (1==0))	{ /print "ERROR" } else { /print "OK" }
+
+
+!!!!!!!!!!!!!!!!!!!
+!! BASIC || TEST !!
+!!!!!!!!!!!!!!!!!!!
+!! TRUE || TRUE
+/if 1==1    || 1==1	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  || 1==1	{ /print "OK" } else { /print "ERROR" }
+/if 1==1    || (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  || (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if ((1==1) || (1==1))	{ /print "OK" } else { /print "ERROR" }
+
+!! TRUE || FALSE
+/if 1==1    || 1==0	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  || 1==0	{ /print "OK" } else { /print "ERROR" }
+/if 1==1    || (1==0)	{ /print "OK" } else { /print "ERROR" }
+/if (1==1)  || (1==0)	{ /print "OK" } else { /print "ERROR" }
+/if ((1==1) || (1==0))	{ /print "OK" } else { /print "ERROR" }
+
+!! FALSE || TRUE
+/if 1==0    || 1==1	{ /print "OK" } else { /print "ERROR" }
+/if (1==0)  || 1==1	{ /print "OK" } else { /print "ERROR" }
+/if 1==0    || (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if (1==0)  || (1==1)	{ /print "OK" } else { /print "ERROR" }
+/if ((1==0) || (1==1))	{ /print "OK" } else { /print "ERROR" }
+
+!! FALSE || FALSE
+/if 1==0    || 1==0	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  || 1==0	{ /print "ERROR" } else { /print "OK" }
+/if 1==0    || (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if (1==0)  || (1==0)	{ /print "ERROR" } else { /print "OK" }
+/if ((1==0) || (1==0))	{ /print "ERROR" } else { /print "OK" }
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! COMPOUND BOOLEAN TESTS !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!! Test associativity - assuming left to right default order of processing:
+/if 1==1 || 1==1 && 1==0   { /print "ERROR" } else { /print "OK" }
+/if 1==1 || (1==1 && 1==0) { /print "OK" } else { /print "ERROR" }
+
+/if 1==1 && 1==1   || 1==0 && 1==0   { /print "ERROR" } else { /print "OK" }
+/if (1==1 && 1==1) || (1==0 && 1==0) { /print "OK" } else { /print "ERROR" }
+
+!! Long chaining of operators:
+/if 1==1 && 1==0 || 1==1 && 1==1 || 1==1 && 1==1 || 1==1 && 1==1 { /print "OK" } ...
+	else { /print "ERROR" }
+
+!! Short compound ops with other operations besides equals(==)
+/if ( (1 <= 5) && (2 >= 1) ) { /print "OK" } else { /print "ERROR" }
+/if ( (1 != 2) && (1 <= 1) ) { /print "OK" } else { /print "ERROR" }

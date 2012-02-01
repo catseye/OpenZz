@@ -1,0 +1,665 @@
+2002-06-03  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* openzz.spec: bumped to 1.0.4-4
+	
+	* src/rule.c, src/scope.c, testsuite/when_delete_scope.zz:
+	activated 'when delete scope' syntax and added a test case.
+
+	* src/Makefile.am: moved zzi.c to libozzi for interactive
+	support. bumped lib version.
+
+	* src/dumpnet.c: some indentations.
+
+	* err.c, zz.h: exported total_error_n as zz_get_error_number().
+
+	* kernel.c: small comment.
+
+	* param.c, zz.h: exported param_level as
+	zz_get_param_stack_depth().
+	
+2002-05-09  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* src/Makefile.am:
+	moved version-info for 1.0.4.
+
+	* src/avl.c:
+	worked around a bug in node cached allocator for gcc 2.96-98.
+
+	* src/param.c, src/source.c:
+	indenting & makeup.
+
+	* src/sys.c, src/zlex.h, src/kernel.c:
+	moved some macros. fixed s_load_lib and changed ABI.
+
+	* src/zzdoc_dynamiclibs.xml:
+	documented above change.
+	
+	* src/util.c, src/zz.h:
+	added zz_scnt_get_tag_name().
+
+	* src/zz.c:
+	-h dumps usage.
+
+	* testsuite/Makefile.am, testsuite/tagdtor.c, testsuite/tagdtor.zz:
+	a new test case for dynamic loading of library which adds a new
+	type (tag + ctor). tested param ctor & dtor calling.
+	
+2002-04-09  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* testsuite/Makefile.am:
+	added povoidrule.zz.
+
+	* testsuite/zz_test.sh:
+	fixed as of zz->ozz.
+
+	* testsuite/return.zz, testsuite/utilities.zz:
+	fixed as now real defaults to float.
+	
+2002-03-28  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* testsuite/popvoidrule.zz:
+	added popvoidrule bug test case to CVS.
+
+2002-03-09  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* doc/RPM-howto:
+	contributed by zuliani@nergal.it.
+	
+	* openzz.spec, configure.in, src/Makefile.am: 
+	bumped 1.0.2 release number. bumped library version number. added
+	table.h.
+
+	* src/zz.c:
+	added stuff to usage infos.
+	
+2002-03-09  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* openzz.spec:
+	contributed by zuliani@nergal.it. adapted to changes in 1.0.1.
+
+	* src/Makefile.am:
+	moved to ozz prefix.
+
+2002-02-13  Davide Rossetti <davide.rossetti@roma1.infn.it>
+
+	* configure.in:	
+	bumped 1.0.1 release number. fixed proper readline handling on
+	RH7.2 via libtermcap dependency (thx to Francesco Zuliani
+	<zuliani@nergal.it>).
+	
+	* src/zz.h, src/action.c:
+	added zz_bind_get_ret_value() needed by TAO100 compiler.
+	WARNING zz_parse_tt() is not really present in libzz!!
+	
+	* AUTHORS:
+	fixed authors email addrs.
+
+2002-02-12  Davide Rossetti <davide.rossetti@roma1.infn.it>
+	
+	* src/zz.h, src/zlex.c, src/zlex.h:
+	add more params to zz_lex_add_new_tag (ctor,dtor,cast) breaking 
+	binary compatibity.
+	let zlex_realconst_double = 0 so now real consts default to float type.
+	some makeup.
+	
+	* src/Makefile.am:
+	bumped major version number.
+
+	* src/sys.c:
+	debug zz_trace in s_add() waiting for tag_of by James.
+
+	* src/zz.h, src/zzbind.h:
+	made C++ friendly.
+
+2002-02-07  Davide Rossetti <davide.rossetti@roma1.infn.it>
+	
+	* src/zz.c:
+	removed clumsy zz param syntax; changed startup info; default is not verbose
+	
+2002-01-11  James Brooks <james.brooks@roma1.infn.it>
+
+	* src/sys.c
+	Altered "get_rank_for_type()" to take params by reference instead of by value (incurring copy)
+
+2002-01-08  James Brooks <james.brooks@roma1.infn.it>
+
+	* src/zlex.c:
+	Bug fix for scientific notation: 3.3e+2 was returning as 5.3
+
+	* testsuite/zz_test.sh
+	Added new test files and made test script more userfriedly - accepts
+	command line params.
+
+2002-01-07  James Brooks <james.brooks@roma1.infn.it>
+
+	* src/kernel.c, src/sys.c:
+	Added "tag_of(param)" utility function to determine tag type of an identifier
+	
+2001-12-18  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/boolean.zz:
+	Boolean comparisson operators (>=, <=) weren't setting tag type to int - caused bugs.
+	Inserted test case for >= and <= operaetors - caught and fixed related bug.
+
+	* src/list.c, src/sys.c:
+	Boolean comparisson operators (>=, <=) weren't setting tag type to int - caused bugs.
+
+2001-12-17  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/util.c: included here zz_parse_string()
+
+2001-12-17  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/Makefile.am, src/Makefile.orig, src/sys.c, src/util.c:
+	New file for keeping utility functions in one place
+
+2001-12-14  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/parse.c: Typo
+
+	* src/source.c, src/sys.c:
+	Moved "zz_parse_string(s)" function from source.c to sys.c
+
+	* Makefile.am, configure.in: Still adjusting...
+
+	* autogen.sh:
+	Need aclocal call - without it necessary macros are missing for autoconf
+
+	* src/Makefile.am:
+	Still working on this - think we have a rough working draft though
+	Work in progress
+
+	* Makefile.am, autogen.sh, configure.in:
+	Still working on this - think we have a rough working draft though
+
+2001-12-14  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/kernel.c, src/source.c, src/sys.c, src/zzi.c: Added in kernel:
+	/stat -> /include <>
+	/stat -> /add_includedir
+	/stat -> /print_includedirs
+
+	moved zz_parse_string from zzi.c to source.c
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/zz.h: added
+
+	* configure.in:
+	fixed spaces after \ and AC_INIT wants an existing filename
+
+2001-12-13  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/printz.c, src/printz.cc:
+	Renamed(and converted) printz.cc to printz.c
+
+	* src/Makefile.am, src/Makefile.orig: Converting ".cc" files to ".c"
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* ChangeLog: updated
+
+	* src/kernel.c:
+	some comments. added star rule for indirect param definition
+
+	* testsuite/deref_param.zz: renamed. patched for * moved into kernel.c
+
+	* testsuite/startparam.zz: renamed
+
+	* BUGS: plain date and author
+
+2001-12-13  James Brooks  <james.brooks@roma1.infn.it>
+
+	* autogen.sh: Need 'autoheader' call
+
+	* testsuite/boolean.zz, testsuite/looptest_do.zz, testsuite/looptest_while.zz:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+	Not used anymore.
+	Updates found in bugs
+
+	* src/convert.cc, src/convert.h:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+	Not used anymore.
+
+	* BUGS, NEWS, autogen.sh:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+
+2001-12-13  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/while.zz: New bug entries
+	Supersceded by looptest_while.zz
+
+	* BUGS: New bug entries
+
+	* testsuite/looptest_do.zz, testsuite/looptest_while.zz:
+	Added code for 2 new loops: 'do' and 'while'.  Bugs exist for certain types
+	of boolean logic that loops accept - working on fixes.
+	Testscripts for new loops
+
+	* src/kernel.c, src/sys.c:
+	Added code for 2 new loops: 'do' and 'while'.  Bugs exist for certain types
+	of boolean logic that loops accept - working on fixes.
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* BUGS: added
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/kernel.c:
+	some comments. added star rule for indirect param definition
+
+	* testsuite/deref_param.zz: renamed. patched for * moved into kernel.c
+
+	* testsuite/startparam.zz: renamed
+
+	* BUGS: plain date and author
+
+2001-12-13  James Brooks  <james.brooks@roma1.infn.it>
+
+	* autogen.sh: Need 'autoheader' call
+
+	* testsuite/boolean.zz, testsuite/looptest_do.zz, testsuite/looptest_while.zz:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+	Not used anymore.
+	Updates found in bugs
+
+	* src/convert.cc, src/convert.h:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+	Not used anymore.
+
+	* BUGS, NEWS, autogen.sh:
+	Need NEWS file for automake, autogen.sh is to automake buidl process
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* BUGS: added a bug fix
+
+	* src/list.c: fixed zero term string in print_list
+
+2001-12-13  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/while.zz: New bug entries
+	Supersceded by looptest_while.zz
+
+	* BUGS: New bug entries
+
+	* testsuite/looptest_do.zz, testsuite/looptest_while.zz, src/kernel.c, src/sys.c:
+	Added code for 2 new loops: 'do' and 'while'.  Bugs exist for certain types
+	of boolean logic that loops accept - working on fixes.
+	Testscripts for new loops
+
+2001-12-13  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* BUGS: added
+
+2001-12-12  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/Makefile.am: added bad but initial version
+
+	* Makefile.am: added subdir src/
+
+	* configure.in: readline fun
+
+	* configure.in: added config.h
+
+2001-12-11  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/defopen.c: back in C from C++
+
+	* src/Makefile.orig: updated to new layout
+
+	* COPYING, INSTALL, README, doc/zzsigpl.pdf, doc/zzsigpl.ps, header.txt:
+	New file.
+
+	* COPYING, INSTALL, README, doc/zzsigpl.pdf, doc/zzsigpl.ps, header.txt:
+	first layout release
+
+	* testsuite/foreach.zz: added a problematic case
+
+2001-12-11  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/source.c: Commented unused code segments.
+
+2001-12-07  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* testsuite/while.zz: just a try
+
+2001-12-07  James Brooks  <james.brooks@roma1.infn.it>
+
+	* Makefile.am, configure.in, src/aclocal.m4:
+	Update Makefile.am for removed subdirs and complete process for other new files
+
+	* src/Makefile.orig, src/kernel.c, src/zlex.c: Removed dlex
+
+2001-12-07  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/Makefile.orig: added export flag for dynamic loading
+
+2001-12-06  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/printz.h: Moved printz.h from pan dir to zz main
+
+	* src/printz.cc: Moved printz.cc from pan dir to zz main
+
+	* src/defopen.h: Moved defopen.h from pan dir to zz main
+
+	* src/defopen.c: Moved defopen.cc from pan dir to zz main
+
+	* src/convert.h: Moved convert.h from pan dir to zz main
+
+	* src/convert.cc: Moved convert.cc from pan dir to zz main
+
+	* src/avl.h: Moved avl.h from pan dir to zz main
+
+	* src/avl.c: Moved avl.c from pan dir to zz main
+
+	* src/Makefile.orig, src/trace.h:
+	In the process of moving remaining needed pieces out of "pan" dir into main zz dir.
+
+	* AUTHORS, Makefile.am: Initial checkin of files for gnu build process
+
+	* testsuite/listsplit.zz:
+	Added "$zz$split()" function giving zz the features of the c strtok() function
+	Testfile for testing "$zz$split() function
+
+	* src/kernel.c, src/sys.c:
+	Added "$zz$split()" function giving zz the features of the c strtok() function
+
+2001-12-05  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/boolean.zz:
+	Added file to testsuite to test new "&&" and "||" operators
+
+2001-12-04  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* ChangeLog: updated
+
+	* src/sys.c: a unset auto var and a comment; should hane no effect...
+
+	* src/param.c: commented param_substitute()
+
+	* src/kernel.c: protect fancy operator in $zz$ namespace...
+
+	* testsuite/startparam.zz, testsuite/foreach.zz: added
+
+	* src/source.c: explicitly zeroing of zz_chanout
+
+2001-12-04  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/action.c: Added comments about argv[]
+
+2001-12-04  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/source.c, src/source.h, src/zzi.c:
+	Fixed EOL recognition bug in tt input, commented out default output stream initializers (by request), and parameterized the maximum input line length.
+
+2001-12-03  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/kernel.c, src/parse.c, src/sys.c, src/zlex.c:
+	Added support for compound boolean operations ('&&' and '||')
+
+2001-11-29  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/Makefile.orig, src/source.c, src/source.h, src/zz.c, src/zzi.c:
+	Replaced use of pan/edcom.c and pan/my_tty.c by using the GNU libreadline.  zzi.c is the file that manages tty interaction with the zz lib and zz.c is the client of that interface.
+
+2001-11-19  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/action.c, src/dumpnet.c, src/err.c, src/interface.c, src/kernel.c, src/lazy.c, src/list.c, src/param.c, src/parse.c, src/rule.c, src/scope.c, src/source.c, src/sys.c, src/table.c, src/zkernel.c, src/zlex.c, src/zlex.h, src/zsys.c, src/zz.c, src/zzi.c:
+	Converted usage of "int" and "long int" in s_content struct (in zlex.h) to types specified in <stdint.h> include file (int32_t and int64_t).
+
+2001-11-19  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/dumpnet.c, src/err.c, src/err.h, src/param.c, src/parse.c, src/rule.c, src/scope.c, src/sys.c, src/table.c, src/zlex.c, src/zsys.c, src/action.c:
+	Replaced error() with zz_error() to avoid conflicts in gcc builds
+
+2001-11-19  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/sys.c, src/zlex.c, src/zlex.h:
+	More modifications (and cleanup) for new 'int64' and 'double' types.
+
+2001-11-16  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/zlex.c: fixed float const in lex
+
+	* src/zlex.c: something wrong, some print_string with tag!=qstring
+
+	* ChangeLog: updated
+
+	* src/zlex.c, src/zlex.h: fixed types for zlex_set_STUFF
+
+2001-11-16  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/integer.zz:
+	Initial checkin for regression test script.  Planning to use this script as a model for other types: double int, float, double.
+
+2001-11-16  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/kernel.h, src/kernel.c: renamed conversion funcs; fix PROC stuff
+
+	* src/zlex.c, src/zlex.h: moved find_tag decl
+
+	* src/err.h: declare error()
+
+	* src/err.c: use stdarg
+
+	* src/sys.c: changed name to conversion funcs. added sys.h.
+
+	* src/sys.h: added
+
+	* src/param.c: a perf comment
+
+	* src/kernel.c: changed hex to stringify. added int64 version.
+
+	* testsuite/numerictypes.zz: added
+
+	* src/zlex.c: fix for numeric types parsing
+
+	* src/trace.h: always keep assert
+
+	* src/zlex.c: added zlex_set_default_real_as_double and
+	zlex_set_default_integer_as_int64. support them in zlex(). plain
+	printing of int64.
+
+	* src/zkernel.c: added zlex_set_default_real_as_double and
+	zlex_set_default_integer_as_int64; a bit of comments
+
+	* src/kernel.c, src/zlex.c, src/zlex.h:
+	added int64; placed lots of zz_assert for ptr params; tentative replacement of pan/printz (not functional on glibc2.1); more length check for numeric consts
+
+	* testsuite/double.zz: tentative ref file placement
+
+2001-11-15  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/zlex.c: removed one reference to obsolete cast
+
+	* src/Makefile.orig, src/zlex.c, src/zlex.h:
+	Less source-conflicting support for tree dump.
+	Remove dummytree.c. Sorry for the inconvenience...
+
+2001-11-15  James Brooks  <james.brooks@roma1.infn.it>
+
+	* testsuite/double.zz:
+	(James Brooks) Spread out arithmetic logic (+-*/) accross seperate functions by type (int,float,double) - more "object oriented approach".  Building out testsuite...
+	(James Brooks) building up testsuite
+
+	* src/sys.c, src/zlex.c:
+	(James Brooks) Spread out arithmetic logic (+-*/) accross seperate functions by type (int,float,double) - more "object oriented approach".  Building out testsuite...
+
+2001-11-15  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/Makefile.orig:
+	Fixed a bug that prevented zz32 to compile w/out gcc.
+	dummytree.c gets linked only in this case
+
+	* src/zlex.c, src/zlex.h: New tree tag print support
+
+2001-11-15  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/zlex.c, src/zlex.h:
+	(James Brooks) More work on s_tag->cast() functionality.
+
+2001-11-14  James Brooks  <james.brooks@roma1.infn.it>
+
+	* src/Makefile.orig, src/zlex.h: (James Brooks) typo in zlex.h
+
+	* src/zlex.c, src/zlex.h:
+	(James Brooks) Filling in functionality for new s_tag->cast() method.
+
+2001-11-14  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/zlex.h: un-commented cast stuff
+
+	* src/zlex.h: just a rough idea
+
+2001-11-12  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/Makefile.orig: fixed -I option
+
+	* src/trace.h: use stdout in zz_trace
+
+	* src/param.c: added param.h
+
+	* src/zlex.c: fixed comment
+
+	* src/param.h: added
+
+	* testsuite/setparseeol.zz, testsuite/setparseeol2.zz:
+	updated for fixed lexer
+
+	* src/source.c: modified next_token state machine
+
+	* src/kernel.c: commented /tag stuff
+
+2001-11-09  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* testsuite/double.zz: fixed suffix for float const
+
+	* src/action.c, src/rule.c: more assert
+
+	* src/rule.c: removed dummy arg assert in setaction_exeproc
+
+	* src/Makefile.orig: removed DEBUG definition
+
+2001-11-08  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/rule.c: more assert
+
+	* src/list.c, src/rule.c: added assert
+
+	* src/trace.h: added zz_set_trace_mask
+
+	* src/Makefile.orig: added _GNU_SOURCE=1; zz.c is depend-ed
+
+	* testsuite/setparseeol.zz, testsuite/setparseeol2.zz: split in 2
+
+	* src/trace.h: let's use printz
+
+	* src/sys.c: use access macros
+
+	* src/source.c: zz_trace added
+
+	* src/parse.c: removed casts
+
+	* src/list.c: zz_trace added; removed a cast
+
+	* src/kernel.c: a bit of comment
+
+	* src/kernel.h: protected
+
+	* testsuite/listmerge.zz: minor change
+
+	* src/param.c: debugging of eol...
+
+	* src/zlex.h: more union members
+
+	* src/zlex.c: added verbosity
+
+	* src/action.c: fixed list merge bug
+
+2001-11-07  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/zz.c: more std C compliant
+
+	* src/zz.c: added -d switch
+
+	* ChangeLog: updated
+
+	* src/sys.c, src/trace.h, src/zlex.c:
+	introduced zz_assert and used all over
+
+	* ChangeLog: updated
+
+	* src/Makefile.orig:
+	fixed typos. added DEBUG macros to control trace.h behaviour.
+
+	* src/trace.h: added prefix to zz_trace
+
+2001-11-06  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/action.c, src/parse.c, src/scope.c, src/trace.h, src/zlex.c:
+	introduce zz_trace
+
+	* src/parse.c, src/zlex.c, testsuite/setparseeol.zz:
+	some pretty-print; tentative implementation of semicolon_to_eol conversion; lots of prints
+
+	* src/Makefile.orig: added CPPFLAGS
+
+2001-11-05  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* ChangeLog, src/kernel.h, src/zkernel.c, testsuite/double.zz, testsuite/setcase.zz, testsuite/setparseeol.zz:
+	case and eol manip syntax added
+
+	* ChangeLog, src/Makefile.orig, src/kernel.c, src/sys.c, src/zlex.c, src/zlex.h:
+	added double type; added zlex_set_case_sensitive and zlex_set_parse_eol
+
+	* src/zlex.c: use <...>f for float const
+
+	* src/zlex.h: added more macros ad 64bit types
+
+2001-11-02  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/zlex.h: work-around for crash...
+
+	* testsuite/listmerge.zz: added list bug test
+
+	* ChangeLog: moved old stuff in ChangedLog.old
+
+	* src/zz.c: moved zz msgs to stderr
+
+	* src/Makefile.orig, src/action.c, src/err.c, src/interface.c, src/kernel.h, src/list.c, src/param.c, src/parse.c, src/rule.c, src/scope.c, src/source.c, src/sys.c, src/table.c, src/zlex.c, src/zlex.h, src/zsys.c:
+	introduced infrastructure for 'complex' s_content
+
+2001-10-31  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/sys.c:
+	converted to s_content_value and fixed a (maybe) bug in sub for int
+	case
+
+	* src/kernel.c, src/sys.c: added /if else
+
+2001-10-31  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/action.c, src/interface.c:
+	Little changes to support used macros for setaction_exeproc()
+	(but in tree_code enums)
+
+2001-10-30  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/action.c, src/kernel.h, src/rule.c: added FUN (not SFUN) support
+
+2001-10-30  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/Makefile.orig: Dependecies fixed
+
+2001-10-26  Davide Rossetti  <davide.rossetti@roma1.infn.it>
+
+	* src/Makefile.orig, src/action.c, src/rule.h:
+	enlarged MAX_RULE_LENGTH; more param in actions..
+
+2001-10-05  dicarlo  <federico.dicarlo@roma1.infn.it>
+
+	* src/mem.h, src/param.c, src/parse.c, src/parse.h, src/rule.c, src/rule.h, src/scope.c, src/source.c, src/sys.c, src/table.c, src/trace.h, src/zkernel.c, src/zlex.c, src/zlex.h, src/zsys.c, src/zz.c, src/zzi.c, ChangeLog, src/Makefile.orig, src/action.c, src/dumpnet.c, src/err.c, src/err.h, src/interface.c, src/kernel.c, src/kernel.h, src/lazy.c, src/list.c, src/list.h:
+	First Release of zzc language
+

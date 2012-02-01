@@ -1,0 +1,35 @@
+///////////////////////////////
+////////// OPEN BUGS //////////
+///////////////////////////////
+
+
+Bugs are now being tracked on SourceForge.
+See the SourceForge Bugs page for the "OpenZz" project:
+
+ https://sourceforge.net/tracker/?group_id=43547&atid=436689
+
+or if that link changes:
+
+ https://sourceforge.net/projects/openzz/ 
+
+
+////////////////////////////////
+////////// FIXED BUGS //////////
+////////////////////////////////
+
+// Davide Rossetti - 13/12/01
+fixed "printz of list producing garbage"
+
+
+// James Brooks - 13/12/01
+//  Fixed 10/01/2002
+ /while ((1==1)) {
+  /print "test"
+ }
+
+
+// Davide Rossetti - 28/12/01
+//  Fixed by James Brooks - 10/01/2001
+$zz$split(str_to_split, separators) incorrectly modified 1st arg
+
+

@@ -1,0 +1,160 @@
+
+<glossentry>
+  <glossterm>Action</glossterm>
+<glossdef>
+  <para>The action is a list of tokens.  Usually it is associated to a syntax extension.  It is executed when the grammar rules is reduced (Zz has matched the rule) or when the statement <literal>/execute</literal> is issued.</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Application</glossterm>
+<glossdef>
+<para> See Zz application.</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Bead</glossterm>
+<glossdef>
+<para>
+Is the basic element of a thread.  There are terminal (simple) beads and non terminal beads.  The terminal beads are tokens to be matched exactly (explicit constant numbers, keywords etc.), non terminal beads are made up with a syntagma and a recipient of the actual value the bead will match.  The form of a non terminal bead is:</para>
+<para><literal>syntagma^var</literal></para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>C-Procedure</glossterm>
+<glossdef>
+<para>
+A program written in C and linked with the Zz kernel, which knows the C-Procedure entry point.  Zz will invoke the C-Procedure as specified by the user.  There are user written C-Procedures (used to configure Zz to exploit a certain set of user functions within an application) and kernel or system C-Procedures furnished within the Zz kernel.
+</para>
+</glossdef>
+</glossentry> 
+
+<glossentry>
+  <glossterm>Derived syntagma</glossterm>
+<glossdef>
+<para>
+A syntagma made up of assigned threads created by using the syntax extension statement.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Dynamic grammar</glossterm>
+<glossdef>
+<para>
+A grammar that may grow during the parsing phase itself.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Level</glossterm>
+<glossdef>
+<para>
+Syntactical rules are organized in levels.  Thus a level is a set of syntactical rules.  Levels are ordered, named, and can be active or inactive.  The rules in the higher levels hide those in lower levels.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Lexical syntagma</glossterm>
+<glossdef>
+<para>
+A syntagma returning one of the lexical tags, all these syntagmas are built in within the Zz kernel.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Nonterminal bead</glossterm>
+<glossdef>
+<para>
+See bead.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Rule</glossterm>
+<glossdef>
+<para>
+Also called a "Syntax rule" or "production rule", is the right side of the Syntax extension statement.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Return value</glossterm>
+<glossdef>
+<para>
+A special statement used within an action.  It is used to give a value to the variable associated with a non terminal bead.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Syntax extension</glossterm>
+<glossdef>
+<para>
+The Zz language statement(s) used to extend the syntax recognized by Zz.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Syntagma</glossterm>
+<glossdef>
+<para>
+The syntagma is a basic structure in the syntax.  A syntagma has a name and 0 or many rules (threads) defining what the syntagma will match.  
+A syntagma can be extended (adding more threads to it) using the statement: /syntagma > thread [action].
+The common way to refer to a syntagma is using it in a non terminal bead, within a thread: .... syntagma^var ...
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Thread</glossterm>
+<glossdef>
+<para>
+A thread is something that the parser will match with the input tokens.  A thread is a list of beads.  All the threads are organized within syntagmas.  The only way to define a thread is adding a thread to a syntagma.  It is possible to specify an action to be executed when a thread matches something.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Zz-variable</glossterm>
+<glossdef>
+<para>
+A Zz variable has a name a value and a tag.  A variable is defined with the assignments statements = or := or is the left side of a non terminal beads (after the caret symbol: ^).
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Zz-application</glossterm>
+<glossdef>
+<para>
+This is the result of the union of the User C-Procedures and the Zz Kernel (the result we obtain configuring Zz).  Usually a Zz application is characterized by a very rich and pleasant syntax too.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Zz-kernel</glossterm>
+<glossdef>
+<para>
+The Zz kernel is the unconfigured version of Zz. The Zz Kernel recognizes the Zz language and is able to call the Kernel C-Procedures.
+</para>
+</glossdef>
+</glossentry>
+
+<glossentry>
+  <glossterm>Zz  language 0, Zz L0</glossterm>
+<glossdef>
+<para>
+The basic language that Zz recognizes before any language extension is done.
+</para>
+</glossdef>
+</glossentry>

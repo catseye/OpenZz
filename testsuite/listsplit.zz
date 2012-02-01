@@ -1,0 +1,84 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+!! REFERENCE OUTPUT
+!!
+!!test b:abcd
+!!
+!!test c:a b,c d
+!!
+!!test d:a
+!!test d:b
+!!test d:c
+!!test d:d
+!!
+!!test e:a b
+!!test e:c d
+!!
+!!test f:a
+!!test f:b
+!!test f:c
+!!test f:d
+!!
+!!test g:a
+!!test g:b
+!!test g:c
+!!test g:d
+!!  after split src string is: a b,c d
+!!
+!! END OUTPUT
+
+!! A: Empty case
+/list = $zz$split("","")
+/foreach i in list { /print "test a:"&i }
+/print ""
+
+!! B: No seperators defined
+/list = $zz$split("abcd","")
+/foreach i in list { /print "test b:"&i }
+/print ""
+
+!! C: Looking for any default behavior in seperators
+/list = $zz$split("a b,c d","")
+/foreach i in list { /print "test c:"&i }
+/print ""
+
+!! D: Test seperators
+/list = $zz$split("a b c d"," ")
+/foreach i in list { /print "test d:"&i }
+/print ""
+
+!! E: Test seperators
+/list = $zz$split("a b,c d",",")
+/foreach i in list { /print "test e:"&i }
+/print ""
+
+!! F: Test multiple seperators
+/list = $zz$split("a b,c d"," ,")
+/foreach i in list { /print "test f:"&i }
+/print ""
+
+!! G: as in F + src string in var
+/srcstr = "a b,c d"
+/list = $zz$split(srcstr," ,")
+/foreach i in list { /print "test g:"&i }
+/print "  after split src string is:", srcstr
+/print ""

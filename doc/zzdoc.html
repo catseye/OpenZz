@@ -1,0 +1,1276 @@
+<html><head><META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Zz: THE TAO ENGINE</title><meta content="DocBook XSL Stylesheets V1.48" name="generator"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><h1 class="title"><a name="NA22"></a>Zz: THE TAO ENGINE</h1></div><div><h3 class="author">Simone Cabasino</h3></div><div><h3 class="author">Gian Marco Todesco</h3></div><div><h3 class="author">Pier Stanislao Paolucci</h3></div><div><p class="copyright">Copyright &copy; 2001 S.Cabasino, G.M. Todesco, P.S. Paolucci</p></div><div><div class="legalnotice">Quadrics and TAO are trademarks of Alenia Spazio S.p.A.</div></div><div><div class="legalnotice">APE 100 and Zz are trademarks of the I.N.F.N. (Italian National Institute of Nuclear Physics).</div></div><div><div class="legalnotice">APE100 is the parallel computer architecture designed by the I.N.F.N.</div></div><div><div class="legalnotice">Quadrics is the family of parallel computers of Alenia Spazio S.p.A.</div></div><div><div class="legalnotice">This document describes the Zz compiler construction language used on the Quadrics/APE100 computers.</div></div><div><div class="legalnotice">The TAO programming language and the Zz compiler were originally designed by S. Cabasino, P.S. Paolucci and G.M. Todesco of the I.N.F.N. in the framework of the I.N.F.N. APE100 parallel computing project.</div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NA51">Preface</a></dt><dd><dl><dt><a href="#NA54">Motivation</a></dt><dt><a href="#NA62">About this document</a></dt></dl></dd><dt>1. <a href="#NA7C">Introduction</a></dt><dd><dl><dt><a href="#NA89">Overview</a></dt><dt><a href="#NA96">ZZ Configurations</a></dt></dl></dd><dt>2. <a href="#NABC">A guided tour</a></dt><dd><dl><dt><a href="#NABF">Getting Started</a></dt><dt><a href="#NAC4">Hello World</a></dt><dt><a href="#NAF1">About the Zz language</a></dt><dt><a href="#NB0D">The Lexical Analyzer</a></dt><dt><a href="#NB3F">Variables and Expressions</a></dt><dd><dl><dt><a href="#NB44">Declaring Zz Variables</a></dt><dt><a href="#NB57">Lists</a></dt><dt><a href="#NB79">Expressions</a></dt><dt><a href="#NB85">Errors</a></dt><dt><a href="#NB93">Syntax Extensions</a></dt><dt><a href="#NBF4">Nonterminal Beads</a></dt></dl></dd><dt><a href="#NCBA">Basic Statements</a></dt><dd><dl><dt><a href="#NCBD">Control Statements</a></dt><dt><a href="#ND08">Monitor Utilities</a></dt><dt><a href="#ND19">Overloading and Type Control </a></dt><dt><a href="#ND28">Indentation Style</a></dt><dt><a href="#ND3E">Precedences</a></dt><dt><a href="#ND60">About Actions </a></dt><dt><a href="#NDB0">Using Zz variables</a></dt><dt><a href="#NE1D">Variables and Parameters</a></dt><dt><a href="#NE39">Syntax Extensions Scope (scope of the rules)</a></dt><dt><a href="#NE6B">When Change Action or Exit Scope</a></dt></dl></dd></dl></dd><dt>3. <a href="#NE80">Semantic Interface</a></dt><dd><dl><dt><a href="#NEB2">Syntax definitions</a></dt><dt><a href="#NEBA">Parameter passing</a></dt><dd><dl><dt><a href="#NEE1">A little problem: the float.</a></dt><dt><a href="#NEEB">Utilities available inside the C-Procedures</a></dt></dl></dd><dt><a href="#NF02">Zz kit</a></dt><dd><dl><dt><a href="#NF0D">main.c</a></dt><dt><a href="#NF1C">Declare simple C-Procedures</a></dt></dl></dd></dl></dd><dt>4. <a href="#NF2B">Dynamic Libraries</a></dt><dd><dl><dt><a href="#NF32">Basic Example</a></dt><dt><a href="#NF71">Grammar Extending Example</a></dt><dt><a href="#N1041">Grammar Extending Example with Return Type</a></dt></dl></dd><dt>5. <a href="#N1151">Reference Guide</a></dt><dd><dl><dt><a href="#N115B">Lexical analysis</a></dt><dd><dl><dt><a href="#N1165">Comments</a></dt><dt><a href="#N116A">Continuation lines</a></dt><dt><a href="#N116F">Spacing</a></dt><dt><a href="#N117B">Interactive interface</a></dt></dl></dd><dt><a href="#N1180">Parser</a></dt><dd><dl><dt><a href="#N1187">Tokens' Precedence</a></dt><dt><a href="#N1199">Statements</a></dt></dl></dd><dt><a href="#N11A4">Syntax Extensions</a></dt><dd><dl><dt><a href="#N11CD">Beads</a></dt><dt><a href="#N11DE">Simple (or terminal) beads</a></dt><dt><a href="#N11E8">Non terminal beads</a></dt><dt><a href="#N1217">kernel syntagmas</a></dt><dt><a href="#N1221">When change action or exit scope</a></dt></dl></dd><dt><a href="#N1243">Basic expressions and Variables</a></dt><dd><dl><dt><a href="#N127E">List</a></dt></dl></dd><dt><a href="#N1298">Statements and Utilities</a></dt></dl></dd><dt><a href="#N1326">Glossary</a></dt><dt>A. <a href="#N139D">Zz &amp; compilers</a></dt><dd><dl><dt><a href="#N13AE">Variable and dynamic syntax</a></dt><dt><a href="#N13DC">A statement to declare a variable</a></dt><dt><a href="#N13F5">Statement to define a new variable type</a></dt><dt><a href="#N1413">A more realistic example</a></dt><dt><a href="#N1431">Structures</a></dt><dt><a href="#N1478">From SOA to RPN</a></dt></dl></dd></dl></div><div class="preface"><div class="titlepage"><div><h2 class="title"><a name="NA51"></a>Preface</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NA54">Motivation</a></dt><dt><a href="#NA62">About this document</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NA54"></a>Motivation</h2></div></div><p>The Zz language was designed within the APE100 team of INFN to serve as the basic tool to develop compilers for the Ape100 parallel computers.  One of the aims of the APE100 group is the realization of a supercomputer specifically designed to solve specific numerical problem arising from the QCD community, but suitable also for other applications.  The great necessity of custom compilers and interpreters suggests us the need to design the tool described in this document.</p><p>Hence two major reasons to develop Zz were:</p><div class="itemizedlist"><ul type="disc"><li>To simplify the job of compiler and interpreter implementation.</li><li>To produce new highly readable custom languages</li></ul></div><p>Given its flexibility, Zz has been also used for a variety of system software, including the symbolic debugger DBQ and the machine description compiler.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NA62"></a>About this document</h2></div></div><p>This document has to be read with a little bit of tolerance.  There are certainly some errors; but nevertheless we have done our best to ensure its quality.  We assume that the reader has general familiarity with computer terminology.</p><p>The first part is intended to lead the novice user to the comprehension of the fundamental Zz concepts
+
+<sup>[<a href="#ftn.NA69" name="NA69">1</a>]</sup>
+
+.  To learn these concepts we suggest you try all the examples because sometimes the results can be quite surprising.  This tutorial guide should be read sequentially because we have introduced the terminology in a progressive fashion.</p><p>The second part is a quite detailed reference guide, which is useful to develop a real application.  This reference guide is something more than a list of statements, but does not explain the concepts.</p><p>The third part is a guide to tailor Zz to fit your needs.</p><p>This documents is concluded with some examples of advanced Zz use and a glossary.</p><p>When a character plays a special role, it is highlighted, like this dollar: $.  When something is optional we use the notation [ ... ].</p><p>Usually keywords are bold.</p><p>Zz is a dynamic language you will expand its vocabulary as you use it.  However the Kernel is also evolving, so we hope to continually produce new releases of Zz and of this document.  Stay in tune with the latest developments by monitoring the website listed in the resources section of this document.</p></div><div class="footnotes"><br><hr align="left" width="100"><div class="footnote"><p><sup>[<a href="#NA69" name="ftn.NA69">1</a>] </sup>The theory of dynamic parsing is described in: S.Cabasino, P.S.Paolucci, G.M.Todesco, "Dynamic Parsers and Evolving Grammars", published on the November issue of <i>ACM SIGPLAN Notices (1992)</i></p></div></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="NA7C"></a>Chapter 1. Introduction</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NA89">Overview</a></dt><dt><a href="#NA96">ZZ Configurations</a></dt></dl></div><p>The Zz language is a general-purpose incremental language.  It can handle operator overloading and any kind of structured data.  By our definitions, an incremental language is a language that is able to easily grow according to the users needs, and which is also suitable to develop complex compilers and simple command interpreters (we use as an example a calculator).  The user of Zz starts using a simple interface that allows him to introduce new statements.</p><p>The user can specify the semantics of his statements using other Zz statements or routines written by the user in a conventional programming language (like the C language).  We call these routines, usable from Zz, "C-Procedures".</p><p>Zz can to be instructed to recognize very general grammars; upon matching a grammar rule it can execute an action as stated above.  Thus one of the aims of Zz is to interface a set of C-Procedures with a command language.</p><p>Developing a Zz application is quite easy using its native environment.  The user is encouraged to take advantage of the inherent flexibility of Zz to improve the interfaces of their applications.  Today, within the APE group, Zz is used in all the applications that require some user interface or command language.  Zz has many enticing aspects, for example it can add new words to its syntax like FORTH does, it can handle its own code like LISP does, and it can handle syntaxes like YACC does.</p><p>For the compiler writers Zz can be quite helpful.  It does the job of a compiler compiler, but it handles the variables and other objects declarations maintaining a pure syntactic strong type checking.  A compiler developed using Zz could be general like ADA and C, but our intention is that Zz will be used to develop innovative Very High Level Language (VHLL) compilers with dynamic syntax capability.</p><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NA89"></a>Overview</h2></div></div><p>A compiler is designed to translate source code, written in a given language, e.g. FORTRAN either into executable machine code or into an intermediate form, (e.g. into an assembler program or binary object code).  In the APE software we choose the second alternative, since the main code optimization step is executed in a following program.</p><p>Programs written in a high level language, e.g. FORTRAN can be looked at in two different ways.  The first is to consider the program as a statement in the given language of a computational task to be executed by the computer.  The second is to look at it as a series of statements which instruct the compiler to produce either the machine code or the assembler code needed to execute the task.  In the first way, the program represents directives to the compiler rather than the description of the computational task at hand. Common examples of this kind are declarations of variables and special data types and structures, or directives for compiler options (e.g. LIST, NoLIST, etc.).  For the following discussion of Zz, it is however useful to adopt the second point of view, where all lines in the program are seen as directives to the compiler.</p><p>The basic idea underlying Zz is that of a language which can be extended not only by the definition of new entities (e.g.: structures, subroutines or tasks declarations) and by the redefinition of existing ones (e.g.: overloading), but where the programmer can modify the syntax itself.  In the point of view we have adopted, all compiler languages are extensible to a limited extent.  Fortran 77 compilers, e.g., allow the definition of new identifiers, the names of variables, arrays, functions, and subroutines.  Other compilers, e.g. those for ADA and C++, go one step further, and allow operator overloading and the definition of new data types.  Languages such as FORTH and LISP are even more versatile, as they allow the definition of new operators accepting a very unfriendly grammar.  Zz has the versatility of FORTH and LISP, with the added feature of making possible the definition of new syntactical forms.  This makes of Zz a universal compiler language.  It is possible, through suitably designed syntax extensions, to use Zz to write compilers for most existing languages including, among others, FORTRAN, C and C++.</p><p>The extension of Zz proceeds through the definition of "production rules", which specify new syntactical forms accepted by the language, and thus effectively add to the grammar of the language.  For each new production rule the user can specify an action that will be executed when the interpreter recognizes the corresponding syntactical form.  The action can be specified either in the Zz language, or as a call to a user defined C procedure.</p><p>The Zz language basic package, Zz L0, has been written in C to ensure easy portability between different platforms.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NA96"></a>ZZ Configurations</h2></div></div><p>Zz can interface a set of C-Procedures with a command language.  The basic set of C-Procedures available in the Zz kernel is limited; however the user may link in their own C-Procedures with the Zz kernel.</p><p>Zz will be able to call all the C-Procedures in an appropriate sequence, providing the needed parameters according to the defined grammar rules.</p><p>It is didactically interesting, although without interesting practical applications, to use the unconfigured version of Zz.  It allows only the output to standard output with a basic format handling.  When you plan to use Zz in a certain area of your project to produce a Zz application you have to write, in Zz language, the syntax extension files which define the syntax to be used in your project and the actions to be executed.  Moreover you should configure Zz linking to Zz the set of your C-Procedures.  We will do here three examples to clarify the field of application of Zz.</p><div class="orderedlist"><ol type="1"><li><p>Let's suppose that you need a command interpreter to give commands to your data acquisition equipment.  You need some C-Procedures as filters, data analysis procedures, device drivers etc.  Zz will call them when you will write statements like:</p><pre class="programlisting">STORE ON MY_FILE EVENTS ROM DEVICE 3 (FILTER: B=23) 
+FIT EVENTS FROM MY_FILE WITH MY_FUNCT; DISPLAY CHI^2.</pre></li><li><p>Let's suppose that your new parallel supercomputer needs a special language extension and you plan to develop a new compiler.  You will write, and link to Zz, a lot of C-Procedures to write assembler code to optimize the programs, to write program listings and so on. As an example you need statements like:</p><pre class="programlisting">
+ where (convergence &gt; 0.0001) there ..... endwhere 
+ ifall (check ==ok ) { ...... }
+</pre></li><li><p>You need the Fortran languages, but you need to enrich the Fortran syntax adding special purpose statements to handle a computer network or a special machine.  The standard compiler is ok for you, but the new statements will provide the programmer with the capability of producing shell procedures to configure appropriately the network or to allocate the machines when the program is running.</p><p>A "Fortran extended" instruction could be:</p><pre class="programlisting">TEST COMMUNICATIONS</pre></li></ol></div><p>In these examples you have to configure three different "Zz applications".  These three applications differ in the user action library and in the syntax.  Indeed when you will have linked the C-Procedures library, and in so configuring Zz, you will describe the syntax.</p><p>The first application will link standard analysis algorithms and user procedures. The second will generate optimized code for your computer and the third one will produce Fortran source and shell commands.</p><p>The first chapters of this manual will not describe a specific Zz application and the examples will use mainly the set of C-Procedures available in the basic kit.  The third part will describe in detail the way to link the Zz kernel with user written C-Procedures (i.e. how to configure Zz).</p></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="NABC"></a>Chapter 2. A guided tour</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NABF">Getting Started</a></dt><dt><a href="#NAC4">Hello World</a></dt><dt><a href="#NAF1">About the Zz language</a></dt><dt><a href="#NB0D">The Lexical Analyzer</a></dt><dt><a href="#NB3F">Variables and Expressions</a></dt><dd><dl><dt><a href="#NB44">Declaring Zz Variables</a></dt><dt><a href="#NB57">Lists</a></dt><dt><a href="#NB79">Expressions</a></dt><dt><a href="#NB85">Errors</a></dt><dt><a href="#NB93">Syntax Extensions</a></dt><dt><a href="#NBF4">Nonterminal Beads</a></dt></dl></dd><dt><a href="#NCBA">Basic Statements</a></dt><dd><dl><dt><a href="#NCBD">Control Statements</a></dt><dt><a href="#ND08">Monitor Utilities</a></dt><dt><a href="#ND19">Overloading and Type Control </a></dt><dt><a href="#ND28">Indentation Style</a></dt><dt><a href="#ND3E">Precedences</a></dt><dt><a href="#ND60">About Actions </a></dt><dt><a href="#NDB0">Using Zz variables</a></dt><dt><a href="#NE1D">Variables and Parameters</a></dt><dt><a href="#NE39">Syntax Extensions Scope (scope of the rules)</a></dt><dt><a href="#NE6B">When Change Action or Exit Scope</a></dt></dl></dd></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NABF"></a>Getting Started</h2></div></div><p>We call "The Zz language" (or simply "Zz") the language accepted by Zz when it starts.  This language allows the definitions of new grammar rules, i.e. the language itself may change and grow.  In this chapter we introduce Zz as it is when it is started without any language extension.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NAC4"></a>Hello World</h2></div></div><p>The first program to write is the emerging software standard "Hello World!".  Zz has to be installed and you need to know how to call it: for details on your installation, please ask your system manager.</p><p>If you want Zz to process a file instead of starting an interactive session, you should type:</p><tt>&amp; </tt><b><tt>zz filename</tt></b><p>If you omit the file name it starts an interactive sessions; an environment useful for doing exercises:</p><pre class="screen">
+$ zz 
+....... ZZ initialization message ... 
+zz&gt; /print "Hello, world" 
+Hello, world 
+zz&gt; ctrl-z 
+$
+</pre><p>To exit politely type ctrl-Z (ctrl-D for UNIX users).</p><p>The statement <tt>/print</tt> (read "slash print") is used to print something on your screen.</p><p>Of course the user of a dynamic language would try to write a dynamic example from the beginning.  Therefore let's define a new statement: "Hello" that is used to print "Hello, world".</p><pre class="screen">
+$ zz 
+....... ZZ initialization message ... 
+zz&gt; /stat -&gt; "Hello" { 
+.. /print "Hello, world" 
+.. } 
+zz&gt; Hello!! now Hello is a new recognized stat. 
+zz&gt; 
+Hello, world 
+zz&gt;
+</pre><p>Arguments of the <tt>/print</tt> statements print may also be numbers or expressions:</p><pre class="screen">
+zz&gt; /print 12.7 * 2
+25.4
+zz&gt; /print "The result is ", 20+4.0/3.0
+The result is 21.333334
+</pre><p>There are also variables, and statements to assign expression to them:</p><pre class="screen">
+zz&gt; /r=12 
+zz&gt; /pi=3.141593 
+zz&gt; /header= "circle = " 
+zz&gt; /print header,2*r*pi 
+circle = 75.398232 
+zz&gt; 
+zz&gt; /x = 12 
+zz&gt; /y = goofie 
+zz&gt; /print y 
+goofie 
+zz&gt; /y = x 
+zz&gt; /print y 
+12 
+zz&gt; /y = "x" 
+zz&gt; /print y 
+x
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NAF1"></a>About the Zz language</h2></div></div><p>Zz is a very sparse language: few operations are intrinsically supported.  The key of Zz is the syntax extension statement.  In the current release the following are available as predefined statements: assignment, print, evaluation of simple expressions, and a limited number of other basic instructions.  In principle there is no need of Zz instructions, except for only the syntax extension capability.  The intrinsic Zz statements are however useful for purposes of exercise and in the early stages of application development.</p><p>The Zz intrinsic statements are prefixed with a simple slash / introduced to clearly distinguish the Zz starting language statements from the user application language.</p><p>It is possible to fit more than one statement on one line, terminating each statement with a semicolon(;).  If there is one single statement the semicolon is optional.</p><p>Example:</p><pre class="screen">
+zz&gt; /print "Hello, world"; /print "I am happy!''
+Hello, world
+I am happy!
+</pre><p>If the line is too long to fit in one line it is possible to split it (continuing on the next line) by means of the continuation line marker ... placed at the end of line to be truncated:</p><p>Example: </p><pre class="screen">
+zz&gt; /a= ...
+"not a very long line"
+zz&gt;
+zz&gt; /print a
+not a very long line
+</pre><p>The statement:</p><b><tt>/include "file_name"</tt></b><p>makes it possible to include a stream of statements written within another file (file_name must be the name of a text file containing Zz statements).</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NB0D"></a>The Lexical Analyzer</h2></div></div><p>Zz uses a lexical analyzer to get tokens from the source stream.  The lexical analyzer is able to categorize the following lexical elements:</p><div class="itemizedlist"><ul type="disc"><li><span class="emphasis"><i>identifier</i></span>: A string of alphanumeric characters, underscores and dollar signs.  Note that an identifier cannot start with a number.</li><li><span class="emphasis"><i>character</i></span>: All characters not legal within identifiers (for example ^).</li><li><span class="emphasis"><i>qstring</i></span>: (Quoted string) A string enclosed by double quotes (i.e. "string "). The enclosed string can be composed by one or more printable characters and/or special characters (for example the newline code: "\n").</li><li><span class="emphasis"><i>integer</i></span>: Unsigned decimal integer number.</li><li><span class="emphasis"><i>float</i></span>: Unsigned floating point number.  It is possible to distinguish a floating point number because of the decimal point or exponential notation.</li></ul></div><p>The user can introduce new lexical categories.</p><p>The statement <tt>/print</tt> can print tokens of all these categories.</p><p>Examples:</p><pre class="screen">
+zz&gt; /print " first row \n second row" 
+first row 
+second row 
+zz&gt; /print robert,34,3.5 
+robert 34 3.5 
+zz&gt; /print "&amp;" 
+&amp; 
+zz&gt; /print "****" 
+****
+</pre><p>Note that the control sequence "\n" causes a carriage return.</p><p>The double quotes "" are used mainly in the following cases:</p><div class="itemizedlist"><ul type="disc"><li>Strings which also contain non-alphanumeric characters.</li><li>Strings where the first character is a number.</li><li>Strings containing a name that is also the name of a variable.</li></ul></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NB3F"></a>Variables and Expressions</h2></div></div><p>Zz supports variables and simple expressions; the intrinsic types are mainly numeric, string and list.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NB44"></a>Declaring Zz Variables</h3></div></div><p>The Zz variables are dynamic; they are created when assigning values to them.  A Zz variable has a value and a tag.  The tag of the Zz variables is the type of the expression assigned to it.  There is a correspondence between lexical tokens and tags.</p><p>The assignment statement has the following formats:</p><b><tt>/variable := expression [ as type ]</tt></b><p>or</p><b><tt>/variable = expression [ as type ]</tt></b><p>The optional type is some kind of tag used by a Zz expert to change the tag of expression. It can be any syntagma, as we'll explain in the following.</p><p>The assignment form ":=" creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the "=" one creates LOCAL VARIABLES, which remain alive until the EOF (if declared at level 0) or local block's closing brace "}" (if declared within a block) is reached.  How to use these variables will be explained later.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NB57"></a>Lists</h3></div></div><p>Zz language offers some facilities to manage the lists.  A sequence of tokens within braces {} is interpreted as a list.  It is possible to explicitly assign a list to a variable using the following format:</p><b><tt>/var = { tokens.... }</tt></b><p>Wherein any token is allowed with the exception of "}" and an unmatched double quote ".  List tokens are delimited by spaces.</p><p>As example of assignment to a variable:</p><pre class="screen">
+zz&gt; /my_list = { alfa b c , "anymore" 23.4 }"}
+</pre><p>It is possible to refer to any item of a list using the notation <tt>variable.item_number</tt>, where <tt>item_number</tt> is the 1 based index number of the item we want to refer to.  It is also possible to print the length of the list (i.e. the number of the elements in the list) using the notation <tt>variable.length</tt>.</p><p>As an example, using the list defined above:</p><pre class="screen">
+zz&gt; /print my_list.1 , my_list.4
+alfa ,
+zz&gt; /print my_list.length
+6
+zz&gt;
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NB79"></a>Expressions</h3></div></div><p>The four usual arithmetic operations (*, /, +, -) are supported for integer and floating point data types, following the usual rules of precedence.  The type of the result is chosen depending on the type of the operands with the usual rules of floating type conversion for mixed floating/integer calculations.</p><p>A concatenation operator "&amp;" is defined.  The "&amp;" symbol can be used to join identifiers, strings, or lists, and it can also operate if one of the operands is a numeric variable.  In this case it takes the corresponding literal value of the number.</p><p>Examples:</p><pre class="screen">
+zz&gt; /id = "blabla" 
+zz&gt; /golf = id &amp; 12*(4+5) 
+zz&gt; /print golf 
+blabla108 
+zz&gt; 
+zz&gt; /v1=15 
+zz&gt; /v2=16 
+zz&gt; /id = ciccio &amp;_&amp; v1 &amp;_&amp; v2 
+zz&gt; /print id 
+ciccio_15_16 
+zz&gt; /my_list = { 123 "mouse" 2.4 } 
+zz&gt; /print my_list 
+{ 123 mouse 2.4 } 
+zz&gt; /print my_list.2 
+mouse 
+zz&gt; /new_list = my_list &amp; { 123 } 
+zz&gt; /print new_list 
+{ 123 mouse 2.4 123}
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NB85"></a>Errors</h3></div></div><p>When ZZ doesn't recognize a statement it prints a diagnostic message.</p><p>Example:</p><pre class="screen">
+zz&gt; /alfa=12*(13 # 40)
++ **** SYNTAX ERROR ****
+| got: '#'
+| expected one of:  '*' '/' ')' '+' '-'
+| /alfa=12*(13 # 40)
+|              ^
+| line 1 of stdin
+zz&gt;
+</pre><p>The unexpected token is underlined by a "^" sign.  Zz also prints the pertinent rules, underlining the place where the mismatch occurred.</p><p>In the previous example the following character are acceptable: *, /, ), +, -, while # is meaningless.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NB93"></a>Syntax Extensions</h3></div></div><p>The key power of ZZ is the capability of expanding the recognized language.  To add syntax extension to ZzL0 it is necessary to specify something on which to match, and an action to execute when this match occurs.</p><p>Now we introduce a new statement (shortly: stat) to display the Zz version.  This new statement will be: "show version":</p><pre class="screen">
+zz&gt; /stat -&gt; show version { 
+.. /print "Zz Version 2.0 31, October 1991\n" 
+.. } 
+zz&gt; 
+zz&gt; show version 
+Zz Version 2.0 31, October 1991
+</pre><p>The usual prompt "zz&gt;" changes to a couple of dots to show that the action specification has to be completed.  It is possible to overload a part of the above statement to display something else:</p><pre class="screen">
+zz&gt; /stat -&gt; show authors { 
+.. /print "Zz's authors are:" 
+.. /print " Simone Cabasino" 
+.. /print " Pier Stanislao Paolucci" 
+.. /print " Gian Marco Todesco" 
+.. } 
+zz&gt; show authors 
+Zz's authors are: 
+Simone Cabasino 
+Pier Stanislao Paolucci 
+Gian Marco Todesco 
+zz&gt; show version 
+Zz Version 2.0 31, October 1991
+</pre><p>In the examples just shown we added new syntaxes to the grammar of the statements (<tt>stat</tt>), writing:</p><pre class="screen">
+zz&gt; /stat -&gt; thread { actions }
+</pre><p>We call these kinds of statements "syntax extensions".  More generally the form of the syntax extension statement is:</p><b><tt>
+/ syntagma -&gt; thread [ {action } ]
+</tt></b><p>"<tt>stat</tt>" is a good syntagma.  Actually <tt>stat</tt> is the only syntagma that we have seen up to now: we will describe general syntagmas later.</p><p>We call "<tt>thread</tt>" the pattern (or rule) we are adding to the syntax (more exactly to the syntagma) and that Zz will be able to recognize when met.  We call "<tt>action</tt>" the list of Zz statements, within braces <tt>{}</tt>, to be executed when the thread will be matched.  The action is an optional field.</p><p>A <tt>thread</tt> is a list of <tt>beads</tt>.  There are <tt>terminal beads</tt> like show, author, authors or Hello and <tt>nonterminal beads</tt>.  <tt>Nonterminal beads</tt> will be introduced later.</p><p>Let's try with an error:</p><pre class="screen">
+zz&gt; show author 
+***** SYNTAX ERROR 
+etc.... 
+</pre><p>We can foresee this error and give a friendlier message:</p><pre class="screen">
+zz&gt; /stat -&gt; show author { 
+.. /print "There are several authors of Zz."
+.. /print "The correct statement is 'show authors'" 
+.. /print "anyway:" 
+.. show authors 
+.. } 
+zz&gt; 
+zz&gt; show author 
+There are several authors of Zz.
+The correct statement is 'show authors'
+anyway: 
+Zz's authors are:
+Simone Cabasino 
+Pier Stanislao Paolucci 
+Gian Marco Todesco
+</pre><p>Please note that you can use the stat "show authors" within the action of "show author".</p><p>The statement /rules shows all the syntax rules added to Zz:</p><pre class="screen">
+zz&gt; /rules 
+RULES
+ Scope kernel 
+  stat -&gt; show author
+  stat -&gt; show authors
+  stat -&gt; show version
+  stat -&gt; say Hello
+</pre><p>Here follows a set of examples to summarize:</p><pre class="screen">
+zz&gt; /stat -&gt; "?" { 
+.. /print "Commands today are:" 
+.. /print " say Hello" 
+.. /print " show version" 
+.. /print " show authors" 
+.. } 
+zz&gt; 
+zz&gt; /stat -&gt; 12 { 
+.. /print "you typed the integer number 12" 
+.. } 
+zz&gt; 
+zz&gt; /stat -&gt; 12.0 {
+.. /print "you typed the fp number 12.0" 
+.. } 
+zz&gt; 
+zz&gt; 12 
+you typed the integer number 12 
+zz&gt; 
+zz&gt; 000012 
+you typed the integer number 12 
+zz&gt; 
+zz&gt; 12.000000 
+you typed the fp number 12.0 
+zz&gt; 
+zz&gt; 12. 
+you typed the fp number 12.0 
+zz&gt; 
+zz&gt; 1.2e1 
+you typed the fp number 12.0
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NBF4"></a>Nonterminal Beads</h3></div></div><p>Let's again introduce a syntax extension with an example (that we strongly suggest to try) of a nonterminal bead in the thread: </p><pre class="screen">
+zz&gt; /stat -&gt; "I am " ident^name { 
+.. /print "Hello ",name, "!" 
+.. } 
+zz&gt; 
+zz&gt; I am freddy 
+Hello freddy!
+</pre><p>Of course an integer number is not a legal identifier and Zz will warn us about it:</p><pre class="screen">
+zz&gt; I am 13 
+***** SYNTAX ERROR etc....
+</pre><p>In the example above the nonterminal bead is <tt>ident^name</tt>.  Here, "name" is like a variable and identifies the bead inside the thread.  "ident" is predefined, it will match any legal identifier.</p><p>The general form of a nonterminal bead is:</p><b><tt>syntagma ^ parameter</tt></b><p>A nonterminal bead is made up of the <tt>syntagma</tt>, the character ^ (caret), and an identifier that plays the role of a formal parameter and can be used like a variable within the action.  A nonterminal bead matches a set of syntactical objects (eg: identifiers and integers but also expressions or programs as we'll show in the following).  We use "syntagma" for the name of those sets.</p><p><tt>ident</tt>, <tt>stat</tt> and <tt>int</tt> are good examples of predefined syntagmas built in the kernel of Zz, and hence always available.  We'll see in the following that when the action is executed (because the thread has matched something) all the formal parameters will have the actual value just matched.</p><p>We can create new syntagmas simply by using it in a nonterminal bead or assigning to it a thread with the syntax extension statement.  This means that it is possible to assign one or more threads to a syntagma by using it in a following statement or refer (within a nonterminal bead) to a syntagma, which has not yet any thread assigned to it.  It is possible to say informally that a syntagma is a collection of threads and a syntax extension is the way to assign a new thread  (with the corresponding action) to a syntagma.  When the parser has to match a nonterminal bead it tries to match all the threads of the syntagma referenced in the nonterminal bead.</p><p>A new syntagma: <tt>color</tt> is defined in the following example:</p><pre class="screen">
+zz&gt; /stat -&gt; use the ink color^c { 
+.. /print " I'm using the color n.",c
+.. }
+zz&gt; 
+zz&gt; /color -&gt; red { /return 1 } 
+zz&gt; /color -&gt; violet { /return 2 } 
+zz&gt; /color -&gt; pink { /return 3 } 
+zz&gt; 
+zz&gt; 
+zz&gt; use the ink red 
+I'm using the color n.1
+</pre><p>We have seen above the practical usage of the statement <tt>/return</tt>.  The statement <tt>/return</tt> makes sense only within actions because it is used to give a value to the formal parameter of a nonterminal bead.  It is possible to return something changing its type in a way like the assignment does.  The general form of the return statements is:</p><b><tt>/return expression [ as type ]</tt></b><p>Using a syntagma with no thread associated to it generates a syntax error.  Try this kind of error with the undefined color yellow:</p><pre class="screen">
+zz&gt; use the ink yellow 
+***** SYNTAX ERROR 
+etc.... 
+</pre><p>The following example, that we again suggest to try, shows an interesting concept:</p><pre class="screen">
+zz&gt; /color -&gt; gray int^a "%" {/return 100+a} 
+zz&gt; use the ink gray 20% 
+I'm using the color n. 120 
+</pre><p>As you can see the new color just defined is more complex then a simple token.  When in action we are not interested in the actual parameter's values, like in the following example:</p><pre class="screen">
+zz&gt; /stat -&gt; "I'm" ident^name {/print "Hello!"} 
+</pre><p>We can use as a convention the name "$" for the formal parameter:</p><pre class="screen">
+zz&gt; /stat -&gt; "I'm" ident^$ {/print "Hello!"} 
+</pre><p>When we use the <span class="emphasis"><i>$</i></span> sign in formal parameters we remark that the parameter is dummy, but it is a mere convention.  In fact the <span class="emphasis"><i>$</i></span> is treated by Zz as any other identifier.</p><p>In a rule like this:</p><pre class="screen">
+zz&gt; /stat -&gt; "I'm" ident^$ "from" ident^$ { 
+/print "Hello!" 
+} 
+</pre><p>The value of $ is replaced twice during the parsing, i.e.</p><pre class="screen">
+zz&gt; I'm Laura from Rome 
+Hello! 
+</pre><p>When the thread is parsed the identifier "Laura" and then "Rome" are associated to the parameter <span class="emphasis"><i>$</i></span>.  When the action is executed the <span class="emphasis"><i>$</i></span> parameter contains the last value "Rome", in fact:</p><pre class="screen">
+zz&gt; /stat -&gt; "I'm" ident^$ "from" ident^$ { 
+/print "Hello!' 
+/print $ 
+} 
+zz&gt; I'm Laura from Rome 
+Hello! 
+Rome 
+</pre><p>And the same behavior occurs if <span class="emphasis"><i>$</i></span> is substituted by another identifier.</p><div class="table"><p><b>Table 2.1. Some useful syntagmas available within Zz are:</b></p><table summary="Some useful syntagmas available within Zz are:" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th>BEAD</th><th>Description</th></tr></thead><tbody><tr><td>ident^xxx</td><td>Matches a string of alphanumeric characters, dollars, and underscore that do not begin with a digit (the lexical token identifier).</td></tr><tr><td>int^xxx</td><td>Matches a string of integer digits (the lexical integer).</td></tr><tr><td>float^xxx</td><td>Matches a string of digits with a decimal point and/or exponential notation (the lexical float).</td></tr><tr><td>qstring^xxx</td><td>Matches a string delimited by quotes.  Special characters are allowed if escaped with a slash (the lexical qstring).</td></tr><tr><td>stat^xxx</td><td>Matches a Zz statement</td></tr><tr><td>statlist^xxx</td><td>Matches a list of <tt>stat^</tt> separated with ";" or newline</td></tr><tr><td>num_e^xxx</td><td>Matches a Zz integer expression and returns the <tt>int</tt> result</td></tr><tr><td>string_e^xxx</td><td>Matches a Zz string expression and returns the qstring result</td></tr><tr><td>list_e^xxx</td><td>Matches a Zz integer expression and returns the list result</td></tr><tr><td>any^xxx</td><td>Matches any token</td></tr></tbody></table></div></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NCBA"></a>Basic Statements</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NCBD"></a>Control Statements</h3></div></div><p>Sometimes it could be useful to control the parsing flow. It will be possible to iterate the parsing (something like a loop) and to conditionally parse some sentence (something like a conditional branch).</p><p>In the current version of Zz, the following are implemented: <tt>/for, /foreach, /do, /while, /if</tt>.</p><div class="orderedlist"><ol type="1"><li><span class="emphasis"><i>/for</i></span><pre class="screen">
+/for index_var = start_val to stop_val ... 
+  [step step_val] {action} 
+</pre><p>The action is executed (stop_val  start_val + step_val)/step_val times.</p><p>Examples:</p><pre class="screen">
+zz&gt; /for i = 1 to 6 { 
+/print i 
+} 
+1 
+2 
+3 
+4 
+5 
+6 
+zz&gt; /for i = 1 to 6 step 2{ 
+/print i 
+} 
+1 
+3 
+5
+</pre></li><li><span class="emphasis"><i>/foreach</i></span><pre class="screen">/foreach variable in list { action }</pre><p>The action is executed once for each item in list. The variable takes the value of each item.</p><p>Example:</p><pre class="screen">
+zz&gt; /my_list = { a bb ccc } 
+zz&gt; /foreach k in my_list { /print k } 
+a 
+bb 
+ccc 
+</pre></li><li><span class="emphasis"><i>/do</i></span><pre class="screen">
+/do { action } while ( logical_condition )
+</pre><p>Perform the action while the logical_condition is true.  The loop is always executed at least once.</p><pre class="screen">
+zz&gt; /control = 1
+zz&gt; /do { /print control; /control = control + 1; } while (control &lt;=3)
+1
+2
+3
+zz&gt;
+</pre></li><li><span class="emphasis"><i>/while</i></span><pre class="screen">
+/while ( logical_condition ) { action }
+</pre><p>The action is executed as long as the logical_condition is true.  Unlike the "do" loop, this structure may never have it's action executed.</p><pre class="screen">
+zz&gt; /control = 1
+zz&gt; /while (control &lt;= 3) { /print control; /control = control + 1; }
+1
+2
+3
+zz&gt;
+</pre></li><li><span class="emphasis"><i>/if</i></span><pre class="screen">
+/if logical_condition { action }
+</pre><p>The action is executed if the condition is true.</p><p>Example:</p><pre class="screen">
+zz&gt; /a = 2 
+zz&gt; /b = 0 
+zz&gt; /if a &gt; b { 
+/c = a  b 
+/print c 
+} 
+2
+</pre></li></ol></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="ND08"></a>Monitor Utilities</h3></div></div><p>There are some utilities to handle syntax extensions. The statements:</p><pre class="screen">
+/krules [syntagma ] 
+/rules [syntagma ] 
+</pre><p>These are used to print both kernel and user threads (/krules) or only user rules (/rules). The optional syntagma is used to print only the rules attached to a specific syntagma.</p><p>There is a statement to show all the variables active at a certain level:</p><pre class="screen">
+/param 
+</pre><p>This statement can be used within an action to know the parameter's values.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="ND19"></a>Overloading and Type Control </h3></div></div><p>We introduce with this example the concept of overloading:</p><pre class="screen">
+zz&gt; /stat -&gt; show int^x { 
+.. /print "Integer ",x 
+.. } 
+zz&gt; 
+zz&gt; /stat -&gt; show float^x { 
+.. /print "Floating Point ",x 
+.. } 
+zz&gt; 
+zz&gt; show 12 
+Integer 12 
+zz&gt; 
+zz&gt; show 12.0 
+Floating Point 12.0000 
+</pre><p>In the example above the word show manifests two different behaviors depending only on the type of the number (12 or 12.0).  In other words the statement show is overloaded.  The parser is able to resolve the overloading ambiguity choosing the right thread according to the type of the nonterminal beads: int^x or float^x.  There are other languages allowing some kind of overloading: ADA and C++ for instance allow the operator overloading, but not the definition of new operators.</p><p>In the following example we show how ZzL0 variables dynamically change their type:</p><pre class="screen">
+zz&gt; /my_value = 12 !! my_value is integer 
+zz&gt; show my_value 
+Integer 12 
+zz&gt; /my_value = 12.0 !! my_value now is float 
+zz&gt; show my_value 
+Floating Point 12.000000
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="ND28"></a>Indentation Style</h3></div></div><p>We prefer the typographic style described below.</p><p>When the action is very short or omitted all the SE has to be written on only one line:</p><pre class="screen">
+zz&gt; /stat -&gt; one_hello { /print "Hello, World!" } 
+zz&gt; /stat -&gt; this is an unuseful statement and... 
+does nothing 
+</pre><p>Elsewhere we prefer to begin at new line the action:</p><pre class="screen">
+zz&gt; /stat -&gt; four_hello { 
+.. one_hello 
+.. one_hello 
+.. one_hello 
+.. one_hello 
+.. } 
+zz&gt; 
+</pre><p>It is forbidden to insert a new line before the open brace.</p><p>Examples</p><pre class="screen">
+zz&gt; /color -&gt; green { /return 10 } 
+zz&gt; /color -&gt; blue { /return 20 } 
+zz&gt; /stat -&gt; the ink is color^c {/print "ink = ",c} 
+zz&gt; 
+zz&gt; /feeling -&gt; glad { /return 1000 } 
+zz&gt; /feeling -&gt; blue { /return 1001 } 
+zz&gt; 
+zz&gt; /stat -&gt; I feel feeling^f {/print "You feel ",f} 
+zz&gt; 
+zz&gt; I feel blue 
+You feel 1001 
+zz&gt; 
+zz&gt; the ink is blue 
+ink = 20 
+zz&gt; 
+zz&gt; /arg3 -&gt; int^a "," int^b "," int^c { 
+.. /print "push ",a 
+.. /print "push ",b 
+.. /print "push ",c 
+.. } 
+zz&gt; /stat -&gt; goofie arg3^$ { 
+.. /print "call goofie" 
+.. } 
+zz&gt; pippo 1,2,3 
+push 1 
+push 2 
+push 3 
+call pippo
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="ND3E"></a>Precedences</h3></div></div><p>The infix operators' notation is user friendly but potentially ambiguous.  Thus there are two options to compute the expression 2 + 3 + 4:</p><div class="orderedlist"><ol type="1"><li>(2+3) + 4</li><li>2 + (3+4)</li></ol></div><p>This ambiguity is of course often negligible, but can be dangerous if the operator isn't associative: (2/3)/4 != 2/(3/4).</p><p>Let's imagine a translator which converts infix (ambiguous) operators into RPN notation (that is unambiguous).  We define explicitly an unambiguous grammar (left associative):</p><pre class="screen">
+zz&gt; /stat -&gt; expr^e 
+zz&gt; /expr -&gt; fact^$ 
+zz&gt; /expr -&gt; expr^$ "/" fact^$ {/print "divide"} 
+zz&gt; /fact -&gt; int^n {/print "push ",n}
+</pre><p>This is to test the example: </p><pre class="screen">
+zz&gt; 20/10/5 
+push 20 
+push 10 
+divide 
+push 5 
+divide 
+</pre><p>Of course it is possible to change one line to change the associativity:</p><pre class="screen">
+zz&gt; /stat -&gt; expr^e 
+zz&gt; /expr -&gt; fact^$ 
+zz&gt; /expr -&gt; fact^$ "/" expr^$ {/print "divide""} 
+zz&gt; /fact -&gt; int^n {/print "push ",n} 
+</pre><p>and now:</p><pre class="screen">
+zz&gt; 20/10/5 
+push 20 
+push 10 
+push 5 
+divide 
+divide
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="ND60"></a>About Actions </h3></div></div><p>When the action is defined all the parameters (associated to the nonterminal beads) and variables within the braces {} are evaluated and the name is replaced with the corresponding value. Local variables (assigned with =) are replaced immediately (when the action is declared) while the other kind (assigned with :=) is replaced only when the action is executed (see also Using Zz variables).</p><p>We have seen up to this point only Zz action within braces {}, but there are two other kinds of actions, thus the syntax extension statement has three different formats:</p><div class="orderedlist"><ol type="1"><li>/syntagma -&gt; thread [ { action } ]</li><li>/syntagma -&gt; thread : C_procedure [(parameters)]</li><li>/syntagma -&gt; thread : return constant_expr.</li></ol></div><p>The first format is well known. The second one is used to call a user C procedure (UCP) linked with the Zz kernel, optionally passing to it its parameters (see Part III).  The third one is used to return a constant value; this format is very similar to:</p><b><tt>/syntagma -&gt; thread { /return expression }</tt></b><p>The third format is fastest because Zz doesn't have to interpret the action; however no variable replacement will occur.</p><p>The kernel makes available a simple C-Procedure: <span class="emphasis"><i>pass</i></span> that is used to return all the parameters of nonterminal beads in the thread.  Thus the following examples (a) and (b) are equivalent but the second one is faster:</p><div class="itemizedlist"><ul type="disc"><li>/sss -&gt; ... xxx^yyy ... { /return yyy }</li><li>/sss -&gt; ... xxx^yyy ... :pass</li></ul></div><p>The following form:</p><pre class="screen">
+zz&gt; /sss -&gt; ... xxx^yyy ... :return yyy
+</pre><p>is wrong because yyy is not a constant expression, in this case Zz will every time return "yyy" and not its actual value.</p><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="ND88"></a>Change the Syntax into an Action</h4></div></div><p>The statement to extend the syntax is usable as any other statement within the braces { } of a Zz action.  This is the way to handle symbol tables using Zz.  Let's suppose that we want Zz to handle our phone directory.  We would need a symbol table for this.  We'll create one called "names":</p><pre class="screen">
+zz&gt; /stat -&gt; show names^x {/print " phone: ", x } 
+zz&gt; /stat -&gt; show any^${/print "phone not available" } 
+zz&gt; 
+zz&gt; /names -&gt; paola { /return "0034345678" } 
+zz&gt; /names -&gt; tony  { /return "002143545" } 
+zz&gt; /names -&gt; albert{ /return "home:123456 office:3445" } 
+zz&gt; 
+zz&gt; show albert 
+phone: home:123456 office:3445 
+zz&gt; show carin 
+phone not available 
+</pre><p>Now we can introduce a statement to insert friendly a new name:</p><pre class="screen">
+zz&gt; /stat -&gt; add ident^n qstring^p... 
+{/names&gt; n { /return p } } 
+zz&gt; add luisa "off. 35682"
+zz&gt; show luisa 
+phone: off. 35682 
+</pre><p>It is also possible to change the action associated with a thread simply by assigning a new action to that it:</p><pre class="screen">
+zz&gt; add luisa "off. 3935682"
+zz&gt; show luisa 
+phone: off: 3935682 
+</pre></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="ND9A"></a>Returning Lists</h4></div></div><p>It is possible to return a list:</p><pre class="screen">
+zz&gt; /int_decl -&gt; ident^name "[" int^size "]" { 
+.. /return { name size } !! unidim. array 
+.. } 
+zz&gt; 
+zz&gt; /int_decl -&gt; ident^name { 
+.. /return { name 1 } !! scalar var 
+.. } 
+</pre><p>Any thread that uses int_decl^xxx will be able in the action to refer to the field of xxx writing xxx.0 and xxx.1.</p></div><div class="sect3"><div class="titlepage"><div><h4 class="title"><a name="NDA4"></a>Special actions</h4></div></div><p>When a syntactical rule is matched the parser does one of the following:</p><div class="itemizedlist"><ul type="disc"><li>Parses the bound tokens as "action" to the rule (this is the more common situation and the only seen up to now)</li><li>Directly calls a routine "hardwired" with the rule (this the situation of the "kernel rules": in some sense the end of the recursion)</li><li>Directly executes a simple action.</li></ul></div></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NDB0"></a>Using Zz variables</h3></div></div><p>We have already seen that the format := creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the = one creates LOCAL VARIABLES which remain alive until the EOF (if declared at level 0) or the matching brace "}" (if declared within a block) are reached.</p><p>Variables declared within a block become alive when the block is parsed (executed).  These variables can be used in the definition of other blocks inside the one which is currently parsed: these blocks, that are not executed now, will be called "inner blocks".</p><p>There is a major difference between the use of a variable within the block in which it is declared and its use in an inner block.</p><div class="orderedlist"><ol type="1"><li><p>In the block in which variables are declared</p><p>Global and local variables can be used as usual in common languages in expressions or assignments within the block in which they are declared, as shown in the following example:</p><pre class="screen">
+zz&gt; /a = 3 
+zz&gt; /b := 5 
+zz&gt; /a = a + b 
+zz&gt; /b := b + 2 
+zz&gt; /print a,b,(a*b + a) 
+8 7 64 
+zz&gt; /stat -&gt; test { 
+.. /c = 10 
+.. /d := 25 
+.. /d := d + c 
+.. /c = c + 1 
+.. /print c , d 
+.. } 
+zz&gt; test 
+11 35 
+</pre><p>But their behavior is different, depending on the way they were declared, if used in inner blocks.</p></li><li><p>In inner blocks</p></li><li><p>About LOCAL variables</p><p>LOCAL variables stop existing when the block in which they are declared does.  For this reason, when defining a new block inside the current block, those variables, if present, are immediately substituted by their values, that is they are fixed once for all.  Then suppose that, within a block, we are going to define an object that will remain alive after the end of the block (for example global variables or rules) and that to define this object we need local variables already defined in the block.  In this case we must be interested in the value of those variables because their value will remain alive within the object that we are defining, while the variable itself will be lost at the end of the execution of the current block.</p><p>For this reason in the inner object that we are defining the names of these variables are immediately substituted by their values so that they are no more variables but fixed strings or constant numbers (depending on their tag):</p><pre class="screen">
+zz&gt; /cc = 7 
+zz&gt; /stat -&gt; test_1 { 
+.. /dd = cc + 3 !!here cc is immediately replaced by 7: that is 
+!!/dd = 7 + 3 
+.. /print dd 
+.. /stat -&gt; dd { !!here dd is immediately replaced by 10 
+.. /ee := dd+1 
+.. /print ee 
+..} 
+..} 
+zz&gt; test_1 
+10 !!comes from /print dd 
+zz&gt; /rules 
+RULES 
+Scope Kernel 
+/stat -&gt; 10 !!the inner object we 
+!!created during the execution of the test_1 
+/stat -&gt; test_1 
+zz&gt; 10 
+11 !!comes from /print ee 
+zz&gt; /cc = 9 
+zz&gt; test_1 
+10 
+!!here cc is not replaced by 9; 
+!!in fact it was replaced by 7 during the 
+!!definition of test_1 
+</pre></li><li><p>Identifier and other expressions</p><p>Remembering that local variables, when entering a new block, are immediately substituted by their values, let us see an important difference about the use in an inner block of local variables (declared in an outer one) whose value is an identifier (strings of alphanumeric characters, underscores and dollars not beginning with a number) and those whose value is any other expression.</p><div class="itemizedlist"><ul type="disc"><li><p>case variable = identifier:</p><p>Identifiers are legal names for variables, so in an inner block we can use the local variables that have an identifier as value in the left part of an assignment, creating a new variable whose name is the value of the old one:</p><pre class="screen">
+zz&gt; /colour = red 
+zz&gt; /stat -&gt; test_2 { 
+.. /print colour 
+.. /colour=green !!this is red = green 
+.. /d=blue !!local d 
+.. /print colour,d !!this is /print red,d 
+.. /param 
+.. } 
+zz&gt; test_2 
+red 
+green blue 
+0L colour == red 
+1L d == blue 
+1L red == green 
+zz&gt; /print colour !! the old value 
+red 
+zz&gt; /print d 
+d 
+!!here d, defined in test_2, is no more alive! 
+zz&gt; /var = mickey 
+zz&gt; /stat -&gt; link { 
+.. /var = var&amp;_mouse 
+.. /print var 
+.. /param 
+.. } 
+zz&gt; link 
+mickey_mouse 
+0L var == mickey 
+0L colour == red 
+1L mickey == mickey_mouse 
+</pre></li><li><p>case variable = any other expression:</p><p>Other expressions (different from identifiers) are not legal names for variables, so it does not make sense to use the name of local variables that have such values in the left part of an assignment. An attempt to use them in this manner would cause a syntax error, as we'll see in the following example:</p><pre class="screen">
+zz&gt; /ff = 13 
+zz&gt; /stat -&gt; test_3 { 
+.. /ff = ff + 1 !! this is /13 = 13 + 1 that 
+does 
+!! not make sense! 
+.. /print ff 
+.. } 
+zz&gt; test_3 
+**** SYNTAX ERROR **** 
+</pre></li></ul></div></li><li><p>About GLOBAL variables</p><p>In inner blocks we can refer to GLOBAL variables, already declared in an outer block, by their names.  In fact, as global variables remain alive until the EOF, when entering a new block, their names are NOT substituted once for all by their values: if the variable is part of an expression, its value is replaced only when that expression is evaluated if the variable is within an action, its value is replaced only when the action is executed.  Then, had they an identifier or any other expression as value, they can be used to the left of an assignment of the type /var := expression.</p><p>Vice versa a global variable, if declared in a block, can be referenced later in an outer block, as it is global:</p><pre class="screen">
+zz&gt; /aa := 4 
+zz&gt; /stat -&gt; test_4 { 
+.. /cc := aa + 1 
+.. /aa := aa*5 
+.. /print aa 
+.. /stat -&gt; test_5 { 
+.. /aa := aa + 5 
+.. /print aa 
+.. } 
+.. } 
+zz&gt; test_4 !! here aa is replaced by 4 
+20 
+zz&gt; /param 
+0G cc == 5 !! cc is defined as global in 
+!! test_1 
+0G aa == 20 
+zz&gt; test_5 
+25 
+zz&gt; /aa := 7 
+zz&gt; test_4 !! here aa is replaced by 7 
+35 
+zz&gt; test_5 
+40 
+</pre></li><li><p>Scope changing</p><p>It is possible to change at anytime the assignment mode of a variable from local (=) to global (:=) and vice versa in the same block in which the variable is declared.</p><p>On the other hand it is not possible to change a variable scope from an inner block.</p><p>The three different situations are analyzed in the following.</p></li><li><p>in inner blocks</p></li><li><p>About local to global</p><div class="itemizedlist"><ul type="disc"><li><p>case variable = identifier:</p><p>If the variable has an identifier as value, trying to change from a local assignment in a block to a global assignment in an inner block will create a new global variable whose name is the value of the local one:</p><pre class="screen">
+zz&gt; /gg=cat 
+zz&gt; /stat -&gt; change { 
+.. /gg:=mouse 
+.. /print gg 
+.. } 
+zz&gt; change 
+mouse 
+zz&gt; /param 
+0G cat == mouse 
+0L gg == cat 
+(thus this is not a scope change!) 
+</pre></li><li><p>case variable = any other expression:</p><p>If the variable has any other expression (different from identifier) as value, the new assignment will cause an error: as said before, when entering the inner block, variable's name is replaced by its value that in this case would not be a legal name (because it is not an identifier).</p><pre class="screen">
+zz&gt; /aa=5 
+zz&gt; /stat -&gt; change_bis { 
+.. / aa:=5 !!this is /5 := 5 that does not 
+make 
+!! sense ! 
+.. /print aa 
+.. } 
+zz&gt; change_bis 
+**** SYNTAX ERROR ****
+</pre></li></ul></div></li><li><p>About global to local</p><p>Vice versa changing from a global assignment in a block to a local one in an inner block will not cause an error because, as expected, in the inner block a local variable with the same name of the global one is created but this new variable will stop existing when the matching brace } is reached:</p><pre class="screen">
+zz&gt; /bb:=6 
+zz&gt; /cc:= 5 
+zz&gt; /stat -&gt; change { 
+.. /bb=6 
+.. /cc=9*bb 
+.. /print bb,cc 
+.. /param 
+.. } 
+zz&gt; /print bb !! the global one 
+6 
+zz&gt; change 
+6 54 !! the local ones 
+0G cc == 5 
+0G bb == 6 
+1L cc == 54 
+1L bb == 6 
+zz&gt; /param 
+0G cc == 5 
+0G bb == 6 
+</pre><p>Again this is not a change of scope.</p></li></ol></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NE1D"></a>Variables and Parameters</h3></div></div><p>There are three kinds of variables: Zz variables, Zz parameters, and thread variables.  Of course if you are using Zz to develop a compiler you have to consider also the variables of your language, but for now let's ignore them.</p><p>We have already talked about Zz variables.</p><p>The Zz parameters are implicitly declared using a nonterminal bead within a thread:</p><b><tt>
+syntagma ^ param 
+</tt></b><p>A parameter hides any identically named variable and its scope is the action attached to the thread.  Pay attention because if param is a variable the value of that variable replaces the parameter itself in the thread:</p><pre class="screen">
+zz&gt; /c = alfa
+zz&gt; /stat -&gt; say ident^c { !!we are entering a new block
+.. /print alfa !!the param c is replaced by
+.. } !!alfa in the thread
+zz&gt; say hello
+hello
+zz&gt; /rules
+RULES
+ Scope kernel
+  stat -&gt; echo
+  stat -&gt; say ident^alfa
+  stat -&gt; echo^s
+
+zz&gt; /c=12 
+zz&gt; /stat -&gt; say ident^c {/print c} 
+*** SYNTAX ERROR ***... 
+</pre><p>The third kind of variable (thread variable) is made up in the following way:</p><pre class="screen">
+zz&gt; /$arg -&gt; alfa : return 154 
+zz&gt; /print alfa 
+154
+</pre><p>$arg is a predefined syntagma used in all the expression to match the arguments; if a new thread (say: alfa) is assigned to it when it matches (say met alfa) the returned value of $arg is the value returned by the action (here: 154).  This kind of variables are global, of course it is possible to introduce a friendly interface to declare them:</p><pre class="screen">
+zz&gt; /stat -&gt; let ident^name "=" int^val { 
+.. /$arg -&gt; name {/return val } 
+.. } 
+zz&gt; let goofie = 3 !!goofie is now a global $arg 
+zz&gt; /print goofie 
+3 
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NE39"></a>Syntax Extensions Scope (scope of the rules)</h3></div></div><p>Syntax Extensions are organized in levels.  All the levels have a name and they are organized in a stack.  New rules are inserted by default in the current level, the top of the stack at startup.  There default scope (level) is called the "kernel" scope.</p><p>A new scope is created by typing:</p><b><tt>
+/push scope scope_name 
+</tt></b><p>At this point scope_name is the current scope at the top of the stack and all the new rules inserted from now on will be assigned by default to this scope.</p><p>The current scope can be removed from the stack typing:</p><b><tt>
+/pop scope
+</tt></b><p>The scope is not lost.  It is only inactive and it can be restored typing again</p><b><tt>
+/push scope scope_name 
+</tt></b><p>To delete a scope it is necessary to type:</p><b><tt>
+/delete scope scope_name 
+</tt></b><p>All the rules that belong to that scope are lost.  To insert a rule in a scope which is not the current top of stack the following syntax should be used:</p><b><tt>
+/(scope_name)stat &gt; myrule {...} 
+</tt></b><p>The stack implies a hierarchy among the scopes.  The parser in fact attempts to reduce a rule in the topmost level and, failing that, in the deeper active levels (inactive levels are not considered).  If a rule is found at a certain level the parser ignores deeper levels.  Within the same level Zz is not able to resolve an ambiguity.  Newly created rules can hide rules in deeper levels, meaning that among rules with the same thread but different actions Zz will reduce the rule in the shallowest level.</p><p>If there are rules declared within <tt>scope_name</tt> with the clause <span class="emphasis"><i>/when delete scope</i></span> the specified actions are executed (see in the following).</p><p>It is also possible to empty a scope using the following syntax:</p><b><tt>
+/delpush scope scope_name 
+</tt></b><p>That will delete and repush the scope scope_name.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NE6B"></a>When Change Action or Exit Scope</h3></div></div><p>It is possible to specify an action to be executed when the action associated to a thread is modified.  The syntax is the following:</p><b><tt>
+/when change action {action_a } 
+</tt></b><p>Please note that the simplest statement to change a syntax is:</p><b><tt>
+/syntagma -&gt; thread {action_b } 
+</tt></b><p>But usually the user introduces some statement to modify automatically the syntax: of course at some deepest level the statement is the simplest one.</p><p>The action action_a is executed if the action_b associated to the rule <tt>/syntagma -&gt; thread</tt> is changed.</p></div></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="NE80"></a>Chapter 3. Semantic Interface</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NEB2">Syntax definitions</a></dt><dt><a href="#NEBA">Parameter passing</a></dt><dd><dl><dt><a href="#NEE1">A little problem: the float.</a></dt><dt><a href="#NEEB">Utilities available inside the C-Procedures</a></dt></dl></dd><dt><a href="#NF02">Zz kit</a></dt><dd><dl><dt><a href="#NF0D">main.c</a></dt><dt><a href="#NF1C">Declare simple C-Procedures</a></dt></dl></dd></dl></div><p>Of course Zz is a program, but it is also available as a C library (libzz.a).  If you want to use the Zz library you must provide the main program, some related routines, and your C-Procedures.  In this environment you can define your 'hard coded' syntax and moreover you can attach your C routines directly to the syntactical rules.</p><p>E.g., suppose you have a valuable routine able to print an important sentence like:</p><pre class="screen">
+hello() 
+{ 
+  printf("Hello World!\n"); 
+}
+</pre><p>And now you want to create a program that calls the routine when the user types 'say hello'.</p><p>The main program is the following:</p><pre class="screen">
+main() 
+{ 
+  extern void hello(); 
+  kernel(); 
+  zkernel(); 
+  usrkernel(); 
+  zz_parse_tt(); 
+}
+</pre><p>Where 'usrkernel' is a routine the user provided which describes the syntax attached to the C-Procedure.</p><p>A possible form for the usrkernel() routine of our example is the following:</p><pre class="screen">
+usrkernel() 
+{
+  zOpen("stat");
+  zKeyword("say hello"); 
+  zCall(hello);
+  ZClose(); 
+}
+</pre><p>And, of course, a tool is available that produces this file automatically from the C-prototyping of the C-Procedures.</p><p>You have to compile the main program and the subroutine and link them with the libzz.a library.  Now you can try:</p><pre class="screen">
+zz&gt; say hello 
+Hello World! 
+</pre><p>And you can also use the Zz features:</p><pre class="screen">
+zz&gt; /for i = 0 to 5 { 
+.. say hello 
+.. }
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+Hello World! 
+</pre><p>Here follows a list of the routines you can use in your C-program to build your application.</p><pre class="screen"> 
+kernel();	load the Zz base syntax. 
+zkernel();	load the Zz metasyntax. 
+zz_set_output(filename);	write outputs to the file filename. 
+zz_set_output(0);	write outputs to the stdout. 
+zz_set_prompt(prompt);	set prompt for interactive sessions 
+zz_set_default_extension();	set default extension for zz files (default: .zz) 
+ret=zz_parse_tt();	parse stdin 
+ret=zz_parse_file(filename);	parse file 
+ret=zz_parse_string(string);	parse string; 
+print_error_count();	Print a report about errors occurred during parsing phase.
+</pre><p>N.B. It is possible to parse more than one source in the same program.  e.g.,</p><pre class="screen">
+main()
+{ 
+  kernel();
+  zkernel();
+  usrkernel(); 
+  zz_parse_file("configuration"); 
+  zz_parse_tt(); 
+} 
+</pre><p>This is able to read syntax definitions from configuration.zz and then use them during parsing of stdin.</p><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NEB2"></a>Syntax definitions</h2></div></div><p>You define a rule using the following routine calls:</p><pre class="screen">
+zOpen(sintname);
+zKeyword(terminalbead);
+zMatch(nonterminalbead);
+zCall(procedure); or zCallFun(procedure,returnedtype)
+zClose();
+
+sintname :string. the name of the sintagma 
+procedure: address of the C-Procedure 
+returnedtype: string. name of the tag associated to the returned value 
+terminalbead: string. terminal bead. 
+nonterminalbead: string. name of the non terminal to be matched (e.g.: "int"). 
+
+Examples: 
+
+dump_ident(name) 
+char *name; 
+{ 
+  printf("dump: %s\n",name); 
+} 
+
+usrkernel() 
+{ 
+  zOpen("stat"); 
+  zKeyword("dump"); 
+  zMatch("ident"); 
+  zCall(dump_ident); 
+  zClose(); 
+}
+
+main() 
+{ 
+  kernel();zkernel();userkernel(); 
+  zz_parse_tt(); 
+}
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NEBA"></a>Parameter passing</h2></div></div><p>The parameter passing between Zz and C-Procedures is quite simple.  The syntactical rule linked with the C-Procedure consists of terminal beads and nonterminal beads.  When the rule is reduced (and before the C-Procedure is invoked) each nonterminal bead has an associated value.  Those values (in their order) build the argument list of the C-Procedure.  In the C-code the arguments of the procedure have to be declared according with the types expected (e.g. int for non terminal int^, char* for nonterminal ident, qstring, and so forth).</p><p>The C-Procedure may be invoked as 'Zz procedure' (i.e. linked to a rule of the form: /stat -&gt; .... ) or as 'Zz function' (i.e. linked to a rule of the form: /something_else -&gt; ....).  In the last case you want to specify the 'Zz type' of the value returned.</p><p>In other words when the C-Procedure has returned a value as 12345 Zz should be able to interpret the number as an integer value or as the address of a string or something else.</p><p>This is accomplished by the tag associated to the function.</p><p>E.g. let us define a C-Procedure implementing a Zz _function:</p><pre class="screen">
+test() 
+{ 
+  return "goofie"; 
+} 
+
+usrkernel() 
+{ 
+  zOpen("$arg");zKeyword("test()"); 
+  zCallFun(test,"qstring");zClose(); 
+}
+</pre><p>We compile, link and run the 'usrZz '.  Now, to check the result of our test, we define a Zz type discriminator: </p><pre class="screen">
+zz&gt; /stat -&gt; which ident^name { 
+  /print "ident=",name 
+}
+zz&gt; /stat -&gt; which qstring^string...{ 
+  /print "qstring=",string 
+} 
+zz&gt; /stat -&gt; which int^num {/print "int=",num} 
+</pre><p>Now you can try:</p><pre class="screen">
+zz&gt; /x = test() 
+zz&gt; which x 
+qstring=goofie 
+</pre><p>If you change the tag (inside userkernel(): "qstring") you will obtain different behavior.</p><p>Note: You can use as 'tag' the identifier you prefer.  For instance you can associate to the function 'test' the tag "myobject".  If you do this you also have to provide specific procedures able to handle "myobject"s.  Only those procedures will be able to handle the value returned by 'test'.</p><p>Let us suppose that you have a SCP function: fopen and a SCP procedure (let us ignore the return value) fputs having the same parameters of the C-language:</p><pre class="screen">
+zz&gt; /filepointer = fopen ("my_file", "w") 
+zz&gt; fputs ("hello world!", file_pointer) 
+</pre><p>Formally a SCP procedure not returning a value is used like a Zz statement with the same format of a C routine call.</p><p>A SCP procedure returning a value is called within an expression with the same format as above.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NEE1"></a>A little problem: the float.</h3></div></div><p>This version of Zz uses 4bytes for representing integer and float.  This creates a little problem when passing float, because C compilers cast to double the float arguments.  So if you write a C-Procedure with some float argument this will go wrong.  A similar problem arises for the returned value.</p><p>The solution up to now is to declare the C-Procedure as returning and/or accepting long integer and converting the values into/from float inside the procedure using the following trick:</p><pre class="screen">
+gasp(ix) 
+long ix; 
+{ 
+  float x,y; 
+  long iy; 
+  x = *(float*) 
+  .... 
+  iy= *(long int*) 
+  return iy; 
+} 
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NEEB"></a>Utilities available inside the C-Procedures</h3></div></div><b><tt>
+filename = get_source_file();
+</tt></b><p>Get the name of the current file (for interactive session return 'stdin').</p><b><tt>
+name = get_source_name(); 
+</tt></b><p>Get the name of the current source (for interactive session return 'stdin').</p><b><tt>
+get_source_line();
+</tt></b><p>Get current line number.</p><b><tt>
+fprintf_source_position(chan,flag);
+</tt></b><p>Write the current line with an arrow marking the current position and write down the current line number, the current file and so forth.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NF02"></a>Zz kit</h2></div></div><p>In this paragraph we describe the environment to develop a Zz application.  You need to customize mainly three files.  The names of these files are free, let's call them: ua.c, sua.zz and main.c.</p><p>You need access to the Zz kernel object library, to the Zz include files and to decl.hz.</p><p>You need the files containing the C-Procedures needed for your application.</p><p>You will describe all the procedures using UCP mechanism within: ua.c, all the soft C-Procedures have to be described within sua.zz and main.c is the main program of your application, within main.c you invoke Zz (Zz is a C callable routine).</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NF0D"></a>main.c</h3></div></div><p>Before invoke Zz your application as to call kernel(), this routine initializes the environment that Zz need. The Zz routine has following prototype:</p><pre class="screen">
+void zz(char* file_in,char* file_ext,char* file_out);
+</pre><p>It is possible to use default values (if the parameter is zero): default file_in is stdin, default file_out is stdout, default file_ext is ".zz".</p><p>Example:</p><pre class="screen">
+main() 
+{
+  kernel(); 
+  zz(0,0,0); /* uses all defaults */ 
+}
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="NF1C"></a>Declare simple C-Procedures</h3></div></div><p>The SCP mechanism is quite naive: the user has to write a file (say sua.zz) with the ANSI standard prototype of his functions and subroutines, like in the following example:</p><pre class="screen">
+/include "hzlib:decl.hz"
+begin 
+  int fopen( char * file_spec, char *a_mode); 
+  void fputs ( char *buffer, int file_ptr); 
+end
+</pre><p>Zz is able to read this file and produces a C source file.  The command can be the following:</p><pre class="screen">
+$ zz +C sua.zz sua.c 
+</pre><p>The file "sua.c" will contain the description of the syntax to invoke the user procedures and the appropriate calls.  This file has to be linked with the Zz kernel and with the file[s] containing the user C procedures (the example doesn't require anything more because fopen and fputs are in the standard C libraries).  The resulting executable program will be a configured version of Zz including the Soft user C-Procedures.</p></div></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="NF2B"></a>Chapter 4. Dynamic Libraries</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#NF32">Basic Example</a></dt><dt><a href="#NF71">Grammar Extending Example</a></dt><dt><a href="#N1041">Grammar Extending Example with Return Type</a></dt></dl></div><p>There are two ways to extend Zz by adding in external procedures written in C: recompiling the Zz library or interactive component(zzi.c), or by building external libraries and then loading them dynamically.  The first method is described in the section titled "Semantic Interface".</p><p>We will explore the second method in this section in a series of examples.</p><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NF32"></a>Basic Example</h2></div></div><p>To begin well will start with a most basic example that only serves to demonstrate the dynamic loading/linking process.  First we need a C program that we will compile into a shared object library:</p><div class="example"><p><b>Example 4.1. Basic Test Program</b></p><pre class="programlisting">
+void init() {
+  printf("Inside lib init().\n");
+}
+</pre></div><p>After saving that in a file called "test.c", we can compile it using the following command (on Linux in our case):</p><pre class="screen">$ <b><tt>gcc -shared test.c -o test.so</tt></b></pre><p>The <tt>"-shared"</tt> flag to the compiler indicates that the output is a library and that the internal references do not need to resolve at compile time - they will link during the dynamic loading process.</p><p>We should now have a shared object file ready for loading:</p><pre class="screen">
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>ls -l test.*</tt></b>
+-rw-r--r--   1 brooks   apedevel       56 Jan 22 13:50 test.c
+-rwxr-xr-x   1 brooks   apedevel     5893 Jan 22 13:50 test.so
+/apona/home1/homedirs/brooks/openzz/src&gt;
+</pre><p>Now we can launch Zz and load the library:</p><pre class="screen">
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>./zz</tt></b>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz&gt; <b><tt>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</tt></b>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+Inside lib init().
+'init()' executed for library '/apona/home1/homedirs/brooks/openzz/src/test.so'.
+zz&gt;
+</pre><p>So we can see that we have confirmation that our library was loaded and moreover that the <tt>init()</tt> function was called.  <tt>init()</tt> is a special function in that it will be executed when the library is loaded if it is present - <tt>init()</tt> is optional.</p><p>A fairly simple example but it gets us started.</p></div><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="NF71"></a>Grammar Extending Example</h2></div></div><p>In this example we will build a C library which we will then load into Zz dynamically in order to extend its grammar.  The library will provide a simple new command "echo" which will just echo its argument back to the console in a detailed format.  This program demonstrates two useful items: how to extend the Zz grammar, and how to pass parameters to C-Procedures.</p><p>First, the program:</p><div class="example"><p><b>Example 4.2. Extending the Grammar</b></p><pre class="programlisting">
+#include &lt;stdlib.h&gt; <a name="echo_example.includes"></a><img border="0" alt="1" src="images/callouts/1.png">
+#include "zlex.h"
+#include "kernel.h"
+
+
+s_echo_args<a name="echo_example.handler"></a><img border="0" alt="2" src="images/callouts/2.png">(argc,argv,ret<a name="echo_example.return"></a><img border="0" alt="3" src="images/callouts/3.png">)
+     int argc;
+     struct s_content argv[], *ret;
+{
+  int i;
+
+  printf("'echo' syntagma called with %d arguments.\n", argc);
+
+  printf("Arg 0 type: %s\n", argv[0].tag-&gt;name);
+
+  printf("Arg 0 value: %s\n", s_content_svalue(argv[0]));
+}
+
+
+void init() {
+  OPEN(stat) M("/echo") GSB(string_e) PROC(s_echo_args) END  <a name="echo_example.syntagma"></a><img border="0" alt="4" src="images/callouts/4.png">
+}
+</pre></div><p>Let's examine this program in a little detail:</p><div class="calloutlist"><table summary="Callout list" border="0"><tr><td align="left" valign="top" width="5%"><a href="#echo_example.includes"><img border="0" alt="1" src="images/callouts/1.png"></a> </td><td align="left" valign="top"><p>First off we need some headers: &lt;stdlib.h&gt;, "zlex.h", "kernel.h".  These provide the marcos and structures required to get our library to compile.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#echo_example.handler"><img border="0" alt="2" src="images/callouts/2.png"></a> </td><td align="left" valign="top"><p><tt>s_echo_args</tt> is the "event handler" function that performs the action of our command: since a command may be called with a variable number of arguments, the architecture to handle a function call also needs to deal with a variable number of arguments.  The solution is to use an argument count and array similar to the <tt>C main()</tt> function.</p><p>The first param, <tt>argc</tt> tells us how many arguments are contained in the <tt>argv</tt> array.  <tt>argv</tt> then has that many items, of the type <tt>s_content</tt>.</p><p><tt>s_content</tt> is defined in <tt>zlex.h</tt> and is a <tt>C struct</tt> which provides a 'data value' and an associated 'type' field.  Note that although you can write code that accesses the internals of the s_content variables, it is preferable to use the macros (also in <tt>zlex.h</tt>) designed for this purpose.  For example:</p><pre class="programlisting">
+s_content_svalue(argv[0])])
+</pre><p>Note however that when we wanted to access the <tt>tag</tt> attribute of the<tt>s_content</tt> struct we did go for it dirrectly:</p><pre class="programlisting">
+printf("Arg 0 type: %s\n", argv[0].tag-&gt;name);
+</pre><p>All <tt>s_content</tt> structures share a common pool of tags - meaning that if <span class="emphasis"><i>S1</i></span> is of type <span class="emphasis"><i>int</i></span> and <span class="emphasis"><i>S2</i></span> is of type <span class="emphasis"><i>int</i></span>, then <span class="emphasis"><i>(S1.tag == S2.tag)</i></span>.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#echo_example.return"><img border="0" alt="3" src="images/callouts/3.png"></a> </td><td align="left" valign="top"><p>The return value <tt>s_content *ret</tt> is not important to us in this example because our new syntagma "<tt>/echo</tt>" has been created with a statement type tag of '<tt>stat</tt>'(the arg to the <tt>OPEN()</tt> macro) which mean it has no return value.  Return values are the subject of the next example.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#echo_example.syntagma"><img border="0" alt="4" src="images/callouts/4.png"></a> </td><td align="left" valign="top"><p>Finally let's look inside the <tt>init()</tt> function:</p><pre class="screen">OPEN(stat) M("/echo") GSB(string_e) PROC(s_echo_args) END</pre><p>Here we find the macro commands that actually extend the Zz grammar to recognize our new command.  In particular a command needs the following:</p><div class="itemizedlist"><ul type="disc"><li><tt>OPEN(&lt;tag&gt;)</tt> - This begins the process of adding a command to the grammar.</li><li>&lt;Some syntax to match&gt; - Here you specify the syntax for Zz to match against.</li><li><tt>PROC(&lt;action&gt;)</tt> - Specification of what to do when Zz matches this command.</li><li><tt>END</tt> - Close the definition of the command.</li></ul></div><p>For the complete list (it's very tiny actually) of grammar extension macros that can be used, look in <tt>kernel.h</tt>.</p></td></tr></table></div><p>Lets compile this example using the same compilation command from the first example:</p><pre class="screen">
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>gcc -shared test.c -o test.so</tt></b>
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>ls -l test.*</tt></b>
+-rw-r--r--   1 brooks   apedevel      403 Jan 22 15:51 test.c
+-rwxr-xr-x   1 brooks   apedevel     6995 Jan 22 15:58 test.so
+/apona/home1/homedirs/brooks/openzz/src&gt;
+</pre><p>... and then we can execute our test in Zz:</p><pre class="screen">
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>./zz</tt></b>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz&gt; <b><tt>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</tt></b>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+'init()' executed for library '/apona/home1/homedirs/brooks/openzz/src/test.so'.
+zz&gt; <b><tt>/echo "an arg"</tt></b>
+'echo' syntagma called with 1 arguments.
+Arg 0 type: qstring
+Arg 0 value: an arg
+zz&gt;
+</pre><p>Here we see that we have added the new command to Zz <tt>"echo"</tt> and after using it we get some information about the parameter that we called it with.</p></div><div class="section"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1041"></a>Grammar Extending Example with Return Type</h2></div></div><p>We have seen how to extend Zz by adding new commands from dynamically loaded libraries, and we looked at an example of how to access the parameters that were passed to such commands.  Now let's consider how data can be passed back to the Zz program environment from the execution of a command.</p><p>We will start by talking a little more about the syntax of the command declaration (macro) statement.  For variety let's look at another command defined in <tt>kernel.c</tt>:</p><pre class="screen">
+OPEN(<a name="dynlibs_return.syntagma"></a><img border="0" alt="1" src="images/callouts/1.png">float) <a name="dynlibs_return.match"></a><img border="0" alt="2" src="images/callouts/2.png">M("cast_to_float") M("(") GSB(double) M(")") <a name="dynlibs_return.proc"></a><img border="0" alt="3" src="images/callouts/3.png">PROC(zz_doubletofloat) END
+</pre><p>We talked about each of these parts in a previous example but here we'll focus in on some details:</p><div class="calloutlist"><table summary="Callout list" border="0"><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_return.syntagma"><img border="0" alt="1" src="images/callouts/1.png"></a> </td><td align="left" valign="top"><p>As mentioned before the argument to the<tt>OPEN()</tt> macro specifies the resulting value of the new command.  We used the type <tt>"stat"</tt> in our previous example because our simple test command didn't have a return value(our following example will).</p><p>The <tt>cast_to_float()</tt> command does return a value - a float, and this is specified in the <tt>OPEN()</tt> macro.  See the section titled "The Lexical Analyzer" for a list of nativly supported types.</p><p>In general, to create a command that returns some value, select a <tt>syntagma</tt> type that is understood by Zz and also set a valid value in the <tt>ret</tt> param of the action providing C-Procedure.  More on this in our example.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_return.match"><img border="0" alt="2" src="images/callouts/2.png"></a> </td><td align="left" valign="top"><p>For the parser to recognize a command it must know the syntax for its <tt>thread</tt>.  The macros available for this are very basic (defined in <tt>"kernel.h"</tt> and give the ability to match fixed and variable items:</p><div class="itemizedlist"><ul type="disc"><li><p><tt>M()</tt>: Match fixed text.  Using "<tt>M("foo") M("(")</tt>" is more flexible than using "<tt>M("foo(")</tt>" for example.  Text matched by the <tt>M()</tt> macro is not passed into the handler(C-Procedure).</p></li><li><p><tt>GSB()</tt>: This macro matches source text that is to be passed into the handler(C-Procedure) for processing.  For its arguments, use the syntagma type that suites your needs.</p></li></ul></div></td></tr><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_return.proc"><img border="0" alt="3" src="images/callouts/3.png"></a> </td><td align="left" valign="top"><p>Finally, <tt>PROC()</tt> identifies the name of the C-Procedure to execute when this <tt>thread</tt> is matched.  You'll see other kinds of handlers defined in <tt>kernel.h</tt> but the basic <tt>PROC()</tt> is the preferred one to use if you want a function to be called for your command.  Note that sometimes you may want other actions to occur instead, for example appending a substructure to a structure (use <tt>PASS</tt> and <tt>APPEND</tt> for this).  This can get a little complex and we're going to consider it outside the scope of this tutorial.</p><p>Outside of this tutorial the best way to really understand this part of Zz is to look at <tt>kernel.c</tt> and see how the standard functions are implemented.</p></td></tr></table></div><p>Before we set you free to dissect Zz, let's finish with our example.  We would like to demonstrate returning a value from a C-Procedure, and to do this we'll create a library function <tt>lcase()</tt> that converts its <tt>string</tt> argument to lowercase.</p><div class="example"><p><b>Example 4.3. lcase() - Convert Arguments to Lowercase.</b></p><pre class="programlisting">
+#include &lt;stdlib.h&gt;
+#include "zlex.h"
+#include "kernel.h"
+#include "err.h"   <a name="dynlibs_fullexample.includes"></a><img border="0" alt="1" src="images/callouts/1.png">
+
+
+s_lcase(argc,argv,ret)
+     int argc;
+     struct s_content argv[], *ret;
+{
+  int i, len;
+  char *s_tmp, *src;
+
+  // Set a reasonable default for the return value
+  ret-&gt;tag = tag_qstring;   <a name="dynlibs_fullexample.default"></a><img border="0" alt="2" src="images/callouts/2.png">
+  s_content_svalue(*ret) = NULL;
+
+  // Test that command arguments are valid
+  if (argc != 1) {
+    zz_error(ERROR, \
+      "s_lcase() called with incorrect # of params(%d), expecting 1.", \
+      argc);
+    return 0;
+  }
+
+  if (argv[0].tag != tag_qstring) {
+    zz_error(ERROR, \
+      "s_lcase() called with param type(%s), expected 'tag_qstring'.", \
+      argv[0].tag-&gt;name);
+    return 0;
+  }
+
+  // Make an alias for the input string - keeps things clean
+  src = s_content_svalue(argv[0]);
+
+  len = strlen(src);
+
+  // Allocate a temp buffer to create new string in
+  s_tmp = malloc(len + 1);
+
+  // Ensure malloc succeeded
+  if (!s_tmp) {
+    zz_error(ERROR, \
+      "s_lcase() system error while executing 'malloc'.");
+    return 0;
+  }
+
+  // Copy and convert the contents of our source string to buffer
+  for (i=0; i&lt;len; i++)
+    s_tmp[i] = tolower(src[i]);
+
+  // Bring over the string terminator symbol
+  s_tmp[len] = '\0';
+
+  // Use the internal 'zlex_strsave' function to make
+  //  a canonical copy - important!
+  s_content_svalue(*ret) = zlex_strsave(s_tmp);   <a name="dynlibs_fullexample.zlex_strsave"></a><img border="0" alt="3" src="images/callouts/3.png">
+
+  // Free up the temporary buffer storage
+  free (s_tmp);
+
+  return 1;   <a name="dynlibs_fullexample.func_return"></a><img border="0" alt="4" src="images/callouts/4.png">
+}
+
+
+void init() {
+  OPEN(qstring) M("lcase") M("(") GSB(qstring) M(")") PROC(s_lcase) END
+}
+</pre></div><p>Being that this is a more realistic example it has grown somewhat.  Since the code is commented we'll just talk about the new additions since the last example:</p><div class="calloutlist"><table summary="Callout list" border="0"><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_fullexample.includes"><img border="0" alt="1" src="images/callouts/1.png"></a> </td><td align="left" valign="top"><p>With the C-Procedure we are now implementing some strict type checking - the error codes used to report errors are defined in the <tt>err.h</tt> header.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_fullexample.default"><img border="0" alt="2" src="images/callouts/2.png"></a> </td><td align="left" valign="top"><p>Since our parameter checking routines can cause our C-Function to prematurely terminate, it's good practice to initialize a default value for the return value.  Another reasonable alternative, since these error conditions imply a Zz program or library design flaw and not a user/source syntax error, would be to report the error and then terminate the program with the usual C <tt>exit(0);</tt>.</p><p>The reason we say these errors are a design flaw is that if the user did try to activate our test program by issuing the <tt>lcase() thread</tt> with the wrong number of parameters, the lexer would catch that and report the error elsewhere (because it knows the correct syntax from the <tt>thread</tt> definition macros).  This C-Procedure would never be executed in that case.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_fullexample.zlex_strsave"><img border="0" alt="3" src="images/callouts/3.png"></a> </td><td align="left" valign="top"><p>Zz maintains an internal (canonical) list of tokens and strings, and for it to recognize equality between such items, both must be registered in this internal structure.  The way to do that is by using <tt>zlex_strsave(s)</tt>.  This function copies its contents if necessary and returns a pointer to the internal value - always use this when adjusting or storing values within Zz.</p></td></tr><tr><td align="left" valign="top" width="5%"><a href="#dynlibs_fullexample.func_return"><img border="0" alt="4" src="images/callouts/4.png"></a> </td><td align="left" valign="top"><p>Generally speaking, Zz C-Procedures return <tt>1</tt> to signify successful execution, and <tt>0</tt> to signify some failure.  These values are not directly used by the Zz internal framework but some <tt>s_foo()</tt> handlers are chained to use others and some of those do depend on the return value.  We recommend continuing this convention.</p></td></tr></table></div><p>Let's now compile and run our test:</p><pre class="screen">
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>gcc -shared test.c -o test.so</tt></b>
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>ls -l test.*</tt></b>
+-rw-r--r--   1 brooks   apedevel     1499 Jan 23 16:09 test.c
+-rwxr-xr-x   1 brooks   apedevel     7757 Jan 23 17:17 test.so
+/apona/home1/homedirs/brooks/openzz/src&gt; <b><tt>./zz</tt></b>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz&gt; <b><tt>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</tt></b>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+'init()' executed for library '/apona/home1/homedirs/brooks/openzz/src/test.so'.
+zz&gt; <b><tt>/lcase ("teST")</tt></b>
++ **** SYNTAX ERROR ****
+| got: '('
+| expected one of:  '=' '-' ':' int
+| /lcase ("teST")
+|        ^
+| line 13 of stdin
+</pre><p>OK!  First thing to notice here is that when you specify that a function is of a certain syntagma type other than <tt>stat</tt>, Zz is expecting you to use it as an "R-Value", or in other words you need to assign or use the result of this function somewhere.  Let's continue:</p><pre class="screen">
+zz&gt; <b><tt>/s = lcase ("teST")</tt></b>
+zz&gt; <b><tt>/print "s=" &amp; s</tt></b>
+s=test
+zz&gt; <b><tt>/print lcase("This Was An InitCapped String.")</tt></b>
+this was an initcapped string.
+zz&gt;
+</pre><p>Ahh... much better!</p></div><p>Having demonstrated passing of data to and from C-Procedures we'll conclude our library examples here.  There's certainly quite a lot more to learn: take a look at <tt>kernel.c</tt> for the <tt>thread</tt> syntax definitions and also look in <tt>sys.c</tt> to see how their handlers are implemented.</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="N1151"></a>Chapter 5. Reference Guide</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#N115B">Lexical analysis</a></dt><dd><dl><dt><a href="#N1165">Comments</a></dt><dt><a href="#N116A">Continuation lines</a></dt><dt><a href="#N116F">Spacing</a></dt><dt><a href="#N117B">Interactive interface</a></dt></dl></dd><dt><a href="#N1180">Parser</a></dt><dd><dl><dt><a href="#N1187">Tokens' Precedence</a></dt><dt><a href="#N1199">Statements</a></dt></dl></dd><dt><a href="#N11A4">Syntax Extensions</a></dt><dd><dl><dt><a href="#N11CD">Beads</a></dt><dt><a href="#N11DE">Simple (or terminal) beads</a></dt><dt><a href="#N11E8">Non terminal beads</a></dt><dt><a href="#N1217">kernel syntagmas</a></dt><dt><a href="#N1221">When change action or exit scope</a></dt></dl></dd><dt><a href="#N1243">Basic expressions and Variables</a></dt><dd><dl><dt><a href="#N127E">List</a></dt></dl></dd><dt><a href="#N1298">Statements and Utilities</a></dt></dl></div><p>To invoke the basic (unconfigured) version of Zz the command is:</p><b><tt>
+$ zz [ filein [ fileout ] ]
+</tt></b><p>If you omit filein, Zz gets the input from the standard input, if you omit fileout the output is given on the standard output.</p><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N115B"></a>Lexical analysis</h2></div></div><p>There is a lexical analyzer that reads the text to be parsed and converts everything to tokens.  The internal representation of a token is a couple: (tag, value).  The lexical analyzer may return the following tags:</p><b><tt>
+IDENT, FLOAT, INT, QSTRING, CHAR, EOL, EOF 
+</tt></b><p>The parser gets these tokens (value, tags) from the lexical analyzer.  When the lexical analyzer finds a special character outside quotes it gives the token to the parser with the tag: CHAR.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N1165"></a>Comments</h3></div></div><p>The double exclamation mark, !!, is interpreted by the lexical analyzer like an EOL.  All the characters following this symbol until the true EOL are ignored.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N116A"></a>Continuation lines</h3></div></div><p>Three contiguous dots: ... are interpreted like a "line continues" marker.  It means that the line has to be completed with the following line.  All the characters to the EOL are ignored.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N116F"></a>Spacing</h3></div></div><p>The lexical analyzer ignores all redundant spacing.  Space and/or tabs are significant only to separate identifiers and numbers.  It should be noted that special characters are always to be considered different tokens.</p><p>Examples:</p><p>Input stream tokens [tag, value]</p><pre class="screen">
+"+hiA"A++ [qstring,+hiA][ident,A][char,+][char,+]
+"+h i A" A+ [qstring,+h i A] [ident,A] [char,+]
++hi B 3 [char,+] [ident,hi] [ident,B] [int,3]
++hiB3 [char,+] [ident,hiB3]
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N117B"></a>Interactive interface</h3></div></div><p>When the input stream is an ANSI TTY the user benefits of an interactive shell with some editing capabilities: the keypad arrows are available to select old commands or to edit a command.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1180"></a>Parser</h2></div></div><p>The parser gets tokens from the current source.  The current source can be the standard input (an input file or the TTY) as well as a list of tokens within a Zz variable (e.g. an action attached to a successfully matched thread).  When the current source is an input stream, the tokens are created by the lexical analyzer.</p><p>The parser accepts a sequence of statement according with syntactical rules attached to the syntagma stat.  The user can introduce his own statements specifying new syntactical rules to be added to the syntagma stat. More generally the whole Zz syntax can be extended and modified.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N1187"></a>Tokens' Precedence</h3></div></div><p>There are some implicit precedence rules that the user cannot control.  The parser uses the following order of precedence to accept a token:</p><div class="orderedlist"><ol type="1"><li>Its own parameters (a Zz variable)</li><li>Terminal beads</li><li>Lexical beads</li><li>Lexical bead any (any^xxx)</li></ol></div><p>When beads are in competition to match a token the parser chooses immediately based on the precedence of the tag.  E.G. If a token is either a legal identifier or a keyword the parser will match it as a keyword.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N1199"></a>Statements</h3></div></div><p>Zz starts and recognizes a basic language called Zz language level 0 or simply Zz L0.  By means of syntax extensions this language can evolve.</p><p>The character: ";" (semi colon) at the end of the statement is necessary to put two or more statements on the same line.</p><p>All the Zz L0 statements are prefixed with the character "/", this symbol can be useful to distinguish added statements from the original ones.  The user can however introduce statements prefixed with the same slash: "/".</p><p>Probably the most important statements of Zz L0 are the ones to increment or modify the syntax.  They are described in a separate chapter.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N11A4"></a>Syntax Extensions</h2></div></div><p>A syntax extension is completely defined giving a production rule and (optionally) the action to be executed when the parser reduces it.</p><p>A production rule consists of a nonterminal, called the left side of the production ("target syntagma"), an arrow, and a sequence of terminals and/or nonterminals, called the right side of the production (called a "thread of beads").</p><p>The Zz statement that allows the syntax extension has the following format:</p><b><tt>
+/target_syntagma -&gt; thread [action ]
+</tt></b><p>That means that wherever a target_syntagma is acceptable the parser will also accept the pattern specified in the thread.</p><p><tt>target_syntagma</tt> is any legal identifier.  The user can create a new syntagma simply using it.  A very common syntagma is stat (for "statement") because the parser tries to interpret the source as a sequence of stats.</p><p>Thread is a sequence of beads (separated with spaces or tabs):</p><b><tt>
+bead_1 bead_2 ..... bead_n
+</tt></b><p>There are two types of beads: simple (terminal) beads and nonterminal beads.  A simple bead is either an identifier, a number (float or int), or a quoted string to be matched exactly.  The nonterminal beads have the following format:</p><b><tt>
+syntagma_y ^ parameter
+</tt></b><p>The parser will use syntagma_y to match the input source and, if available, a result will be returned giving a value to the parameter.  This value is available in the attached action only.</p><p>The action is an optional field; if omitted a default action is performed.  The action is a list of tokens.  A well formed (usable) action is made up of a list of statements; it has the following format:</p><b><tt>
+{ 
+  zz statements 
+  [/return expression [as tag]] 
+} 
+</tt></b><p>The statement <span class="emphasis"><i>/return</i></span> is explicitly remarked because it is meaningful only within actions.  Zz statements are a sequence of user defined statements as well as predefined statements separated with new lines or with semicolons.</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N11CD"></a>Beads</h3></div></div><p>As written above, there are two kinds of beads: simple (or terminal) beads and non terminal beads.</p><p>The behavior of the parser is the following:</p><div class="itemizedlist"><ul type="disc"><li>A terminal bead matches exactly the source token,</li><li>A syntagma (nonterminal bead) matches the source if:
+  <div class="itemizedlist"><ul type="round"><li>A whole thread attached to the syntagma matches OR</li><li>A the name of the tag of the source token is equal to the name of the syntagma.</li></ul></div></li></ul></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N11DE"></a>Simple (or terminal) beads</h3></div></div><p>A simple bead can be an identifier, integer number, a floating point number and a quoted string.</p><b><tt>
+Examples: HALLO 666 3.1415 "ABC &gt; 22+C"
+</tt></b><p>The first bead matches only the identifier HALLO the second bead will match the integer number 666 (as well as 00666), the third bead will match the floating number 3.1415 (as well as 03.14150 or 31415e4), the fourth one will match the sequence of token ABC &gt; 22 + C (no matter of care of the spacing).  Indeed the bead "ABC &gt; 22+C" is totally equivalent to the sequence of beads: ABC "&gt;" 22 "+" C.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N11E8"></a>Non terminal beads</h3></div></div><p>A non terminal bead is used to match a syntactical construct (syntagma).  The format (within a thread) to insert a non terminal bead is:</p><b><tt>
+syntagma ^ parameter
+</tt></b><p>There are two kinds of syntagmas (and corresponding two types of beads): lexical syntagmas and derived syntagmas.</p><p>The lexical beads are:</p><div class="itemizedlist"><ul type="disc"><li>ident ^ parameter</li><li>qstring ^ parameter</li><li>int ^ parameter</li><li>float ^ parameter</li><li>any ^ parameter</li><li>param ^ parameter</li></ul></div><p>These beads match the tokens with corresponding tag and by convention return in the parameter the corresponding value (returned by the lexical analyzer).  The first bead will match well formed identifiers, the second one string within double quote: " ", the same for float and int.  There are special situations when it is useful that the parser accepts any token; the special bead useful in this case is any^.  It is possible to attach new rules to a lexical syntagma.</p><p>It is important to underline that Zz in order to handle variable and parameters has to identify as soon as possible identifier that are defined as Zz variables, thus the syntagma param matches only identifier having a value and it returns the name of the variable.</p><p>The derived beads are a directive for the parser to match the rules corresponding to the related syntagma.</p><p>Example:</p><b><tt>
+syntagma_x ^ parameter_x 
+</tt></b><p>To be effective some rules of this kind will be defined to give a meaning to syntagma_x:</p><p>Example:</p><pre class="screen">
+/syntagma_x -&gt; thread_a {action_a; /return xxxx} 
+/syntagma_x -&gt; thread_b {action_b; /return yyyy} 
+/syntagma_x -&gt; thread_c {action_c; /return yyyy} 
+</pre><p>If the successfully matched thread is the list of bead thread_b then parameter_x value will be yyyy.</p><p>A bead always matches a variable with a tag having the same name of the bead's syntagma; e.g. the bead colour^value will match a variable with tag colour.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N1217"></a>kernel syntagmas</h3></div></div><p>The lexical syntagmas are defined in a previous chapter.  This is a summary of them and a short description of the derived syntagmas available within the kernel:</p><pre class="screen"> 
+stat^$	matches a Zz statement 
+statlist^$	matches' one or more Zz statements divided by ; or EOL
+param^ ret	matches a Zz parameter or variable and returns its name 
+list_e^ ret	matches a list expression and returns the list 
+num_e^ ret	matches a numeric (int or float) expression and returns its value
+string_e^ ret	matches a character expression and returns its value 
+int^ ret	(lexical) matches a unsigned integer number and returns its value 
+float^ ret	(lexical) matches a unsigned float number and returns its value 
+ident^ ret	(lexical) matches a identifier and returns its name. 
+qstring^ ret	(lexical) matches a quoted string and returns the string. 
+</pre></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N1221"></a>When change action or exit scope</h3></div></div><p>It is possible to specify an action to be executed when the action associated to a thread is modified.  The syntax is the following:</p><b><tt>
+/when change action { action_a } 
+</tt></b><p>Please note that the simplest statement to change a syntax is:</p><b><tt>
+/syntagma -&gt; thread {action_b } 
+</tt></b><p>But the user usually introduces some statement to automatically modify the syntax, of course at some deepest level the statement is the simplest one.</p><p>The action <tt>action_a</tt> is executed if the <tt>action_b</tt> associated to the rule <tt>/syntagma -&gt; thread</tt> is changed.</p><p>For example:</p><pre class="screen">
+zz&gt; /stat -&gt; changing { 
+  /print alfa 
+} 
+zz&gt; /when change action { 
+  /print "action changed" 
+} 
+zz&gt; /stat -&gt; changing { 
+  /print beta 
+} 
+action changed 
+zz&gt;
+</pre></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1243"></a>Basic expressions and Variables</h2></div></div><p>Zz variables have a name, a value and a tag.  Usually the following tags are used: ident, int, float, qstring, list.  New tags can be introduced (a tag can be any identifier).</p><p>To create a Zz variable you have to assign a value to it.  The simplest statement is the assignment:</p><b><tt>
+/ variable = expression [ as tag ]
+</tt></b><p>or</p><b><tt>
+/ variable := expression [ as tag ]
+</tt></b><p>Variable is the name of a variable (any identifier is allowed). eg:</p><pre class="screen"> 
+goofie, Hello, a_b 
+</pre><p>Expression may be integer, float, quoted string, single identifiers, list and allowed combinations.  The 4 arithmetic operations and parenthesis are allowed on integer and floating point numbers with the conventional precedence rules. The resulting type of the expression is float if any of the operands are float.</p><p>There is a list and string concatenation operator: "&amp;".  This can also operate on numeric values or identifiers taking the literal representation of the numbers and the ASCII representation of the identifier. e.g.:</p><pre class="screen">
+"Rose thou"&amp;" are "&amp;sick, {1,2}&amp;{3,4}
+</pre><p>Note that variables are allowed in the expressions.</p><p>In the assignment the resulting type of the expression fixes the tag of the target variable.  It is possible to explicitly force the tag type with the clause "as".  In the clause 'as tag', tag may be any identifier (e.g. int, qstring, list, color, town).</p><p>The format := creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the = one creates LOCAL VARIABLES which remain alive until the EOF (if declared at level 0) or the matching brace } (if declared within a block) are reached.</p><p>LOCAL variables stop existing when the block in which are declared does. For this reason, when defining a new block, those variables, if present, are immediately substituted by their values.</p><p>There is an important difference about the use in an inner block of local variables (declared in an outer one) whose value is an identifier (strings of alphanumeric characters, underscores and dollars not beginning with a number) and those whose value is any other expression:</p><div class="itemizedlist"><ul type="disc"><li><p>case variable = identifier:</p><p>In this case the names of local variables can be used in the left part of an assignment thus creating a new variable whose name is the value of the old one (identifiers are legal names for variables)</p></li><li><p>case variable = any other expression:</p><p>Other expressions (different from identifiers) are not legal names for variables, so in this case it does not make sense to use the name of local variables in the left part of an assignment. An attempt to use them in this manner would cause a syntax error.</p></li></ul></div><p>In inner blocks we can refer to GLOBAL variables, already declared in an outer block, by their names.  In fact, as global variables remain alive until the EOF, when entering a new block, their names are NOT substituted once for all by their values:</p><div class="itemizedlist"><ul type="disc"><li>If the variable is part of an expression, its value is replaced only when that expression is evaluated.
+</li><li>If the variable is within an action, its value is replaced only when the action is executed.</li></ul></div><p>So they can always be used to the left of an assignment.  Vice versa if declared in a block, a global variable can be referenced later in an outer block, as it is global.</p><p>It is possible to change the scope of a variable from local to global and vice versa only in the block where the variable is defined (for local to global) or in the outer block level 0 (for global to local)</p><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="N127E"></a>List</h3></div></div><p>This is the format to create a list:</p><b><tt>
+{ token_1 token_2 ..... token_n }
+</tt></b><p>A list expression is made up with the list concatenation operator: "&amp;".  It is possible to refer to an item of a variable containing a list using the following format:</p><b><tt>
+variable . item_number 
+</tt></b><p><span class="emphasis"><i>variable</i></span> is a variable containing a list.  <span class="emphasis"><i>item_number</i></span> is an integer number, lists being indexed with the first item as 1.</p><p>The lists are used to introduce blocks of statements (like the actions connected with a rule).</p><p>The tokens in the lists are any character with the exception of a right bracket (}) or an unmatched double quote (").</p><p>An item in a list can be a variable but regardless from the scope of the variable (LOCAL or GLOBAL) its value is inserted once for all in the list when it is defined.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1298"></a>Statements and Utilities</h2></div></div><p>The following utilities are available within Zz L0:</p><b><tt>
+/dumpnet syntagma
+</tt></b><p>Shows the whole syntactical network attached to a syntagma.</p><b><tt>
+/memory
+</tt></b><p>Shows the memory usage and the variation of it.</p><pre class="screen">
+ <b><tt>/include filename[.hz]</tt></b>
+ <b><tt>/include filename.type</tt></b>
+ <b><tt>/include "filename"</tt></b>
+</pre><p>To include a Zz source file.</p><b><tt>
+/print argument_list
+</tt></b><p>To print something on the screen.  Arguments of any basic type can be printed. The arguments have to be separated with commas.  Available arguments are: qstrings, integer and float expressions, lists, the length of a qstring (i.e. the number of characters in the string) or of a list (i.e. the number of the element of the list) and any item of a list.</p><p>Examples:</p><pre class="screen">
+zz&gt; /my_list = { alfa b c , "anymore" 23.4 } 
+zz&gt; /print my_list.1 , my_list.4 
+alfa anymore 
+zz&gt; /print my_list.length 
+6 
+zz&gt; /aa = "test" 
+zz&gt; /print aa.length 
+4 
+/beep [ message ] 
+</pre><p>This statement prints a sequential number, the cpu time, the name of the input file, the line number and optionally a message.</p><b><tt>
+/execute list_of_stat
+</tt></b><p>Is used to execute a block of statement contained in a list.</p><b><tt>
+/rules [ syntagma ]
+</tt></b><p>Prints all the user rules or the rules attached to a specified syntagma.</p><b><tt>
+/krules [ syntagma ]
+</tt></b><p>Prints all the (user and kernel) rules or the rules attached to a specified syntagma.</p><b><tt>
+/error [ message ]
+</tt></b><p>Like /print but outputs results as an error message.</p><b><tt>
+/param
+</tt></b><p>It shows all the variables, their values types etc...</p><b><tt>
+tag_of(param)
+</tt></b><p>Returns the tag (type) of a variable.  Note this resolves to a type of <tt>qstring</tt> itself so it must be used as part of another statement, i.e. <tt>/print tag_of(my_var).</tt></p><b><tt>
+/trace option
+</tt></b><p>To trace the parser actions.  Allowed values for option are:</p><div class="itemizedlist"><ul type="disc"><li>0 No trace</li><li>2 Trace reductions</li></ul></div><b><tt>
+/for index_var = start_val to stop_val... 
+  [step step_val] {action}
+</tt></b><p>The action is executed (stop_val  start_val + step_val)/step_val times; start_val, stop_val and stepval must be integer expressions (float are not recognized).</p><b><tt>
+/foreach variable in list { action }
+</tt></b><p>The action is executed once for each element in the list. Variable takes at each iteration the value of an item in the list.</p><b><tt>
+/if logical_condition { action }
+</tt></b><p>The action is executed if the condition is true.</p><p>The following relational operators are provided:</p><pre class="screen">
+==	equal
+!=	not equal
+&lt;	less than
+&gt;	greater than
+&lt;=	less than or equal to
+&gt;=	greater than or equal to
+</pre><p>They can all be applied to integer expressions while only == and != can be applied to strings.</p><pre class="screen">
+ <b><tt>/push scope scope_name</tt></b>
+ <b><tt>/pop scope</tt></b>
+ <b><tt>/delete scope scope_name</tt></b>
+ <b><tt>/delpush scope scope_name</tt></b>
+</pre><p>The scopes are identified by a name. The default scope is kernel.   A new scope is created with /push scope scope_name; the new created rules can hide the old scope.</p><p>To exit a scope use /pop scope; this command does not delete the syntactical rules of the scope at the top of the stack, it only saves and hides them; to delete the rules of the scope scope_name use the statement: /delete scope scope_name.</p><p>If there are rules declared within scope_name with the clause /when delete scope the specified actions are executed.</p><p>To empty a scope use the syntax /delpush scope scope_name that will delete and re-push the scope scope_name.</p></div></div><div class="glossary" id="N1326"><div class="titlepage"><div><h2 class="title"><a name="N1326"></a>Glossary</h2></div></div><dl><dt>Action</dt><dd><p>The action is a list of tokens.  Usually it is associated to a syntax extension.  It is executed when the grammar rules is reduced (Zz has matched the rule) or when the statement <tt>/execute</tt> is issued.</p></dd><dt>Application</dt><dd><p> See Zz application.</p></dd><dt>Bead</dt><dd><p>
+Is the basic element of a thread.  There are terminal (simple) beads and non terminal beads.  The terminal beads are tokens to be matched exactly (explicit constant numbers, keywords etc.), non terminal beads are made up with a syntagma and a recipient of the actual value the bead will match.  The form of a non terminal bead is:</p><p><tt>syntagma^var</tt></p></dd><dt>C-Procedure</dt><dd><p>
+A program written in C and linked with the Zz kernel, which knows the C-Procedure entry point.  Zz will invoke the C-Procedure as specified by the user.  There are user written C-Procedures (used to configure Zz to exploit a certain set of user functions within an application) and kernel or system C-Procedures furnished within the Zz kernel.
+</p></dd><dt>Derived syntagma</dt><dd><p>
+A syntagma made up of assigned threads created by using the syntax extension statement.
+</p></dd><dt>Dynamic grammar</dt><dd><p>
+A grammar that may grow during the parsing phase itself.
+</p></dd><dt>Level</dt><dd><p>
+Syntactical rules are organized in levels.  Thus a level is a set of syntactical rules.  Levels are ordered, named, and can be active or inactive.  The rules in the higher levels hide those in lower levels.
+</p></dd><dt>Lexical syntagma</dt><dd><p>
+A syntagma returning one of the lexical tags, all these syntagmas are built in within the Zz kernel.
+</p></dd><dt>Nonterminal bead</dt><dd><p>
+See bead.
+</p></dd><dt>Rule</dt><dd><p>
+Also called a "Syntax rule" or "production rule", is the right side of the Syntax extension statement.
+</p></dd><dt>Return value</dt><dd><p>
+A special statement used within an action.  It is used to give a value to the variable associated with a non terminal bead.
+</p></dd><dt>Syntax extension</dt><dd><p>
+The Zz language statement(s) used to extend the syntax recognized by Zz.
+</p></dd><dt>Syntagma</dt><dd><p>
+The syntagma is a basic structure in the syntax.  A syntagma has a name and 0 or many rules (threads) defining what the syntagma will match.  
+A syntagma can be extended (adding more threads to it) using the statement: /syntagma &gt; thread [action].
+The common way to refer to a syntagma is using it in a non terminal bead, within a thread: .... syntagma^var ...
+</p></dd><dt>Thread</dt><dd><p>
+A thread is something that the parser will match with the input tokens.  A thread is a list of beads.  All the threads are organized within syntagmas.  The only way to define a thread is adding a thread to a syntagma.  It is possible to specify an action to be executed when a thread matches something.
+</p></dd><dt>Zz-variable</dt><dd><p>
+A Zz variable has a name a value and a tag.  A variable is defined with the assignments statements = or := or is the left side of a non terminal beads (after the caret symbol: ^).
+</p></dd><dt>Zz-application</dt><dd><p>
+This is the result of the union of the User C-Procedures and the Zz Kernel (the result we obtain configuring Zz).  Usually a Zz application is characterized by a very rich and pleasant syntax too.
+</p></dd><dt>Zz-kernel</dt><dd><p>
+The Zz kernel is the unconfigured version of Zz. The Zz Kernel recognizes the Zz language and is able to call the Kernel C-Procedures.
+</p></dd><dt>Zz  language 0, Zz L0</dt><dd><p>
+The basic language that Zz recognizes before any language extension is done.
+</p></dd></dl></div><div class="appendix"><div class="titlepage"><div><h2 class="title"><a name="N139D"></a>Appendix A. Zz &amp; compilers</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#N13AE">Variable and dynamic syntax</a></dt><dt><a href="#N13DC">A statement to declare a variable</a></dt><dt><a href="#N13F5">Statement to define a new variable type</a></dt><dt><a href="#N1413">A more realistic example</a></dt><dt><a href="#N1431">Structures</a></dt><dt><a href="#N1478">From SOA to RPN</a></dt></dl></div><p>It is possible to use Zz in a lot of different contexts, although usually it is used to define Command Language Interpreter and Compilers.  Some of us are using Zz to design innovative graphical user interfaces or Protocol Adaptive Networks.</p><p>All the Zz applications benefits of the dynamic feature which makes the user able to dynamically redefine and to extend the language or the protocol recognized by its application.</p><p>In this document we avoid giving too much formal specification in the tutorial guide.  Within this informal context it is possible to say that the Zz "recognizes" a wider class of grammar than say a classic LR parser.</p><p>It is impossible at a pure syntactic level to introduce in a classic static parser the concept of declared variable or declared routine.  In a classic compiler this dirty job (or part of it) is devolved to the semantic.</p><p>Of course this is a major problem for new languages like ADA or C++ that try to introduce something like a limited degree of growth in the syntax (new objects, strong type checking etc...).</p><p>This chapter will show, using some examples, how to imagine the, Zz based, new compilers.</p><p>This appendix examines some examples that are by themselves a part of the work of a compiler writer. The problem we explicitly solve in few lines are: variable, record and types declaration, subroutine and cycles implementation. We leave to the user imagination the assembly language format or the user routines to write the object code and any kind of optimization.</p><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N13AE"></a>Variable and dynamic syntax</h2></div></div><p>Almost all languages have the variable concept.  A variable is basically a name with some information attached to it (e.g. the address) a standard compiler could attach to the variable name also the type.  Zz has only to remember the address because of its capability of dynamically insert a name in the proper grammar rule.</p><p>To define a variable means to modify (in the variable scope) the grammar accepted by the compiler.  All humans (at least the compiler writers!) knows: when I define the real variable ``goofie'', the terminal goofie will be accepted (apart from the scope rules) where the compiler accepts a real variable and, for instance, the compiler could use there the variable address (eg: 0x1234).</p><p>Zz is able to understand this concept, the proper way to explain it is:</p><b><tt>
+/real_var -&gt; "goofie" {/return 0x1234} 
+</tt></b><p>The language syntactic rules to handle the variables have to be inserted yet.  Now the simplest way to manage a real_var is to introduce a very simple I/O operation like a "write" (of course write means to generate the proper assembler code):</p><b><tt>
+ stat -&gt; write real_var^v {
+   /print "GOSUB write_real_var #",v 
+</tt></b><p>After all Zz is ready to accept this statement:</p><pre class="screen">
+write goofie 
+</pre><p>And emits on the standard output device:</p><pre class="screen">
+GOSUB write_real_var #0x1234 
+</pre><p>Of course a lot of operations have to be defined to handle properly a "real_var"; we will show something in the following.</p><p>Let us imagine that a real_var needs 4 bytes and we use a Zz internal register (a Zz variable ) to manage the memory allocation.  The Zz variable we use (say "curr_address") has to be initialized to the proper value and the variable declaration of goofie has to follow the following schema:</p><pre class="screen">
+/curr_addr = 0xA0000
+/addr = cur_address
+/cur_address := cur_address+1
+/real_var -&gt; goofie {/return addr}
+</pre><p>NOTE. addr (having the meaning of local variable) is defined using = and it is immediately replaced while cur_address is defined using :=.  So doing the above defined syntactical rule, the first time, has the meaning of:</p><pre class="screen">
+/real_var -&gt; goofie { /return 0xA0000 }
+</pre><p>To declare a new variable the right sequence could be:</p><pre class="screen">
+/addr = cur_address 
+/cur_address := cur_address+1 
+real_var -&gt; tommy { /return addr } 
+</pre><p>And tommy is allocated at 0xA0001, of course this way to declare a variable is quite unfriendly.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N13DC"></a>A statement to declare a variable</h2></div></div><p>To allow the variable declaration with a more conventional statement we have to introduce a statement capable to define a new syntax rule.</p><p>As an example it is possible to introduce this code:</p><pre class="screen">
+stat -&gt; real ident^var_name {
+  /addr = cur_address 
+  /cur_address := cur_address+1 
+  /real_var &gt; var_name { 
+    /return addr 
+  } 
+}
+ 
+/cur_address:= 0x1000 
+</pre><p>Creating the statement:</p><pre class="screen">
+real var_name 
+</pre><p>and the programmer can write as an example:</p><pre class="screen">
+real alfred 
+real barbara 
+</pre><p>Zz then inserts the rules:</p><pre class="screen">
+/real_var -&gt; alfred {/return 0x1000} 
+/real_var -&gt; barbara {/return 0x1001} 
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N13F5"></a>Statement to define a new variable type</h2></div></div><p>Using another level of indirect declaration of syntax rules we can insert new variable types; this is the code:</p><pre class="screen">
+stat -&gt; type ident^type_name { 
+  /var = type_name&amp;_var
+  /stat -&gt; type_name ident^var_name { 
+    /addr = cur_address 
+    /cur_address := cur_address+1 
+    /var -&gt; var_name { 
+      /return addr 
+    } 
+  } 
+}
+
+/cur_address := 0x1000 
+</pre><p>This introduces the new statement with the general format:</p><pre class="screen">
+type custom_type 
+</pre><p>NOTE. In the above listed schema a new sintagma name is created using the string concatenation operator "&amp;".  As an example the new created type angle uses the new sintagma angle_var.  This trick will be used often in the following.</p><p>We can try the new statement defining the type angle:</p><pre class="screen">
+type angle 
+angle teta 
+</pre><p>Zz does this work for you:</p><pre class="screen">
+stat -&gt; angle ident^varname { 
+  /addr = cur_address 
+  /cur_address := cur_address + 1 
+  /angle_var -&gt; var_name { 
+    /return addr 
+  } 
+}
+
+angle teta 
+</pre><p>This will create the rule:</p><pre class="screen">
+/angle_var &gt; teta {/return 0x1000} 
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1413"></a>A more realistic example</h2></div></div><p>The above defined statement to declare a variable is quite simplified.  The first required improvements will allow to declare a variable list in order to accept:</p><pre class="screen">
+real a,b,c,d 
+</pre><p>and could be useful to specify the memory occupation of any type.</p><pre class="screen">
+stat -&gt; type ident^typename num_e^typesize {
+  /var = typename&amp;_var 
+  stat -&gt; typename identlist^varnamelst { 
+    /foreach varname in varnamelst { 
+      /addr = cur_address 
+      /cur_address:=...
+        cur_address+typesize
+      /var -&gt; varname { /return addr }
+    }
+  }
+}
+
+/cur_address := 0x1000 
+</pre><p>NOTE. identlist is a predefined sintagma matching a comma separated list of identifiers.</p><p>The allowed statements are:</p><pre class="screen">
+type custom_type custom_type_size 
+custom_type list_of_variable 
+</pre><p>Examples:</p><pre class="screen">
+type complex 2 
+type real 1 
+real x,y,z 
+complex a,b,c 
+</pre><p>Zz automatically inserts the rules:</p><pre class="screen">
+/real_var -&gt; x { /return 1000 } 
+/real_var -&gt; y { /return 1001 } 
+/real_var -&gt; z { /return 1002 } 
+/complex_var -&gt; alfa { /return 1004 } 
+/complex_var -&gt; beta { /return 1006 } 
+/complex_var -&gt; gamma { /return 1008 } 
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1431"></a>Structures</h2></div></div><p>Using the mechanism of type we can create objects with arbitrary name and size.  To define structures we need something to extract a part of a variable.</p><p>As an example:</p><pre class="screen">
+type bad_struct 3 
+bad_struct a,b 
+</pre><p>This declares two variable of three items each but it is impossible to access an item within the variable.</p><p>We need rules of this kind:</p><pre class="screen">
+/real_var -&gt; structured_var^v .x { /return v+0 } 
+/real_var -&gt; structured_var^v .y { /return v+1 } 
+/real_var -&gt; structured_var^v .z { /return v+2 } 
+</pre><p>so doing an item of something structured is usable as a real variable.</p><p>In the following paragraph we'll show how to automatically create the above mentioned rules.  The user syntax could be the following:</p><pre class="screen">
+record record_type 
+custom_type item_list 
+endrecord 
+</pre><p>As an example:</p><pre class="screen">
+record point 
+real x,y,z 
+endrecord 
+</pre><p>and to declare a struct and to access an item...</p><pre class="screen">
+point position 
+write position.x 
+</pre><p>We want that the syntax to declare the record fields is the same used to declare a variable; of course we need an offset to access items within a record.  It is possible to say that we have an address within the record (say cur_offset)...</p><pre class="screen">
+stat -&gt; type ident^typename num_e^typesize { 
+  /var = typename&amp;_var 
+
+  stat -&gt; typename identlist^varnamelist { 
+    /foreach varname in varnamelist { 
+      /addr = cur_address 
+      /cur_address := cur_address + typesize 
+      /var -&gt; varname { /return addr } 
+    }
+  } 
+
+  /record_stat&gt; typename identlist^fieldnamelist { 
+    /foreach fieldname in fieldnamelist { 
+      /addr = cur_offset 
+      /cur_offset := cur_offset + typesize 
+      /var -&gt; cur_record_var^v "." fieldname {/return v+addr} 
+    }
+  }
+}
+</pre><p>In the above example a variable declaration is a good statement (stat) 
+while a record_stat allows declaration of record fields. 
+In the example we suppose: cur_offset initilized to 0 and 
+cur_record_var initialized to the name (the syntagma) of the record 
+we are declaring (e.g. if we declare a record, say our_record, then 
+cur_record_var has the value of our_record_var)</p><p>Now we create the syntax of the statement record. We have to 
+initialize cur_offset, to accept record_stat and to invoke type with 
+record name and length.</p><pre class="screen">
+/record_head -&gt; ident^record_name { 
+  /cur_offset := 0;
+  /cur_record_var := record_name&amp;_var
+  /return record_name
+} 
+/record_body -&gt; record_stat^$ "\n"
+/record_body -&gt; record_body^$ record_stat^$ "\n" 
+/stat -&gt; record record_head^record_name "\n"
+record_body^$ end record{ 
+  type record_name cur_offset 
+} 
+</pre><p>Now we can try our master piece:</p><pre class="screen">
+record point 
+real x,y,z 
+endrecord 
+</pre><p>This does automatically something like:</p><pre class="screen">
+/real_var -&gt; point_var^v ".x" { /return v+0 } 
+/real_var -&gt; point_var^v ".y" { /return v+1 } 
+/real_var -&gt; point_var^v ".z" { /return v+2 }
+type point 3 
+</pre><p>Of course we can use our new described record and declare a variable of that kind:</p><pre class="screen">
+point position,speed 
+</pre><p>We can access the whole record as well as a single item:</p><pre class="screen">
+write position.y 
+</pre><p>with this line Zz reduces the following rules:</p><pre class="screen">
+/point_var -&gt; position { /return1000 } 
+!!valore: 1000 
+/real_var -&gt; point_var^v.y { /return v+1 } 
+!!valore: 1001 
+/stat -&gt; write real_var^v { /print ... } 
+</pre></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="N1478"></a>From SOA to RPN</h2></div></div><p>Let's imagine that our target language is able to understand a stack 
+oriented assembler. Our assembler accepts instructions operating 
+over variable address: PUSH, ADD, MOVE, etc... We would like to 
+introduce conventional expressions:</p><pre class="screen">
+zz&gt; /$arg -&gt; real_var^$ : pass 
+zz&gt; /stat -&gt; real_var^ris"="expr^a{/print "move to", ris} 
+zz&gt; /expr -&gt; term^t 
+zz&gt; /expr -&gt; expr^e "+" term^t { /print "add" } 
+zz&gt; /expr -&gt; expr^e "" term^t { /print "sub" } 
+zz&gt; /term -&gt; fact^f 
+zz&gt; /term -&gt; term^t "*" fact^f { /print "add" } 
+zz&gt; /term -&gt; term^t "/" fact^f { /print "div" } 
+zz&gt; /fact -&gt; real_var^num { /print "push ", num }
+zz&gt; /fact -&gt; "(" expr^e ")" 
+zz&gt; /fact -&gt; "" fact^f { /print "change sign" } 
+</pre><p>Now we can try ( using the declaration defined above ):</p><pre class="screen">
+zz&gt; type real 1 
+zz&gt; real a,b,c 
+zz&gt; a=b+c 
+push real_var:1001 
+push real_var:1002 
+add 
+move to real_var:1000
+</pre></div></div></div></body></html>

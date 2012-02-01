@@ -1,0 +1,64 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+
+!!
+!! Reference Output
+!!123.226
+!!1.48398e+25
+!!23.2
+!!333.3
+!!
+!!*** TESTING ALGEBRA ***
+!!13.8
+!!2.85915
+!!100.5
+!!15.1
+!! END OUTPUT
+
+!! be sure double is the default
+/zlex_set_default_real_as_double 1
+
+/miao=123.22555
+/print miao
+
+!! this is just re-interpreting half double in miao
+/aa=miao as float
+/print aa
+
+/stat-> "mumu<" float^bu ">" {
+  /print bu
+}
+
+/kk=23.2f
+/print kk
+
+mumu< cast_to_float(333.3) >
+
+/print ""
+/print "*** TESTING ALGEBRA ***"
+
+/print 8.3 + 5.5
+/print 20.3 / 7.1
+/print 20.1 * 5.0
+/print 20.1 - 5.0
+
+

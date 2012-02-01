@@ -1,0 +1,505 @@
+
+<para>To invoke the basic (unconfigured) version of Zz the command is:</para>
+
+<userinput>
+$ zz [ filein [ fileout ] ]
+</userinput>
+
+<para>If you omit filein, Zz gets the input from the standard input, if you omit fileout the output is given on the standard output.</para>
+
+<sect1><title>Lexical analysis</title>
+
+<para>There is a lexical analyzer that reads the text to be parsed and converts everything to tokens.  The internal representation of a token is a couple: (tag, value).  The lexical analyzer may return the following tags:</para>
+
+<userinput>
+IDENT, FLOAT, INT, QSTRING, CHAR, EOL, EOF 
+</userinput>
+
+<para>The parser gets these tokens (value, tags) from the lexical analyzer.  When the lexical analyzer finds a special character outside quotes it gives the token to the parser with the tag: CHAR.</para>
+
+<sect2><title>Comments</title>
+
+<para>The double exclamation mark, !!, is interpreted by the lexical analyzer like an EOL.  All the characters following this symbol until the true EOL are ignored.</para>
+
+</sect2>
+
+<sect2><title>Continuation lines</title>
+
+<para>Three contiguous dots: ... are interpreted like a "line continues" marker.  It means that the line has to be completed with the following line.  All the characters to the EOL are ignored.</para>
+
+</sect2>
+
+<sect2><title>Spacing</title>
+
+<para>The lexical analyzer ignores all redundant spacing.  Space and/or tabs are significant only to separate identifiers and numbers.  It should be noted that special characters are always to be considered different tokens.</para>
+
+<para>Examples:</para>
+
+<para>Input stream tokens [tag, value]</para>
+
+<screen>
+"+hiA"A++ [qstring,+hiA][ident,A][char,+][char,+]
+"+h i A" A+ [qstring,+h i A] [ident,A] [char,+]
++hi B 3 [char,+] [ident,hi] [ident,B] [int,3]
++hiB3 [char,+] [ident,hiB3]
+</screen>
+
+</sect2>
+
+<sect2><title>Interactive interface</title>
+
+<para>When the input stream is an ANSI TTY the user benefits of an interactive shell with some editing capabilities: the keypad arrows are available to select old commands or to edit a command.</para>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Parser</title>
+
+<para>The parser gets tokens from the current source.  The current source can be the standard input (an input file or the TTY) as well as a list of tokens within a Zz variable (e.g. an action attached to a successfully matched thread).  When the current source is an input stream, the tokens are created by the lexical analyzer.</para>
+
+<para>The parser accepts a sequence of statement according with syntactical rules attached to the syntagma stat.  The user can introduce his own statements specifying new syntactical rules to be added to the syntagma stat. More generally the whole Zz syntax can be extended and modified.</para>
+
+<sect2><title>Tokens' Precedence</title>
+
+<para>There are some implicit precedence rules that the user cannot control.  The parser uses the following order of precedence to accept a token:</para>
+
+<orderedlist>
+ <listitem>Its own parameters (a Zz variable)</listitem>
+ <listitem>Terminal beads</listitem>
+ <listitem>Lexical beads</listitem>
+ <listitem>Lexical bead any (any^xxx)</listitem>
+</orderedlist>
+
+<para>When beads are in competition to match a token the parser chooses immediately based on the precedence of the tag.  E.G. If a token is either a legal identifier or a keyword the parser will match it as a keyword.</para>
+
+</sect2>
+
+<sect2><title>Statements</title>
+
+<para>Zz starts and recognizes a basic language called Zz language level 0 or simply Zz L0.  By means of syntax extensions this language can evolve.</para>
+
+<para>The character: ";" (semi colon) at the end of the statement is necessary to put two or more statements on the same line.</para>
+
+<para>All the Zz L0 statements are prefixed with the character "/", this symbol can be useful to distinguish added statements from the original ones.  The user can however introduce statements prefixed with the same slash: "/".</para>
+
+<para>Probably the most important statements of Zz L0 are the ones to increment or modify the syntax.  They are described in a separate chapter.</para>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Syntax Extensions</title>
+
+<para>A syntax extension is completely defined giving a production rule and (optionally) the action to be executed when the parser reduces it.</para>
+
+<para>A production rule consists of a nonterminal, called the left side of the production ("target syntagma"), an arrow, and a sequence of terminals and/or nonterminals, called the right side of the production (called a "thread of beads").</para>
+
+<para>The Zz statement that allows the syntax extension has the following format:</para>
+
+<userinput>
+/target_syntagma -> thread [action ]
+</userinput>
+
+<para>That means that wherever a target_syntagma is acceptable the parser will also accept the pattern specified in the thread.</para>
+
+<para><literal>target_syntagma</literal> is any legal identifier.  The user can create a new syntagma simply using it.  A very common syntagma is stat (for "statement") because the parser tries to interpret the source as a sequence of stats.</para>
+
+<para>Thread is a sequence of beads (separated with spaces or tabs):</para>
+
+<userinput>
+bead_1 bead_2 ..... bead_n
+</userinput>
+
+<para>There are two types of beads: simple (terminal) beads and nonterminal beads.  A simple bead is either an identifier, a number (float or int), or a quoted string to be matched exactly.  The nonterminal beads have the following format:</para>
+
+<userinput>
+syntagma_y ^ parameter
+</userinput>
+
+<para>The parser will use syntagma_y to match the input source and, if available, a result will be returned giving a value to the parameter.  This value is available in the attached action only.</para>
+
+<para>The action is an optional field; if omitted a default action is performed.  The action is a list of tokens.  A well formed (usable) action is made up of a list of statements; it has the following format:</para>
+
+<userinput>
+{ 
+  zz statements 
+  [/return expression [as tag]] 
+} 
+</userinput>
+
+<para>The statement <emphasis>/return</emphasis> is explicitly remarked because it is meaningful only within actions.  Zz statements are a sequence of user defined statements as well as predefined statements separated with new lines or with semicolons.</para>
+
+<sect2><title>Beads</title>
+
+<para>As written above, there are two kinds of beads: simple (or terminal) beads and non terminal beads.</para>
+
+<para>The behavior of the parser is the following:</para>
+
+<itemizedlist>
+ <listitem>A terminal bead matches exactly the source token,</listitem>
+ <listitem>A syntagma (nonterminal bead) matches the source if:
+  <itemizedlist>
+    <listitem>A whole thread attached to the syntagma matches OR</listitem>
+    <listitem>A the name of the tag of the source token is equal to the name of the syntagma.</listitem>
+  </itemizedlist>
+ </listitem>
+</itemizedlist>
+
+</sect2>
+
+<sect2><title>Simple (or terminal) beads</title>
+
+<para>A simple bead can be an identifier, integer number, a floating point number and a quoted string.</para>
+
+<userinput>
+Examples: HALLO 666 3.1415 "ABC > 22+C"
+</userinput>
+
+<para>The first bead matches only the identifier HALLO the second bead will match the integer number 666 (as well as 00666), the third bead will match the floating number 3.1415 (as well as 03.14150 or 31415e4), the fourth one will match the sequence of token ABC > 22 + C (no matter of care of the spacing).  Indeed the bead "ABC > 22+C" is totally equivalent to the sequence of beads: ABC ">" 22 "+" C.</para>
+
+</sect2>
+
+<sect2><title>Non terminal beads</title>
+
+<para>A non terminal bead is used to match a syntactical construct (syntagma).  The format (within a thread) to insert a non terminal bead is:</para>
+
+<userinput>
+syntagma ^ parameter
+</userinput>
+
+<para>There are two kinds of syntagmas (and corresponding two types of beads): lexical syntagmas and derived syntagmas.</para>
+
+<para>The lexical beads are:</para>
+
+<itemizedlist>
+ <listitem>ident ^ parameter</listitem>
+ <listitem>qstring ^ parameter</listitem>
+ <listitem>int ^ parameter</listitem>
+ <listitem>float ^ parameter</listitem>
+ <listitem>any ^ parameter</listitem>
+ <listitem>param ^ parameter</listitem>
+</itemizedlist>
+
+<para>These beads match the tokens with corresponding tag and by convention return in the parameter the corresponding value (returned by the lexical analyzer).  The first bead will match well formed identifiers, the second one string within double quote: " ", the same for float and int.  There are special situations when it is useful that the parser accepts any token; the special bead useful in this case is any^.  It is possible to attach new rules to a lexical syntagma.</para>
+
+<para>It is important to underline that Zz in order to handle variable and parameters has to identify as soon as possible identifier that are defined as Zz variables, thus the syntagma param matches only identifier having a value and it returns the name of the variable.</para>
+
+<para>The derived beads are a directive for the parser to match the rules corresponding to the related syntagma.</para>
+
+<para>Example:</para>
+
+<userinput>
+syntagma_x ^ parameter_x 
+</userinput>
+
+<para>To be effective some rules of this kind will be defined to give a meaning to syntagma_x:</para>
+
+<para>Example:</para>
+
+<screen>
+/syntagma_x -> thread_a {action_a; /return xxxx} 
+/syntagma_x -> thread_b {action_b; /return yyyy} 
+/syntagma_x -> thread_c {action_c; /return yyyy} 
+</screen>
+
+<para>If the successfully matched thread is the list of bead thread_b then parameter_x value will be yyyy.</para>
+
+<para>A bead always matches a variable with a tag having the same name of the bead's syntagma; e.g. the bead colour^value will match a variable with tag colour.</para>
+
+</sect2>
+
+
+<sect2><title>kernel syntagmas</title>
+
+<para>The lexical syntagmas are defined in a previous chapter.  This is a summary of them and a short description of the derived syntagmas available within the kernel:</para>
+
+<screen> <!-- FIXME - should be a table -->
+stat^$	matches a Zz statement 
+statlist^$	matches' one or more Zz statements divided by ; or EOL
+param^ ret	matches a Zz parameter or variable and returns its name 
+list_e^ ret	matches a list expression and returns the list 
+num_e^ ret	matches a numeric (int or float) expression and returns its value
+string_e^ ret	matches a character expression and returns its value 
+int^ ret	(lexical) matches a unsigned integer number and returns its value 
+float^ ret	(lexical) matches a unsigned float number and returns its value 
+ident^ ret	(lexical) matches a identifier and returns its name. 
+qstring^ ret	(lexical) matches a quoted string and returns the string. 
+</screen>
+
+</sect2>
+
+<sect2><title>When change action or exit scope</title>
+
+<para>It is possible to specify an action to be executed when the action associated to a thread is modified.  The syntax is the following:</para>
+
+<userinput>
+/when change action { action_a } 
+</userinput>
+
+<para>Please note that the simplest statement to change a syntax is:</para>
+
+<userinput>
+/syntagma -> thread {action_b } 
+</userinput>
+
+<para>But the user usually introduces some statement to automatically modify the syntax, of course at some deepest level the statement is the simplest one.</para>
+
+<para>The action <literal>action_a</literal> is executed if the <literal>action_b</literal> associated to the rule <literal>/syntagma -> thread</literal> is changed.</para>
+
+<para>For example:</para>
+
+<screen>
+zz> /stat -> changing { 
+  /print alfa 
+} 
+zz> /when change action { 
+  /print "action changed" 
+} 
+zz> /stat -> changing { 
+  /print beta 
+} 
+action changed 
+zz>
+</screen>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Basic expressions and Variables</title>
+
+<para>Zz variables have a name, a value and a tag.  Usually the following tags are used: ident, int, float, qstring, list.  New tags can be introduced (a tag can be any identifier).</para>
+
+<para>To create a Zz variable you have to assign a value to it.  The simplest statement is the assignment:</para>
+
+<userinput>
+/ variable = expression [ as tag ]
+</userinput>
+
+<para>or</para>
+
+<userinput>
+/ variable := expression [ as tag ]
+</userinput>
+
+<para>Variable is the name of a variable (any identifier is allowed). eg:</para>
+
+<screen> 
+goofie, Hello, a_b 
+</screen>
+
+<para>Expression may be integer, float, quoted string, single identifiers, list and allowed combinations.  The 4 arithmetic operations and parenthesis are allowed on integer and floating point numbers with the conventional precedence rules. The resulting type of the expression is float if any of the operands are float.</para>
+
+<para>There is a list and string concatenation operator: "&amp;".  This can also operate on numeric values or identifiers taking the literal representation of the numbers and the ASCII representation of the identifier. e.g.:</para>
+
+<screen>
+"Rose thou"&amp;" are "&amp;sick, {1,2}&amp;{3,4}
+</screen>
+
+<para>Note that variables are allowed in the expressions.</para>
+
+<para>In the assignment the resulting type of the expression fixes the tag of the target variable.  It is possible to explicitly force the tag type with the clause "as".  In the clause 'as tag', tag may be any identifier (e.g. int, qstring, list, color, town).</para>
+
+<para>The format := creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the = one creates LOCAL VARIABLES which remain alive until the EOF (if declared at level 0) or the matching brace } (if declared within a block) are reached.</para>
+ 
+<para>LOCAL variables stop existing when the block in which are declared does. For this reason, when defining a new block, those variables, if present, are immediately substituted by their values.</para>
+
+<para>There is an important difference about the use in an inner block of local variables (declared in an outer one) whose value is an identifier (strings of alphanumeric characters, underscores and dollars not beginning with a number) and those whose value is any other expression:</para>
+
+<itemizedlist>
+<listitem> <para>case variable = identifier:</para>
+
+<para>In this case the names of local variables can be used in the left part of an assignment thus creating a new variable whose name is the value of the old one (identifiers are legal names for variables)</para>
+</listitem>
+<listitem> <para>case variable = any other expression:</para>
+
+<para>Other expressions (different from identifiers) are not legal names for variables, so in this case it does not make sense to use the name of local variables in the left part of an assignment. An attempt to use them in this manner would cause a syntax error.</para>
+</listitem>
+</itemizedlist>
+
+<para>In inner blocks we can refer to GLOBAL variables, already declared in an outer block, by their names.  In fact, as global variables remain alive until the EOF, when entering a new block, their names are NOT substituted once for all by their values:</para>
+
+<itemizedlist>
+<listitem>If the variable is part of an expression, its value is replaced only when that expression is evaluated.
+</listitem>
+<listitem>If the variable is within an action, its value is replaced only when the action is executed.</listitem>
+</itemizedlist>
+
+<para>So they can always be used to the left of an assignment.  Vice versa if declared in a block, a global variable can be referenced later in an outer block, as it is global.</para>
+
+<para>It is possible to change the scope of a variable from local to global and vice versa only in the block where the variable is defined (for local to global) or in the outer block level 0 (for global to local)</para>
+
+<sect2><title>List</title>
+
+<para>This is the format to create a list:</para>
+
+<userinput>
+{ token_1 token_2 ..... token_n }
+</userinput>
+
+<para>A list expression is made up with the list concatenation operator: "&amp;".  It is possible to refer to an item of a variable containing a list using the following format:</para>
+
+<userinput>
+variable . item_number 
+</userinput>
+
+<para><emphasis>variable</emphasis> is a variable containing a list.  <emphasis>item_number</emphasis> is an integer number, lists being indexed with the first item as 1.</para>
+
+<para>The lists are used to introduce blocks of statements (like the actions connected with a rule).</para>
+
+<para>The tokens in the lists are any character with the exception of a right bracket (}) or an unmatched double quote (").</para>
+
+<para>An item in a list can be a variable but regardless from the scope of the variable (LOCAL or GLOBAL) its value is inserted once for all in the list when it is defined.</para>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Statements and Utilities</title>
+
+<para>The following utilities are available within Zz L0:</para>
+
+<userinput>
+/dumpnet syntagma
+</userinput>
+
+<para>Shows the whole syntactical network attached to a syntagma.</para>
+
+<userinput>
+/memory
+</userinput>
+
+<para>Shows the memory usage and the variation of it.</para>
+
+<screen>
+ <userinput>/include filename[.hz]</userinput>
+ <userinput>/include filename.type</userinput>
+ <userinput>/include "filename"</userinput>
+</screen>
+
+<para>To include a Zz source file.</para>
+
+<userinput>
+/print argument_list
+</userinput>
+
+<para>To print something on the screen.  Arguments of any basic type can be printed. The arguments have to be separated with commas.  Available arguments are: qstrings, integer and float expressions, lists, the length of a qstring (i.e. the number of characters in the string) or of a list (i.e. the number of the element of the list) and any item of a list.</para>
+
+<para>Examples:</para>
+
+<screen>
+zz> /my_list = { alfa b c , "anymore" 23.4 } 
+zz> /print my_list.1 , my_list.4 
+alfa anymore 
+zz> /print my_list.length 
+6 
+zz> /aa = "test" 
+zz> /print aa.length 
+4 
+/beep [ message ] 
+</screen>
+
+<para>This statement prints a sequential number, the cpu time, the name of the input file, the line number and optionally a message.</para>
+
+<userinput>
+/execute list_of_stat
+</userinput>
+
+<para>Is used to execute a block of statement contained in a list.</para>
+
+<userinput>
+/rules [ syntagma ]
+</userinput>
+
+<para>Prints all the user rules or the rules attached to a specified syntagma.</para>
+
+<userinput>
+/krules [ syntagma ]
+</userinput>
+
+<para>Prints all the (user and kernel) rules or the rules attached to a specified syntagma.</para>
+
+<userinput>
+/error [ message ]
+</userinput>
+
+<para>Like /print but outputs results as an error message.</para>
+
+<userinput>
+/param
+</userinput>
+
+<para>It shows all the variables, their values types etc...</para>
+
+<userinput>
+tag_of(param)
+</userinput>
+
+<para>Returns the tag (type) of a variable.  Note this resolves to a type of <literal>qstring</literal> itself so it must be used as part of another statement, i.e. <literal>/print tag_of(my_var).</literal></para>
+
+<userinput>
+/trace option
+</userinput>
+
+<para>To trace the parser actions.  Allowed values for option are:</para>
+
+<itemizedlist>
+ <listitem>0 No trace</listitem>
+ <listitem>2 Trace reductions</listitem>
+</itemizedlist>
+
+<!-- FIXME - add in other new loop structs -->
+
+<userinput>
+/for index_var = start_val to stop_val... 
+  [step step_val] {action}
+</userinput>
+
+<para>The action is executed (stop_val  start_val + step_val)/step_val times; start_val, stop_val and stepval must be integer expressions (float are not recognized).</para>
+
+<userinput>
+/foreach variable in list { action }
+</userinput>
+
+<para>The action is executed once for each element in the list. Variable takes at each iteration the value of an item in the list.</para>
+
+<userinput>
+/if logical_condition { action }
+</userinput>
+
+<para>The action is executed if the condition is true.</para>
+
+<para>The following relational operators are provided:</para>
+
+<screen>
+==	equal
+!=	not equal
+&lt;	less than
+&gt;	greater than
+&lt;=	less than or equal to
+&gt;=	greater than or equal to
+</screen>
+
+<para>They can all be applied to integer expressions while only == and != can be applied to strings.</para>
+
+<screen>
+ <userinput>/push scope scope_name</userinput>
+ <userinput>/pop scope</userinput>
+ <userinput>/delete scope scope_name</userinput>
+ <userinput>/delpush scope scope_name</userinput>
+</screen>
+
+<para>The scopes are identified by a name. The default scope is kernel.   A new scope is created with /push scope scope_name; the new created rules can hide the old scope.</para>
+
+<para>To exit a scope use /pop scope; this command does not delete the syntactical rules of the scope at the top of the stack, it only saves and hides them; to delete the rules of the scope scope_name use the statement: /delete scope scope_name.</para>
+
+<para>If there are rules declared within scope_name with the clause /when delete scope the specified actions are executed.</para>
+
+<para>To empty a scope use the syntax /delpush scope scope_name that will delete and re-push the scope scope_name.</para>
+
+</sect1>

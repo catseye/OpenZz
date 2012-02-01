@@ -1,0 +1,279 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+!!Reference Output:
+!!*** ASSIGNMENT *** 
+!!first test var = 100 
+!!second test var = 50 
+!!third test var = 150 
+!!*** BASIC INTERPRETATION OF VARIABLE AND CONSTANT EXPRESSIONS *** 
+!!Variable Assignment OK 
+!!Sign change OK 
+!!*** BASIC ALGABRAIC OPERATIONS *** 
+!!150 
+!!-50 
+!!50 
+!!-50 
+!!50 
+!!50 
+!!-150 
+!!150 
+!!50 
+!!-50 
+!!5000 
+!!-5000 
+!!-5000 
+!!5000 
+!!5000 
+!!-5000 
+!!-5000 
+!!5000 
+!!2 
+!!-2 
+!!-2 
+!!2 
+!!*** BOOLEAN ALGEBRA *** 
+!!Int == OK (var1 == 100) 
+!!Int == OK (var1 == 101) 
+!!Int == OK (-var1 == 100) 
+!!Int == OK (-var1 == -var1) 
+!!Int != OK (var1 != var1) 
+!!Int != OK (var1 != var2) 
+!!Int != OK (-var1 != var1) 
+!!Int != OK (-var1 != -var1) 
+!!Int >= OK (var1 >= var1) 
+!!Int >= OK (var1 >= var2) 
+!!Int >= OK (var1 >= var3) 
+!!Int >= OK (-var1 >= var1) 
+!!Int >= OK (var2 >= -var1) 
+!!Int >= OK (-var2 >= -var1) 
+!!Int <= OK (var1 <= var1) 
+!!Int <= OK (var2 <= var1) 
+!!Int <= OK (var3 <= var1) 
+!!Int <= OK (-var1 <= var1) 
+!!Int <= OK (var2 <= -var1) 
+!!Int <= OK (-var2 <= -var1) 
+!!Int < OK (var1 < var1) 
+!!Int < OK (var2 < var1) 
+!!Int < OK (var3 < var1) 
+!!Int < OK (-var1 < var1) 
+!!Int < OK (var2 < -var1) 
+!!Int < OK (-var2 < -var1) 
+!!Int > OK (var1 > var1) 
+!!Int > OK (var1 > var2) 
+!!Int > OK (var1 > var3) 
+!!Int > OK (-var1 > var1) 
+!!Int > OK (var2 > -var1) 
+!!Int > OK (-var2 > -var1) 
+!!*** MIXED ALGEBRA AND BOOLEAN *** 
+!!OK 
+!!OK 
+!!OK 
+!!END OUTPUT
+
+/print "*** ASSIGNMENT ***"
+/var1=100
+/print "first test var = " & var1
+
+!! Make a second var which is less than var1
+/var2 = 50
+/print "second test var = " & var2
+
+!! Make a third var larger than var1 in order to do math that changes sign of result
+!! This var should be equals to the sum of var1 + var2 (to test combined algebra and logic)
+/var3=150
+/print "third test var = " & var3
+
+
+/print "*** BASIC INTERPRETATION OF VARIABLE AND CONSTANT EXPRESSIONS ***"
+!! equals(==) operator is tested again later but we use it here to assert 
+!! that the variables have been assigned the correct values - all other tests
+!! are invalid if this didn't work.
+/if var1 == 100 { /print "Variable Assignment OK" } ...
+	   else { /print "Variable Assignment ERROR" }
+
+/if -var1 == -100 { /print "Sign change OK" } ...
+	     else { /print "Sign change ERROR" }
+
+
+/print "*** BASIC ALGABRAIC OPERATIONS ***"
+
+/print var1 + var2
+/print -var1 + var2
+/print var1 + -var2
+/print var1 + -var3
+/print -var1 + var3
+
+/print var1 - var2
+/print -var1 - var2
+/print var1 - -var2
+/print -var1 - -var3
+/print var1 - var3
+
+/print var1 * var2
+/print -var1 * var2
+/print var1 * -var2
+/print -var1 * -var2
+
+/print var1 * var2
+/print -var1 * var2
+/print var1 * -var2
+/print -var1 * -var2
+
+/print var1 / var2
+/print -var1 / var2
+/print var1 / -var2
+/print -var1 / -var2
+
+
+/print "*** BOOLEAN ALGEBRA ***"
+!! == != >= <= < >
+
+!!!!!!!!
+!! == !!
+!!!!!!!!
+/if var1 == 100 { /print "Int == OK (var1 == 100)" } ...
+		else { /print "Int == ERROR (var1 == 100)" }
+
+/if var1 == 101 { /print "Int == ERROR (var1 == 101)" } ...
+		else { /print "Int == OK (var1 == 101)" }
+
+/if -var1 == 100 { /print "Int == ERROR (-var1 == 100)" } ...
+		else  { /print "Int == OK (-var1 == 100)" }
+
+/if -var1 == -var1 { /print "Int == OK (-var1 == -var1)" } ...
+		else { /print "Int == ERROR (-var1 == -var1)" }
+
+!!!!!!!!
+!! != !!
+!!!!!!!!
+/if var1 != var1  { /print "Int != ERROR (var1 != var1)" } ...
+	     else { /print "Int != OK (var1 != var1)" }
+
+/if var1 != var2 { /print "Int != OK (var1 != var2)" } ...
+	    else { /print "Int != ERROR (var1 != var2)" }
+
+/if -var1 != var1 { /print "Int != OK (-var1 != var1)" } ...
+	    else  { /print "Int != ERROR (-var1 != var1)" }
+
+/if -var1 != -var1 { /print "Int != ERROR (-var1 != -var1)" } ...
+	      else { /print "Int != OK (-var1 != -var1)" }
+
+!!!!!!!!
+!! >= !!
+!!!!!!!!
+/if var1 >= var1  { /print "Int >= OK (var1 >= var1)" } ...
+	     else { /print "Int >= ERROR (var1 >= var1)" }
+
+/if var1 >= var2  { /print "Int >= OK (var1 >= var2)" } ...
+	     else { /print "Int >= ERROR (var1 >= var2)" }
+
+/if var1 >= var3 { /print "Int >= ERROR (var1 >= var3)" } ...
+	    else { /print "Int >= OK (var1 >= var3)" }
+
+/if -var1 >= var1 { /print "Int >= ERROR (-var1 >= var1)" } ...
+	    else  { /print "Int >= OK (-var1 >= var1)" }
+
+/if var2 >= -var1 { /print "Int >= OK (var2 >= -var1)" } ...
+	   else { /print "Int >= ERROR (var2 >= -var1)" }
+
+/if -var2 >= -var1 { /print "Int >= OK (-var2 >= -var1)" } ...
+	    else { /print "Int >= ERROR (-var2 >= -var1)" }
+
+
+!!!!!!!!
+!! <= !!
+!!!!!!!!
+/if var1 <= var1  { /print "Int <= OK (var1 <= var1)" } ...
+             else { /print "Int <= ERROR (var1 <= var1)" }
+
+/if var2 <= var1  { /print "Int <= OK (var2 <= var1)" } ...
+             else { /print "Int <= ERROR (var2 <= var1)" }
+
+/if var3 <= var1 { /print "Int <= ERROR (var3 <= var1)" } ...
+            else { /print "Int <= OK (var3 <= var1)" }
+
+/if -var1 <= var1 { /print "Int <= OK (-var1 <= var1)" } ...
+            else  { /print "Int <= ERROR (-var1 <= var1)" }
+
+/if var2 <= -var1 { /print "Int <= ERROR (var2 <= -var1)" } ...
+	     else { /print "Int <= OK (var2 <= -var1)" }
+
+/if -var2 <= -var1 { /print "Int <= ERROR (-var2 <= -var1)" } ...
+              else { /print "Int <= OK (-var2 <= -var1)" }
+
+
+!!!!!!!
+!! < !!
+!!!!!!!
+/if var1 < var1  { /print "Int < ERROR (var1 < var1)" } ...
+            else { /print "Int < OK (var1 < var1)" }
+
+/if var2 < var1  { /print "Int < OK (var2 < var1)" } ...
+            else { /print "Int < ERROR (var2 < var1)" }
+
+/if var3 < var1 { /print "Int < ERROR (var3 < var1)" } ...
+           else { /print "Int < OK (var3 < var1)" }
+
+/if -var1 < var1 { /print "Int < OK (-var1 < var1)" } ...
+           else  { /print "Int < ERROR (-var1 < var1)" }
+
+/if var2 < -var1 { /print "Int < ERROR (var2 < -var1)" } ...
+            else { /print "Int < OK (var2 < -var1)" }
+
+/if -var2 < -var1 { /print "Int < ERROR (-var2 < -var1)" } ...
+             else { /print "Int < OK (-var2 < -var1)" }
+
+
+!!!!!!!
+!! > !!
+!!!!!!!
+/if var1 > var1  { /print "Int > ERROR (var1 > var1)" } ...
+            else { /print "Int > OK (var1 > var1)" }
+
+/if var1 > var2  { /print "Int > OK (var1 > var2)" } ...
+            else { /print "Int > ERROR (var1 > var2)" }
+
+/if var1 > var3 { /print "Int > ERROR (var1 > var3)" } ...
+           else { /print "Int > OK (var1 > var3)" }
+
+/if -var1 > var1 { /print "Int > ERROR (-var1 > var1)" } ...
+           else  { /print "Int > OK (-var1 > var1)" }
+
+/if var2 > -var1 { /print "Int > OK (var2 > -var1)" } ...
+            else { /print "Int > ERROR (var2 > -var1)" }
+
+/if -var2 > -var1 { /print "Int > OK (-var2 > -var1)" } ...
+             else { /print "Int > ERROR (-var2 > -var1)" }
+
+
+/print "*** MIXED ALGEBRA AND BOOLEAN ***"
+
+/if (var1 + var2) == var3 { /print "OK" } ...
+		     else { /print "ERROR" }
+
+/if (var1 * var2 + var3) != (var3 + var2 * var1) { /print "ERROR" } ...
+	else { /print "OK" }
+
+/if (var3 / var2 * var1) != (var1 * var3 / var2) { /print "ERROR" } ...
+	else { /print "OK" }
+
+

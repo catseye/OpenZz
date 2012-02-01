@@ -1,0 +1,54 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+
+
+!! Most of this file tests a known bug arrising from the interpreters 
+!! error on reducing the types of arguments to the boolean and 
+!! arithmetic operators.
+!! A partial solution (step in the right direction) is
+!!
+!!  OPEN($cond) GSB($arg) M("==") GSB($arg) PROC(s_eq) END
+!!  // Instead of the current lines
+!!  //OPEN($cond) GSB(string_e) M("==") GSB(string_e) PROC(s_eq) END
+!!  //OPEN($cond) GSB(num_e) M("==") GSB(num_e) PROC(s_eq) END
+!!
+!! Using the above solves the problems demonstrated in this file but 
+!! creates new ones for ambiguity in operations like "A || B || C"
+
+
+/a={6 7 8 9}
+/b=2
+
+/print a.b
+
+/print a.b * 2
+/print a.b / 2
+/print a.b + 2
+/print a.b - 2
+
+/if (7 > 2)    { /print "OK" } 
+/if (a.b > 2)  { /print "OK" }
+/if (a.b >= 2) { /print "OK" }
+/if (a.b < 2)  { /print "ERROR" }
+/if (a.b <= 2) { /print "ERROR" }
+/if (a.b == 2) { /print "ERROR" }
+/if (a.b != 2) { /print "OK" }

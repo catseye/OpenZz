@@ -1,0 +1,30 @@
+release 1.0.4:
+
+. turned on 'when delete scope' syntax
+. added
+	zz_get_error_number()
+	zz_get_param_stack_depth()
+	zz_lex_remove_tag()
+. reworked zz_lex_add_new_tag a bit().
+. changed dynamic lib extentions ABI and fixed their loading. init func is
+  zz_ext_init().
+
+
+release 1.0.3:
+
+. gcc-2.96-98 bug in avl.c worked around
+
+
+release 1.0.2:
+
+. popvoidrule bug worked around
+
+
+release 1.0.1:
+
+. breaks binary compatibility for new tag adding fun
+. fixed RH7.X compilation problems
+. added RPM spec
+. real consts default to float, not double, for better 
+  backward compatibility
+. added tag_of syntagma

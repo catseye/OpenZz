@@ -1,0 +1,55 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/sys.c)
+
+dnl Added to activate automake
+AM_INIT_AUTOMAKE(openzz, 1.0.4)
+
+dnl Checks for programs.
+AC_PROG_CC
+
+dnl JSB - need to include libtool for building shared libs.
+dnl AC_LIBTOOL_DLOPEN
+
+dnl Using 'AM_DISABLE_SHARED' is recomended to speed compile times
+dnl  during development but that disables our dynamic lib loading
+dnl  feature so I'm commenting it out.
+dnl AM_DISABLE_SHARED
+
+AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+AM_CONFIG_HEADER(config.h)
+
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+
+dnl Checks for libraries.
+dnl Replaced second param:`main' with a function in -lreadline:
+AC_CHECK_LIB(termcap, tputs)
+AC_CHECK_LIB(readline, readline)
+
+dnl JSB - include 'dl' lib for loading dynamic libraries.
+dnl       This is used in sys.c - look for use of "dlopen":
+AC_CHECK_LIB(dl, dlopen)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strdup strtol)
+
+dnl JSB - need these to use libtool
+AC_CHECK_LIBM
+AC_SUBST(LIBM)
+
+AC_OUTPUT(Makefile \
+          src/Makefile \
+          doc/Makefile \
+          doc/src/Makefile \
+          testsuite/Makefile \
+          )

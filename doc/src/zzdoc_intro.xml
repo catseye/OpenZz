@@ -1,0 +1,67 @@
+<para>The Zz language is a general-purpose incremental language.  It can handle operator overloading and any kind of structured data.  By our definitions, an incremental language is a language that is able to easily grow according to the users needs, and which is also suitable to develop complex compilers and simple command interpreters (we use as an example a calculator).  The user of Zz starts using a simple interface that allows him to introduce new statements.</para>
+
+<para>The user can specify the semantics of his statements using other Zz statements or routines written by the user in a conventional programming language (like the C language).  We call these routines, usable from Zz, "C-Procedures".</para>
+
+<para>Zz can to be instructed to recognize very general grammars; upon matching a grammar rule it can execute an action as stated above.  Thus one of the aims of Zz is to interface a set of C-Procedures with a command language.</para>
+
+<para>Developing a Zz application is quite easy using its native environment.  The user is encouraged to take advantage of the inherent flexibility of Zz to improve the interfaces of their applications.  Today, within the APE group, Zz is used in all the applications that require some user interface or command language.  Zz has many enticing aspects, for example it can add new words to its syntax like FORTH does, it can handle its own code like LISP does, and it can handle syntaxes like YACC does.</para>
+
+<para>For the compiler writers Zz can be quite helpful.  It does the job of a compiler compiler, but it handles the variables and other objects declarations maintaining a pure syntactic strong type checking.  A compiler developed using Zz could be general like ADA and C, but our intention is that Zz will be used to develop innovative Very High Level Language (VHLL) compilers with dynamic syntax capability.</para>
+
+<sect1><title>Overview</title>
+
+<para>A compiler is designed to translate source code, written in a given language, e.g. FORTRAN either into executable machine code or into an intermediate form, (e.g. into an assembler program or binary object code).  In the APE software we choose the second alternative, since the main code optimization step is executed in a following program.</para>
+
+<para>Programs written in a high level language, e.g. FORTRAN can be looked at in two different ways.  The first is to consider the program as a statement in the given language of a computational task to be executed by the computer.  The second is to look at it as a series of statements which instruct the compiler to produce either the machine code or the assembler code needed to execute the task.  In the first way, the program represents directives to the compiler rather than the description of the computational task at hand. Common examples of this kind are declarations of variables and special data types and structures, or directives for compiler options (e.g. LIST, NoLIST, etc.).  For the following discussion of Zz, it is however useful to adopt the second point of view, where all lines in the program are seen as directives to the compiler.</para>
+
+<para>The basic idea underlying Zz is that of a language which can be extended not only by the definition of new entities (e.g.: structures, subroutines or tasks declarations) and by the redefinition of existing ones (e.g.: overloading), but where the programmer can modify the syntax itself.  In the point of view we have adopted, all compiler languages are extensible to a limited extent.  Fortran 77 compilers, e.g., allow the definition of new identifiers, the names of variables, arrays, functions, and subroutines.  Other compilers, e.g. those for ADA and C++, go one step further, and allow operator overloading and the definition of new data types.  Languages such as FORTH and LISP are even more versatile, as they allow the definition of new operators accepting a very unfriendly grammar.  Zz has the versatility of FORTH and LISP, with the added feature of making possible the definition of new syntactical forms.  This makes of Zz a universal compiler language.  It is possible, through suitably designed syntax extensions, to use Zz to write compilers for most existing languages including, among others, FORTRAN, C and C++.</para>
+
+<para>The extension of Zz proceeds through the definition of "production rules", which specify new syntactical forms accepted by the language, and thus effectively add to the grammar of the language.  For each new production rule the user can specify an action that will be executed when the interpreter recognizes the corresponding syntactical form.  The action can be specified either in the Zz language, or as a call to a user defined C procedure.</para>
+
+<para>The Zz language basic package, Zz L0, has been written in C to ensure easy portability between different platforms.</para>
+
+</sect1>
+
+
+<sect1><title>ZZ Configurations</title>
+
+<para>Zz can interface a set of C-Procedures with a command language.  The basic set of C-Procedures available in the Zz kernel is limited; however the user may link in their own C-Procedures with the Zz kernel.</para>
+
+<para>Zz will be able to call all the C-Procedures in an appropriate sequence, providing the needed parameters according to the defined grammar rules.</para>
+
+<para>It is didactically interesting, although without interesting practical applications, to use the unconfigured version of Zz.  It allows only the output to standard output with a basic format handling.  When you plan to use Zz in a certain area of your project to produce a Zz application you have to write, in Zz language, the syntax extension files which define the syntax to be used in your project and the actions to be executed.  Moreover you should configure Zz linking to Zz the set of your C-Procedures.  We will do here three examples to clarify the field of application of Zz.</para>
+
+<orderedlist>
+<listitem>
+<para>Let's suppose that you need a command interpreter to give commands to your data acquisition equipment.  You need some C-Procedures as filters, data analysis procedures, device drivers etc.  Zz will call them when you will write statements like:</para>
+
+<programlisting>STORE ON MY_FILE EVENTS ROM DEVICE 3 (FILTER: B=23) 
+FIT EVENTS FROM MY_FILE WITH MY_FUNCT; DISPLAY CHI^2.</programlisting>
+</listitem>
+
+<listitem>
+<para>Let's suppose that your new parallel supercomputer needs a special language extension and you plan to develop a new compiler.  You will write, and link to Zz, a lot of C-Procedures to write assembler code to optimize the programs, to write program listings and so on. As an example you need statements like:</para>
+
+<programlisting>
+ where (convergence > 0.0001) there ..... endwhere 
+ ifall (check ==ok ) { ...... }
+</programlisting>
+</listitem>
+
+<listitem>
+<para>You need the Fortran languages, but you need to enrich the Fortran syntax adding special purpose statements to handle a computer network or a special machine.  The standard compiler is ok for you, but the new statements will provide the programmer with the capability of producing shell procedures to configure appropriately the network or to allocate the machines when the program is running.</para>
+
+<para>A "Fortran extended" instruction could be:</para>
+
+<programlisting>TEST COMMUNICATIONS</programlisting>
+</listitem>
+
+</orderedlist>
+
+<para>In these examples you have to configure three different "Zz applications".  These three applications differ in the user action library and in the syntax.  Indeed when you will have linked the C-Procedures library, and in so configuring Zz, you will describe the syntax.</para>
+
+<para>The first application will link standard analysis algorithms and user procedures. The second will generate optimized code for your computer and the third one will produce Fortran source and shell commands.</para>
+
+<para>The first chapters of this manual will not describe a specific Zz application and the examples will use mainly the set of C-Procedures available in the basic kit.  The third part will describe in detail the way to link the Zz kernel with user written C-Procedures (i.e. how to configure Zz).</para>
+
+</sect1>

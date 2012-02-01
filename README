@@ -1,0 +1,22 @@
+                 Zz - Dynamic Lexical Parser README File
+===============================================================================
+
+Zz is a dynamic parser which is currently being developed as a front end to gcc to implement compilation of new languages (ie. TAO and others), for APE systems.  These are custom build parallel processing computers used for LQCD physics research.
+
+See:
+  http://chimera.roma1.infn.it/ape.html
+
+UPDATES
+ See the NEWS and ChangeLog files for information on the latest changes
+ Some support is being formulated at the project directory on SourceForge:
+  http://openzz.sourceforge.net  
+
+LICENSE
+ The Zz library is released under the GNU Lesser GPL (LGPL).
+ Parts of Zz are released under the GPL - see the "COPYING" file in the project root.
+
+DOCUMENTATION
+ See the "doc" subdirectory
+
+APE
+ Whence the name "APE"?  "Ape" is the Italian word for "bee", the mascot of the APE project. (INFN, the funder of the project is based in Italy and the software is primarily developed there).

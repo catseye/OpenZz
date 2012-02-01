@@ -1,0 +1,115 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//Norman Walsh//DTD DocBk XML V3.1.4/EN"
+                         "docbook-dtd/docbookx.dtd" [
+  <!ENTITY zzdoc_preface SYSTEM "zzdoc_preface.xml">
+  <!ENTITY zzdoc_intro SYSTEM "zzdoc_intro.xml">
+  <!ENTITY zzdoc_tour SYSTEM "zzdoc_tour.xml">
+  <!ENTITY zzdoc_dynamiclibs SYSTEM "zzdoc_dynamiclibs.xml">
+  <!ENTITY zzdoc_refguide SYSTEM "zzdoc_refguide.xml">
+  <!ENTITY zzdoc_glossary SYSTEM "zzdoc_glossary.xml">
+  <!ENTITY zzdoc_appendix SYSTEM "zzdoc_appendix.xml">
+  <!ENTITY zzdoc_semanticinterface SYSTEM "zzdoc_semanticinterface.xml">
+]>
+<book>
+  <bookinfo>
+    <!--
+     Note: This document and it's subparts were:
+       - Converted to xml (following the 'DocBook' dtd) from '.ps' original
+       - Reworked and reworded some
+       - Updated to added to, reflecting changes and updates to Zz 
+     by James Brooks, circa Jan/2002 while working under INFN support.
+    -->
+    <title>Zz: THE TAO ENGINE</title>
+
+    <legalnotice>Quadrics and TAO are trademarks of Alenia Spazio S.p.A.</legalnotice>
+    <legalnotice>APE 100 and Zz are trademarks of the I.N.F.N. (Italian National Institute of Nuclear Physics).</legalnotice>
+
+    <author><firstname>Simone</firstname><surname>Cabasino</surname></author>
+    <author><firstname>Gian Marco</firstname><surname>Todesco</surname></author>
+    <author><firstname>Pier Stanislao</firstname><surname>Paolucci</surname></author>
+
+    <copyright>
+	<year>2001</year>
+	<holder>S.Cabasino</holder>
+	<holder>G.M. Todesco</holder>
+	<holder>P.S. Paolucci</holder>
+    </copyright>
+
+    <printhistory>
+      <para>First printing: December 1993</para>
+      <para>Last printing: March 1995</para>
+    </printhistory>
+
+    <legalnotice>APE100 is the parallel computer architecture designed by the I.N.F.N.</legalnotice>
+    <legalnotice>Quadrics is the family of parallel computers of Alenia Spazio S.p.A.</legalnotice>
+    <legalnotice>This document describes the Zz compiler construction language used on the Quadrics/APE100 computers.</legalnotice>
+
+    <legalnotice>The TAO programming language and the Zz compiler were originally designed by S. Cabasino, P.S. Paolucci and G.M. Todesco of the I.N.F.N. in the framework of the I.N.F.N. APE100 parallel computing project.</legalnotice>
+
+  </bookinfo>
+
+
+  <!-- PREFACE -->
+
+  <preface>
+    <title>Preface</title>
+    &zzdoc_preface;
+  </preface>
+
+
+  <!-- CHAPTERS -->
+
+  <chapter>
+    <title>Introduction</title>
+    &zzdoc_intro;
+  </chapter>
+
+  <chapter>
+    <title>A guided tour</title>
+    &zzdoc_tour;
+  </chapter>
+
+  <chapter>
+    <title>Semantic Interface</title>
+    &zzdoc_semanticinterface;
+  </chapter>
+
+  <chapter>
+    <title>Dynamic Libraries</title>
+    &zzdoc_dynamiclibs;
+  </chapter>
+
+  <chapter>
+    <title>Reference Guide</title>
+    &zzdoc_refguide;
+  </chapter>
+
+
+  <!-- BACKMATTER - REFERENCE SECTIONS -->
+
+  <glossary>
+    <title>Glossary</title>
+    &zzdoc_glossary;
+  </glossary>
+
+  <appendix>
+    <title>Zz &amp; compilers</title>
+    &zzdoc_appendix;
+  </appendix>
+
+<!-- 
+  Index tag is required although it's empty here - contents
+  are filled automatically from the index entry tags.
+
+  ... right now it's commented out because there are no index
+  tags in the document to build this from.
+
+  An indexterm looks like:
+   The tiger<indexterm><primary>Big Cats</primary>
+   <secondary>Tigers</secondary></indexterm>
+   is a very large cat indeed.
+
+<index></index>
+-->
+
+</book>

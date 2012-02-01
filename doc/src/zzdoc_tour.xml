@@ -1,0 +1,1369 @@
+
+<sect1><title>Getting Started</title>
+
+<para>We call "The Zz language" (or simply "Zz") the language accepted by Zz when it starts.  This language allows the definitions of new grammar rules, i.e. the language itself may change and grow.  In this chapter we introduce Zz as it is when it is started without any language extension.</para>
+
+</sect1>
+
+
+<sect1><title>Hello World</title>
+
+<para>The first program to write is the emerging software standard "Hello World!".  Zz has to be installed and you need to know how to call it: for details on your installation, please ask your system manager.</para>
+
+<para>If you want Zz to process a file instead of starting an interactive session, you should type:</para>
+
+<prompt>&amp; </prompt> <userinput>zz filename</userinput>
+
+<para>If you omit the file name it starts an interactive sessions; an environment useful for doing exercises:</para>
+
+<screen>
+$ zz 
+....... ZZ initialization message ... 
+zz> /print "Hello, world" 
+Hello, world 
+zz> ctrl-z 
+$
+</screen>
+
+<para>To exit politely type ctrl-Z (ctrl-D for UNIX users).</para>
+
+<para>The statement <literal>/print</literal> (read "slash print") is used to print something on your screen.</para>
+
+<para>Of course the user of a dynamic language would try to write a dynamic example from the beginning.  Therefore let's define a new statement: "Hello" that is used to print "Hello, world".</para>
+
+<screen>
+$ zz 
+....... ZZ initialization message ... 
+zz> /stat -> "Hello" { 
+.. /print "Hello, world" 
+.. } 
+zz> Hello!! now Hello is a new recognized stat. 
+zz> 
+Hello, world 
+zz>
+</screen>
+
+<para>Arguments of the <literal>/print</literal> statements print may also be numbers or expressions:</para>
+
+<screen>
+zz> /print 12.7 * 2
+25.4
+zz> /print "The result is ", 20+4.0/3.0
+The result is 21.333334
+</screen>
+
+<para>There are also variables, and statements to assign expression to them:</para>
+
+<screen>
+zz> /r=12 
+zz> /pi=3.141593 
+zz> /header= "circle = " 
+zz> /print header,2*r*pi 
+circle = 75.398232 
+zz> 
+zz> /x = 12 
+zz> /y = goofie 
+zz> /print y 
+goofie 
+zz> /y = x 
+zz> /print y 
+12 
+zz> /y = "x" 
+zz> /print y 
+x
+</screen>
+
+</sect1>
+
+
+<sect1><title>About the Zz language</title>
+
+<para>Zz is a very sparse language: few operations are intrinsically supported.  The key of Zz is the syntax extension statement.  In the current release the following are available as predefined statements: assignment, print, evaluation of simple expressions, and a limited number of other basic instructions.  In principle there is no need of Zz instructions, except for only the syntax extension capability.  The intrinsic Zz statements are however useful for purposes of exercise and in the early stages of application development.</para>
+
+<para>The Zz intrinsic statements are prefixed with a simple slash / introduced to clearly distinguish the Zz starting language statements from the user application language.</para>
+
+<para>It is possible to fit more than one statement on one line, terminating each statement with a semicolon(;).  If there is one single statement the semicolon is optional.</para>
+
+<para>Example:</para>
+
+<screen>
+zz> /print "Hello, world"; /print "I am happy!''
+Hello, world
+I am happy!
+</screen>
+
+<para>If the line is too long to fit in one line it is possible to split it (continuing on the next line) by means of the continuation line marker ... placed at the end of line to be truncated:</para>
+
+<para>Example: </para>
+
+<screen>
+zz> /a= ...
+"not a very long line"
+zz>
+zz> /print a
+not a very long line
+</screen>
+
+<para>The statement:</para>
+
+<userinput>/include "file_name"</userinput>
+
+<para>makes it possible to include a stream of statements written within another file (file_name must be the name of a text file containing Zz statements).</para>
+
+</sect1>
+
+
+<sect1><title>The Lexical Analyzer</title>
+
+<para>Zz uses a lexical analyzer to get tokens from the source stream.  The lexical analyzer is able to categorize the following lexical elements:</para>
+
+<itemizedlist>
+<listitem><emphasis>identifier</emphasis>: A string of alphanumeric characters, underscores and dollar signs.  Note that an identifier cannot start with a number.</listitem>
+<listitem><emphasis>character</emphasis>: All characters not legal within identifiers (for example ^).</listitem>
+<listitem><emphasis>qstring</emphasis>: (Quoted string) A string enclosed by double quotes (i.e. "string "). The enclosed string can be composed by one or more printable characters and/or special characters (for example the newline code: "\n").</listitem>
+<listitem><emphasis>integer</emphasis>: Unsigned decimal integer number.</listitem>
+<listitem><emphasis>float</emphasis>: Unsigned floating point number.  It is possible to distinguish a floating point number because of the decimal point or exponential notation.</listitem>
+</itemizedlist>
+
+<para>The user can introduce new lexical categories.</para>
+
+<para>The statement <literal>/print</literal> can print tokens of all these categories.</para>
+
+<para>Examples:</para>
+
+<screen>
+zz> /print " first row \n second row" 
+first row 
+second row 
+zz> /print robert,34,3.5 
+robert 34 3.5 
+zz> /print "&amp;" 
+&amp; 
+zz> /print "****" 
+****
+</screen>
+
+<para>Note that the control sequence "\n" causes a carriage return.</para>
+
+<para>The double quotes "" are used mainly in the following cases:</para>
+
+<itemizedlist>
+ <listitem>Strings which also contain non-alphanumeric characters.</listitem>
+ <listitem>Strings where the first character is a number.</listitem>
+ <listitem>Strings containing a name that is also the name of a variable.</listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>Variables and Expressions</title>
+
+<para>Zz supports variables and simple expressions; the intrinsic types are mainly numeric, string and list.</para>
+
+<sect2><title>Declaring Zz Variables</title>
+
+<para>The Zz variables are dynamic; they are created when assigning values to them.  A Zz variable has a value and a tag.  The tag of the Zz variables is the type of the expression assigned to it.  There is a correspondence between lexical tokens and tags.</para>
+
+<para>The assignment statement has the following formats:</para>
+
+<userinput>/variable := expression [ as type ]</userinput>
+
+<para>or</para>
+
+<userinput>/variable = expression [ as type ]</userinput>
+
+<para>The optional type is some kind of tag used by a Zz expert to change the tag of expression. It can be any syntagma, as we'll explain in the following.</para>
+
+<para>The assignment form ":=" creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the "=" one creates LOCAL VARIABLES, which remain alive until the EOF (if declared at level 0) or local block's closing brace "}" (if declared within a block) is reached.  How to use these variables will be explained later.</para>
+
+</sect2>
+
+
+<sect2><title>Lists</title>
+
+<para>Zz language offers some facilities to manage the lists.  A sequence of tokens within braces {} is interpreted as a list.  It is possible to explicitly assign a list to a variable using the following format:</para>
+
+<userinput>/var = { tokens.... }</userinput>
+
+<para>Wherein any token is allowed with the exception of "}" and an unmatched double quote ".  List tokens are delimited by spaces.</para>
+
+<para>As example of assignment to a variable:</para>
+
+<screen>
+zz> /my_list = { alfa b c , "anymore" 23.4 }"}
+</screen>
+
+<para>It is possible to refer to any item of a list using the notation <literal>variable.item_number</literal>, where <literal>item_number</literal> is the 1 based index number of the item we want to refer to.  It is also possible to print the length of the list (i.e. the number of the elements in the list) using the notation <literal>variable.length</literal>.</para>
+
+<para>As an example, using the list defined above:</para>
+
+<screen>
+zz> /print my_list.1 , my_list.4
+alfa ,
+zz> /print my_list.length
+6
+zz>
+</screen>
+
+</sect2>
+
+
+<sect2><title>Expressions</title>
+
+<para>The four usual arithmetic operations (*, /, +, -) are supported for integer and floating point data types, following the usual rules of precedence.  The type of the result is chosen depending on the type of the operands with the usual rules of floating type conversion for mixed floating/integer calculations.</para>
+
+<para>A concatenation operator "&amp;" is defined.  The "&amp;" symbol can be used to join identifiers, strings, or lists, and it can also operate if one of the operands is a numeric variable.  In this case it takes the corresponding literal value of the number.</para>
+
+<para>Examples:</para>
+
+<screen>
+zz> /id = "blabla" 
+zz> /golf = id &amp; 12*(4+5) 
+zz> /print golf 
+blabla108 
+zz> 
+zz> /v1=15 
+zz> /v2=16 
+zz> /id = ciccio &amp;_&amp; v1 &amp;_&amp; v2 
+zz> /print id 
+ciccio_15_16 
+zz> /my_list = { 123 "mouse" 2.4 } 
+zz> /print my_list 
+{ 123 mouse 2.4 } 
+zz> /print my_list.2 
+mouse 
+zz> /new_list = my_list &amp; { 123 } 
+zz> /print new_list 
+{ 123 mouse 2.4 123}
+</screen>
+
+</sect2>
+
+
+<sect2><title>Errors</title>
+
+<para>When ZZ doesn't recognize a statement it prints a diagnostic message.</para>
+
+<para>Example:</para>
+
+<screen>
+zz> /alfa=12*(13 # 40)
++ **** SYNTAX ERROR ****
+| got: '#'
+| expected one of:  '*' '/' ')' '+' '-'
+| /alfa=12*(13 # 40)
+|              ^
+| line 1 of stdin
+zz>
+</screen>
+
+<para>The unexpected token is underlined by a "^" sign.  Zz also prints the pertinent rules, underlining the place where the mismatch occurred.</para>
+
+<para>In the previous example the following character are acceptable: *, /, ), +, -, while # is meaningless.</para>
+
+</sect2>
+
+
+<sect2><title>Syntax Extensions</title>
+
+<para>The key power of ZZ is the capability of expanding the recognized language.  To add syntax extension to ZzL0 it is necessary to specify something on which to match, and an action to execute when this match occurs.</para>
+
+<para>Now we introduce a new statement (shortly: stat) to display the Zz version.  This new statement will be: "show version":</para>
+
+<screen>
+zz> /stat -> show version { 
+.. /print "Zz Version 2.0 31, October 1991\n" 
+.. } 
+zz> 
+zz> show version 
+Zz Version 2.0 31, October 1991
+</screen>
+
+<para>The usual prompt "zz>" changes to a couple of dots to show that the action specification has to be completed.  It is possible to overload a part of the above statement to display something else:</para>
+
+<screen>
+zz> /stat -> show authors { 
+.. /print "Zz's authors are:" 
+.. /print " Simone Cabasino" 
+.. /print " Pier Stanislao Paolucci" 
+.. /print " Gian Marco Todesco" 
+.. } 
+zz> show authors 
+Zz's authors are: 
+Simone Cabasino 
+Pier Stanislao Paolucci 
+Gian Marco Todesco 
+zz> show version 
+Zz Version 2.0 31, October 1991
+</screen>
+
+<para>In the examples just shown we added new syntaxes to the grammar of the statements (<literal>stat</literal>), writing:</para>
+
+<screen>
+zz> /stat -> thread { actions }
+</screen>
+
+<para>We call these kinds of statements "syntax extensions".  More generally the form of the syntax extension statement is:</para>
+
+<userinput>
+/ syntagma -> thread [ {action } ]
+</userinput>
+
+<para>"<literal>stat</literal>" is a good syntagma.  Actually <literal>stat</literal> is the only syntagma that we have seen up to now: we will describe general syntagmas later.</para>
+
+<para>We call "<literal>thread</literal>" the pattern (or rule) we are adding to the syntax (more exactly to the syntagma) and that Zz will be able to recognize when met.  We call "<literal>action</literal>" the list of Zz statements, within braces <literal>{}</literal>, to be executed when the thread will be matched.  The action is an optional field.</para>
+
+<para>A <literal>thread</literal> is a list of <literal>beads</literal>.  There are <literal>terminal beads</literal> like show, author, authors or Hello and <literal>nonterminal beads</literal>.  <literal>Nonterminal beads</literal> will be introduced later.</para>
+
+<para>Let's try with an error:</para>
+
+<screen>
+zz> show author 
+***** SYNTAX ERROR 
+etc.... 
+</screen>
+
+<para>We can foresee this error and give a friendlier message:</para>
+
+<screen>
+zz> /stat -> show author { 
+.. /print "There are several authors of Zz."
+.. /print "The correct statement is 'show authors'" 
+.. /print "anyway:" 
+.. show authors 
+.. } 
+zz> 
+zz> show author 
+There are several authors of Zz.
+The correct statement is 'show authors'
+anyway: 
+Zz's authors are:
+Simone Cabasino 
+Pier Stanislao Paolucci 
+Gian Marco Todesco
+</screen>
+
+<para>Please note that you can use the stat "show authors" within the action of "show author".</para>
+
+<para>The statement /rules shows all the syntax rules added to Zz:</para>
+
+<screen>
+zz> /rules 
+RULES
+ Scope kernel 
+  stat -> show author
+  stat -> show authors
+  stat -> show version
+  stat -> say Hello
+</screen>
+
+<para>Here follows a set of examples to summarize:</para>
+
+<screen>
+zz> /stat -> "?" { 
+.. /print "Commands today are:" 
+.. /print " say Hello" 
+.. /print " show version" 
+.. /print " show authors" 
+.. } 
+zz> 
+zz> /stat -> 12 { 
+.. /print "you typed the integer number 12" 
+.. } 
+zz> 
+zz> /stat -> 12.0 {
+.. /print "you typed the fp number 12.0" 
+.. } 
+zz> 
+zz> 12 
+you typed the integer number 12 
+zz> 
+zz> 000012 
+you typed the integer number 12 
+zz> 
+zz> 12.000000 
+you typed the fp number 12.0 
+zz> 
+zz> 12. 
+you typed the fp number 12.0 
+zz> 
+zz> 1.2e1 
+you typed the fp number 12.0
+</screen>
+
+</sect2>
+
+
+<sect2><title>Nonterminal Beads</title>
+
+<para>Let's again introduce a syntax extension with an example (that we strongly suggest to try) of a nonterminal bead in the thread: </para>
+
+<screen>
+zz> /stat -> "I am " ident^name { 
+.. /print "Hello ",name, "!" 
+.. } 
+zz> 
+zz> I am freddy 
+Hello freddy!
+</screen>
+
+<para>Of course an integer number is not a legal identifier and Zz will warn us about it:</para>
+
+<screen>
+zz> I am 13 
+***** SYNTAX ERROR etc....
+</screen>
+
+<para>In the example above the nonterminal bead is <literal>ident^name</literal>.  Here, "name" is like a variable and identifies the bead inside the thread.  "ident" is predefined, it will match any legal identifier.</para>
+ 
+<para>The general form of a nonterminal bead is:</para>
+
+<userinput>syntagma ^ parameter</userinput>
+
+<para>A nonterminal bead is made up of the <literal>syntagma</literal>, the character ^ (caret), and an identifier that plays the role of a formal parameter and can be used like a variable within the action.  A nonterminal bead matches a set of syntactical objects (eg: identifiers and integers but also expressions or programs as we'll show in the following).  We use "syntagma" for the name of those sets.</para>
+
+<para><literal>ident</literal>, <literal>stat</literal> and <literal>int</literal> are good examples of predefined syntagmas built in the kernel of Zz, and hence always available.  We'll see in the following that when the action is executed (because the thread has matched something) all the formal parameters will have the actual value just matched.</para>
+
+<para>We can create new syntagmas simply by using it in a nonterminal bead or assigning to it a thread with the syntax extension statement.  This means that it is possible to assign one or more threads to a syntagma by using it in a following statement or refer (within a nonterminal bead) to a syntagma, which has not yet any thread assigned to it.  It is possible to say informally that a syntagma is a collection of threads and a syntax extension is the way to assign a new thread  (with the corresponding action) to a syntagma.  When the parser has to match a nonterminal bead it tries to match all the threads of the syntagma referenced in the nonterminal bead.</para>
+
+<para>A new syntagma: <literal>color</literal> is defined in the following example:</para>
+
+<screen>
+zz> /stat -> use the ink color^c { 
+.. /print " I'm using the color n.",c
+.. }
+zz> 
+zz> /color -> red { /return 1 } 
+zz> /color -> violet { /return 2 } 
+zz> /color -> pink { /return 3 } 
+zz> 
+zz> 
+zz> use the ink red 
+I'm using the color n.1
+</screen>
+
+<para>We have seen above the practical usage of the statement <literal>/return</literal>.  The statement <literal>/return</literal> makes sense only within actions because it is used to give a value to the formal parameter of a nonterminal bead.  It is possible to return something changing its type in a way like the assignment does.  The general form of the return statements is:</para>
+
+<userinput>/return expression [ as type ]</userinput>
+
+<para>Using a syntagma with no thread associated to it generates a syntax error.  Try this kind of error with the undefined color yellow:</para>
+
+<screen>
+zz> use the ink yellow 
+***** SYNTAX ERROR 
+etc.... 
+</screen>
+
+<para>The following example, that we again suggest to try, shows an interesting concept:</para>
+
+<screen>
+zz> /color -> gray int^a "%" {/return 100+a} 
+zz> use the ink gray 20% 
+I'm using the color n. 120 
+</screen>
+
+<para>As you can see the new color just defined is more complex then a simple token.  When in action we are not interested in the actual parameter's values, like in the following example:</para>
+
+<screen>
+zz> /stat -> "I'm" ident^name {/print "Hello!"} 
+</screen>
+
+<para>We can use as a convention the name "$" for the formal parameter:</para>
+
+<screen>
+zz> /stat -> "I'm" ident^$ {/print "Hello!"} 
+</screen>
+
+<para>When we use the <emphasis>$</emphasis> sign in formal parameters we remark that the parameter is dummy, but it is a mere convention.  In fact the <emphasis>$</emphasis> is treated by Zz as any other identifier.</para>
+
+<para>In a rule like this:</para>
+
+<screen>
+zz> /stat -> "I'm" ident^$ "from" ident^$ { 
+/print "Hello!" 
+} 
+</screen>
+
+<para>The value of $ is replaced twice during the parsing, i.e.</para>
+
+<screen>
+zz> I'm Laura from Rome 
+Hello! 
+</screen>
+
+<para>When the thread is parsed the identifier "Laura" and then "Rome" are associated to the parameter <emphasis>$</emphasis>.  When the action is executed the <emphasis>$</emphasis> parameter contains the last value "Rome", in fact:</para>
+
+<screen>
+zz> /stat -> "I'm" ident^$ "from" ident^$ { 
+/print "Hello!' 
+/print $ 
+} 
+zz> I'm Laura from Rome 
+Hello! 
+Rome 
+</screen>
+
+<para>And the same behavior occurs if <emphasis>$</emphasis> is substituted by another identifier.</para>
+
+<table><title>Some useful syntagmas available within Zz are:</title>
+<tgroup cols='2' align='left' colsep='1' rowsep='1'>
+<colspec colname='c1'/>
+<colspec colname='c2'/>
+<thead>
+ <row>
+  <entry>BEAD</entry>
+  <entry>Description</entry>
+ </row>
+</thead>
+<tbody>
+<row>
+<entry>ident^xxx</entry><entry>Matches a string of alphanumeric characters, dollars, and underscore that do not begin with a digit (the lexical token identifier).</entry>
+</row>
+
+<row>
+<entry>int^xxx</entry><entry>Matches a string of integer digits (the lexical integer).</entry>
+</row>
+
+<row>
+<entry>float^xxx</entry><entry>Matches a string of digits with a decimal point and/or exponential notation (the lexical float).</entry>
+</row>
+
+<row>
+<entry>qstring^xxx</entry><entry>Matches a string delimited by quotes.  Special characters are allowed if escaped with a slash (the lexical qstring).</entry>
+</row>
+
+<row>
+<entry>stat^xxx</entry><entry>Matches a Zz statement</entry>
+</row>
+
+<row>
+<entry>statlist^xxx</entry><entry>Matches a list of <literal>stat^</literal> separated with ";" or newline</entry>
+</row>
+
+<row>
+<entry>num_e^xxx</entry><entry>Matches a Zz integer expression and returns the <literal>int</literal> result</entry>
+</row>
+
+<row>
+<entry>string_e^xxx</entry><entry>Matches a Zz string expression and returns the qstring result</entry>
+</row>
+
+<row>
+<entry>list_e^xxx</entry><entry>Matches a Zz integer expression and returns the list result</entry>
+</row>
+
+<row>
+<entry>any^xxx</entry><entry>Matches any token</entry>
+</row>
+
+</tbody>
+</tgroup>
+</table>
+
+</sect2>
+
+</sect1>
+
+
+<sect1><title>Basic Statements</title>
+
+<sect2><title>Control Statements</title>
+
+<para>Sometimes it could be useful to control the parsing flow. It will be possible to iterate the parsing (something like a loop) and to conditionally parse some sentence (something like a conditional branch).</para>
+
+<para>In the current version of Zz, the following are implemented: <literal>/for, /foreach, /do, /while, /if</literal>.</para>
+
+<orderedlist>
+<listitem><emphasis>/for</emphasis>
+<screen>
+/for index_var = start_val to stop_val ... 
+  [step step_val] {action} 
+</screen>
+
+<para>The action is executed (stop_val  start_val + step_val)/step_val times.</para>
+
+<para>Examples:</para>
+
+<screen>
+zz> /for i = 1 to 6 { 
+/print i 
+} 
+1 
+2 
+3 
+4 
+5 
+6 
+zz> /for i = 1 to 6 step 2{ 
+/print i 
+} 
+1 
+3 
+5
+</screen>
+</listitem>
+
+<listitem><emphasis>/foreach</emphasis>
+<screen>/foreach variable in list { action }</screen>
+
+<para>The action is executed once for each item in list. The variable takes the value of each item.</para>
+
+<para>Example:</para>
+
+<screen>
+zz> /my_list = { a bb ccc } 
+zz> /foreach k in my_list { /print k } 
+a 
+bb 
+ccc 
+</screen>
+</listitem>
+
+<listitem><emphasis>/do</emphasis>
+<screen>
+/do { action } while ( logical_condition )
+</screen>
+
+<para>Perform the action while the logical_condition is true.  The loop is always executed at least once.</para>
+
+<screen>
+zz> /control = 1
+zz> /do { /print control; /control = control + 1; } while (control &lt;=3)
+1
+2
+3
+zz>
+</screen>
+</listitem>
+
+<listitem><emphasis>/while</emphasis>
+<screen>
+/while ( logical_condition ) { action }
+</screen>
+
+<para>The action is executed as long as the logical_condition is true.  Unlike the "do" loop, this structure may never have it's action executed.</para>
+
+<screen>
+zz> /control = 1
+zz> /while (control &lt;= 3) { /print control; /control = control + 1; }
+1
+2
+3
+zz>
+</screen>
+</listitem>
+
+<listitem><emphasis>/if</emphasis>
+<screen>
+/if logical_condition { action }
+</screen>
+
+<para>The action is executed if the condition is true.</para>
+
+<para>Example:</para>
+
+<screen>
+zz> /a = 2 
+zz> /b = 0 
+zz> /if a > b { 
+/c = a  b 
+/print c 
+} 
+2
+</screen>
+</listitem>
+
+</orderedlist>
+
+</sect2>
+
+
+<sect2><title>Monitor Utilities</title>
+<para>There are some utilities to handle syntax extensions. The statements:</para>
+
+<screen>
+/krules [syntagma ] 
+/rules [syntagma ] 
+</screen>
+
+<para>These are used to print both kernel and user threads (/krules) or only user rules (/rules). The optional syntagma is used to print only the rules attached to a specific syntagma.</para>
+
+<para>There is a statement to show all the variables active at a certain level:</para>
+
+<screen>
+/param 
+</screen>
+
+<para>This statement can be used within an action to know the parameter's values.</para>
+
+</sect2>
+
+<sect2><title>Overloading and Type Control </title>
+
+<para>We introduce with this example the concept of overloading:</para>
+
+<screen>
+zz> /stat -> show int^x { 
+.. /print "Integer ",x 
+.. } 
+zz> 
+zz> /stat -> show float^x { 
+.. /print "Floating Point ",x 
+.. } 
+zz> 
+zz> show 12 
+Integer 12 
+zz> 
+zz> show 12.0 
+Floating Point 12.0000 
+</screen>
+
+<para>In the example above the word show manifests two different behaviors depending only on the type of the number (12 or 12.0).  In other words the statement show is overloaded.  The parser is able to resolve the overloading ambiguity choosing the right thread according to the type of the nonterminal beads: int^x or float^x.  There are other languages allowing some kind of overloading: ADA and C++ for instance allow the operator overloading, but not the definition of new operators.</para>
+
+<para>In the following example we show how ZzL0 variables dynamically change their type:</para>
+
+<screen>
+zz> /my_value = 12 !! my_value is integer 
+zz> show my_value 
+Integer 12 
+zz> /my_value = 12.0 !! my_value now is float 
+zz> show my_value 
+Floating Point 12.000000
+</screen>
+
+</sect2>
+
+
+<sect2><title>Indentation Style</title>
+
+<para>We prefer the typographic style described below.</para>
+
+<para>When the action is very short or omitted all the SE has to be written on only one line:</para>
+
+<screen>
+zz> /stat -> one_hello { /print "Hello, World!" } 
+zz> /stat -> this is an unuseful statement and... 
+does nothing 
+</screen>
+
+<para>Elsewhere we prefer to begin at new line the action:</para>
+
+<screen>
+zz> /stat -> four_hello { 
+.. one_hello 
+.. one_hello 
+.. one_hello 
+.. one_hello 
+.. } 
+zz> 
+</screen>
+
+<para>It is forbidden to insert a new line before the open brace.</para>
+
+<para>Examples</para>
+
+<screen>
+zz> /color -> green { /return 10 } 
+zz> /color -> blue { /return 20 } 
+zz> /stat -> the ink is color^c {/print "ink = ",c} 
+zz> 
+zz> /feeling -> glad { /return 1000 } 
+zz> /feeling -> blue { /return 1001 } 
+zz> 
+zz> /stat -> I feel feeling^f {/print "You feel ",f} 
+zz> 
+zz> I feel blue 
+You feel 1001 
+zz> 
+zz> the ink is blue 
+ink = 20 
+zz> 
+zz> /arg3 -> int^a "," int^b "," int^c { 
+.. /print "push ",a 
+.. /print "push ",b 
+.. /print "push ",c 
+.. } 
+zz> /stat -> goofie arg3^$ { 
+.. /print "call goofie" 
+.. } 
+zz> pippo 1,2,3 
+push 1 
+push 2 
+push 3 
+call pippo
+</screen>
+
+</sect2>
+
+
+<sect2><title>Precedences</title>
+
+<para>The infix operators' notation is user friendly but potentially ambiguous.  Thus there are two options to compute the expression 2 + 3 + 4:</para>
+
+<orderedlist>
+ <listitem>(2+3) + 4</listitem>
+ <listitem>2 + (3+4)</listitem>
+</orderedlist>
+
+<para>This ambiguity is of course often negligible, but can be dangerous if the operator isn't associative: (2/3)/4 != 2/(3/4).</para>
+
+<para>Let's imagine a translator which converts infix (ambiguous) operators into RPN notation (that is unambiguous).  We define explicitly an unambiguous grammar (left associative):</para>
+ 
+<screen>
+zz> /stat -> expr^e 
+zz> /expr -> fact^$ 
+zz> /expr -> expr^$ "/" fact^$ {/print "divide"} 
+zz> /fact -> int^n {/print "push ",n}
+</screen>
+
+<para>This is to test the example: </para>
+
+<screen>
+zz> 20/10/5 
+push 20 
+push 10 
+divide 
+push 5 
+divide 
+</screen>
+
+<para>Of course it is possible to change one line to change the associativity:</para>
+
+<screen>
+zz> /stat -> expr^e 
+zz> /expr -> fact^$ 
+zz> /expr -> fact^$ "/" expr^$ {/print "divide""} 
+zz> /fact -> int^n {/print "push ",n} 
+</screen>
+
+<para>and now:</para>
+
+<screen>
+zz> 20/10/5 
+push 20 
+push 10 
+push 5 
+divide 
+divide
+</screen>
+
+</sect2>
+
+
+<sect2><title>About Actions </title>
+
+<para>When the action is defined all the parameters (associated to the nonterminal beads) and variables within the braces {} are evaluated and the name is replaced with the corresponding value. Local variables (assigned with =) are replaced immediately (when the action is declared) while the other kind (assigned with :=) is replaced only when the action is executed (see also Using Zz variables).</para>
+
+<para>We have seen up to this point only Zz action within braces {}, but there are two other kinds of actions, thus the syntax extension statement has three different formats:</para>
+
+<orderedlist>
+ <listitem>/syntagma -> thread [ { action } ]</listitem>
+ <listitem>/syntagma -> thread : C_procedure [(parameters)]</listitem>
+ <listitem>/syntagma -> thread : return constant_expr.</listitem>
+</orderedlist>
+
+<para>The first format is well known. The second one is used to call a user C procedure (UCP) linked with the Zz kernel, optionally passing to it its parameters (see Part III).  The third one is used to return a constant value; this format is very similar to:</para>
+
+<userinput>/syntagma -> thread { /return expression }</userinput>
+
+<para>The third format is fastest because Zz doesn't have to interpret the action; however no variable replacement will occur.</para>
+
+<para>The kernel makes available a simple C-Procedure: <emphasis>pass</emphasis> that is used to return all the parameters of nonterminal beads in the thread.  Thus the following examples (a) and (b) are equivalent but the second one is faster:</para>
+
+<itemizedlist>
+ <listitem>/sss -> ... xxx^yyy ... { /return yyy }</listitem>
+ <listitem>/sss -> ... xxx^yyy ... :pass</listitem>
+</itemizedlist>
+
+<para>The following form:</para>
+
+<screen>
+zz> /sss -> ... xxx^yyy ... :return yyy
+</screen>
+
+<para>is wrong because yyy is not a constant expression, in this case Zz will every time return "yyy" and not its actual value.</para>
+
+<sect3><title>Change the Syntax into an Action</title>
+
+<para>The statement to extend the syntax is usable as any other statement within the braces { } of a Zz action.  This is the way to handle symbol tables using Zz.  Let's suppose that we want Zz to handle our phone directory.  We would need a symbol table for this.  We'll create one called "names":</para>
+
+<screen>
+zz> /stat -> show names^x {/print " phone: ", x } 
+zz> /stat -> show any^${/print "phone not available" } 
+zz> 
+zz> /names -> paola { /return "0034345678" } 
+zz> /names -> tony  { /return "002143545" } 
+zz> /names -> albert{ /return "home:123456 office:3445" } 
+zz> 
+zz> show albert 
+phone: home:123456 office:3445 
+zz> show carin 
+phone not available 
+</screen>
+
+<para>Now we can introduce a statement to insert friendly a new name:</para>
+
+<screen>
+zz> /stat -> add ident^n qstring^p... 
+{/names> n { /return p } } 
+zz> add luisa "off. 35682"
+zz> show luisa 
+phone: off. 35682 
+</screen>
+
+<para>It is also possible to change the action associated with a thread simply by assigning a new action to that it:</para>
+
+<screen>
+zz> add luisa "off. 3935682"
+zz> show luisa 
+phone: off: 3935682 
+</screen>
+
+</sect3>
+
+
+<sect3><title>Returning Lists</title>
+
+<para>It is possible to return a list:</para>
+
+<screen>
+zz> /int_decl -> ident^name "[" int^size "]" { 
+.. /return { name size } !! unidim. array 
+.. } 
+zz> 
+zz> /int_decl -> ident^name { 
+.. /return { name 1 } !! scalar var 
+.. } 
+</screen>
+
+<para>Any thread that uses int_decl^xxx will be able in the action to refer to the field of xxx writing xxx.0 and xxx.1.</para>
+
+</sect3>
+
+
+<sect3><title>Special actions</title>
+
+<para>When a syntactical rule is matched the parser does one of the following:</para>
+
+<itemizedlist>
+ <listitem>Parses the bound tokens as "action" to the rule (this is the more common situation and the only seen up to now)</listitem>
+ <listitem>Directly calls a routine "hardwired" with the rule (this the situation of the "kernel rules": in some sense the end of the recursion)</listitem>
+ <listitem>Directly executes a simple action.</listitem>
+</itemizedlist>
+
+</sect3>
+
+</sect2>
+
+
+<sect2><title>Using Zz variables</title>
+
+<para>We have already seen that the format := creates GLOBAL VARIABLES which remain alive until the EOF is reached, while the = one creates LOCAL VARIABLES which remain alive until the EOF (if declared at level 0) or the matching brace "}" (if declared within a block) are reached.</para>
+
+<para>Variables declared within a block become alive when the block is parsed (executed).  These variables can be used in the definition of other blocks inside the one which is currently parsed: these blocks, that are not executed now, will be called "inner blocks".</para>
+
+<para>There is a major difference between the use of a variable within the block in which it is declared and its use in an inner block.</para>
+
+<orderedlist>
+
+<listitem>
+
+<para>In the block in which variables are declared</para>
+
+<para>Global and local variables can be used as usual in common languages in expressions or assignments within the block in which they are declared, as shown in the following example:</para>
+
+<screen>
+zz> /a = 3 
+zz> /b := 5 
+zz> /a = a + b 
+zz> /b := b + 2 
+zz> /print a,b,(a*b + a) 
+8 7 64 
+zz> /stat -> test { 
+.. /c = 10 
+.. /d := 25 
+.. /d := d + c 
+.. /c = c + 1 
+.. /print c , d 
+.. } 
+zz> test 
+11 35 
+</screen>
+
+<para>But their behavior is different, depending on the way they were declared, if used in inner blocks.</para>
+</listitem>
+
+<listitem>
+<para>In inner blocks</para>
+</listitem>
+
+<listitem>
+<para>About LOCAL variables</para>
+
+<para>LOCAL variables stop existing when the block in which they are declared does.  For this reason, when defining a new block inside the current block, those variables, if present, are immediately substituted by their values, that is they are fixed once for all.  Then suppose that, within a block, we are going to define an object that will remain alive after the end of the block (for example global variables or rules) and that to define this object we need local variables already defined in the block.  In this case we must be interested in the value of those variables because their value will remain alive within the object that we are defining, while the variable itself will be lost at the end of the execution of the current block.</para>
+
+<para>For this reason in the inner object that we are defining the names of these variables are immediately substituted by their values so that they are no more variables but fixed strings or constant numbers (depending on their tag):</para>
+
+<screen>
+zz> /cc = 7 
+zz> /stat -> test_1 { 
+.. /dd = cc + 3 !!here cc is immediately replaced by 7: that is 
+!!/dd = 7 + 3 
+.. /print dd 
+.. /stat -> dd { !!here dd is immediately replaced by 10 
+.. /ee := dd+1 
+.. /print ee 
+..} 
+..} 
+zz> test_1 
+10 !!comes from /print dd 
+zz> /rules 
+RULES 
+Scope Kernel 
+/stat -> 10 !!the inner object we 
+!!created during the execution of the test_1 
+/stat -> test_1 
+zz> 10 
+11 !!comes from /print ee 
+zz> /cc = 9 
+zz> test_1 
+10 
+!!here cc is not replaced by 9; 
+!!in fact it was replaced by 7 during the 
+!!definition of test_1 
+</screen>
+
+</listitem>
+
+<listitem>
+<para>Identifier and other expressions</para>
+
+<para>Remembering that local variables, when entering a new block, are immediately substituted by their values, let us see an important difference about the use in an inner block of local variables (declared in an outer one) whose value is an identifier (strings of alphanumeric characters, underscores and dollars not beginning with a number) and those whose value is any other expression.</para>
+
+<itemizedlist>
+<listitem>
+<para>case variable = identifier:</para>
+
+<para>Identifiers are legal names for variables, so in an inner block we can use the local variables that have an identifier as value in the left part of an assignment, creating a new variable whose name is the value of the old one:</para>
+
+<screen>
+zz> /colour = red 
+zz> /stat -> test_2 { 
+.. /print colour 
+.. /colour=green !!this is red = green 
+.. /d=blue !!local d 
+.. /print colour,d !!this is /print red,d 
+.. /param 
+.. } 
+zz> test_2 
+red 
+green blue 
+0L colour == red 
+1L d == blue 
+1L red == green 
+zz> /print colour !! the old value 
+red 
+zz> /print d 
+d 
+!!here d, defined in test_2, is no more alive! 
+zz> /var = mickey 
+zz> /stat -> link { 
+.. /var = var&amp;_mouse 
+.. /print var 
+.. /param 
+.. } 
+zz> link 
+mickey_mouse 
+0L var == mickey 
+0L colour == red 
+1L mickey == mickey_mouse 
+</screen>
+
+</listitem>
+
+<listitem>
+<para>case variable = any other expression:</para>
+
+<para>Other expressions (different from identifiers) are not legal names for variables, so it does not make sense to use the name of local variables that have such values in the left part of an assignment. An attempt to use them in this manner would cause a syntax error, as we'll see in the following example:</para>
+
+<screen>
+zz> /ff = 13 
+zz> /stat -> test_3 { 
+.. /ff = ff + 1 !! this is /13 = 13 + 1 that 
+does 
+!! not make sense! 
+.. /print ff 
+.. } 
+zz> test_3 
+**** SYNTAX ERROR **** 
+</screen>
+
+</listitem>
+
+</itemizedlist>
+
+</listitem>
+
+<listitem>
+<para>About GLOBAL variables</para>
+
+<para>In inner blocks we can refer to GLOBAL variables, already declared in an outer block, by their names.  In fact, as global variables remain alive until the EOF, when entering a new block, their names are NOT substituted once for all by their values: if the variable is part of an expression, its value is replaced only when that expression is evaluated if the variable is within an action, its value is replaced only when the action is executed.  Then, had they an identifier or any other expression as value, they can be used to the left of an assignment of the type /var := expression.</para>
+
+<para>Vice versa a global variable, if declared in a block, can be referenced later in an outer block, as it is global:</para>
+ 
+<screen>
+zz> /aa := 4 
+zz> /stat -> test_4 { 
+.. /cc := aa + 1 
+.. /aa := aa*5 
+.. /print aa 
+.. /stat -> test_5 { 
+.. /aa := aa + 5 
+.. /print aa 
+.. } 
+.. } 
+zz> test_4 !! here aa is replaced by 4 
+20 
+zz> /param 
+0G cc == 5 !! cc is defined as global in 
+!! test_1 
+0G aa == 20 
+zz> test_5 
+25 
+zz> /aa := 7 
+zz> test_4 !! here aa is replaced by 7 
+35 
+zz> test_5 
+40 
+</screen>
+
+</listitem>
+
+<listitem>
+<para>Scope changing</para>
+
+<para>It is possible to change at anytime the assignment mode of a variable from local (=) to global (:=) and vice versa in the same block in which the variable is declared.</para>
+
+<para>On the other hand it is not possible to change a variable scope from an inner block.</para>
+
+<para>The three different situations are analyzed in the following.</para>
+
+</listitem>
+
+<listitem>
+<para>in inner blocks</para>
+</listitem>
+
+<listitem>
+<para>About local to global</para>
+
+<itemizedlist>
+<listitem>
+<para>case variable = identifier:</para>
+
+<para>If the variable has an identifier as value, trying to change from a local assignment in a block to a global assignment in an inner block will create a new global variable whose name is the value of the local one:</para>
+
+<screen>
+zz> /gg=cat 
+zz> /stat -> change { 
+.. /gg:=mouse 
+.. /print gg 
+.. } 
+zz> change 
+mouse 
+zz> /param 
+0G cat == mouse 
+0L gg == cat 
+(thus this is not a scope change!) 
+</screen>
+
+</listitem>
+
+<listitem>
+<para>case variable = any other expression:</para>
+
+<para>If the variable has any other expression (different from identifier) as value, the new assignment will cause an error: as said before, when entering the inner block, variable's name is replaced by its value that in this case would not be a legal name (because it is not an identifier).</para>
+
+<screen>
+zz> /aa=5 
+zz> /stat -> change_bis { 
+.. / aa:=5 !!this is /5 := 5 that does not 
+make 
+!! sense ! 
+.. /print aa 
+.. } 
+zz> change_bis 
+**** SYNTAX ERROR ****
+</screen>
+
+</listitem>
+
+</itemizedlist>
+
+</listitem>
+
+<listitem>
+
+<para>About global to local</para>
+
+<para>Vice versa changing from a global assignment in a block to a local one in an inner block will not cause an error because, as expected, in the inner block a local variable with the same name of the global one is created but this new variable will stop existing when the matching brace } is reached:</para>
+
+<screen>
+zz> /bb:=6 
+zz> /cc:= 5 
+zz> /stat -> change { 
+.. /bb=6 
+.. /cc=9*bb 
+.. /print bb,cc 
+.. /param 
+.. } 
+zz> /print bb !! the global one 
+6 
+zz> change 
+6 54 !! the local ones 
+0G cc == 5 
+0G bb == 6 
+1L cc == 54 
+1L bb == 6 
+zz> /param 
+0G cc == 5 
+0G bb == 6 
+</screen>
+
+<para>Again this is not a change of scope.</para>
+
+</listitem>
+
+
+</orderedlist>
+
+</sect2>
+
+
+<sect2><title>Variables and Parameters</title>
+
+<para>There are three kinds of variables: Zz variables, Zz parameters, and thread variables.  Of course if you are using Zz to develop a compiler you have to consider also the variables of your language, but for now let's ignore them.</para>
+
+<para>We have already talked about Zz variables.</para>
+
+<para>The Zz parameters are implicitly declared using a nonterminal bead within a thread:</para>
+
+<userinput>
+syntagma ^ param 
+</userinput>
+
+<para>A parameter hides any identically named variable and its scope is the action attached to the thread.  Pay attention because if param is a variable the value of that variable replaces the parameter itself in the thread:</para>
+
+<screen>
+zz> /c = alfa
+zz> /stat -> say ident^c { !!we are entering a new block
+.. /print alfa !!the param c is replaced by
+.. } !!alfa in the thread
+zz> say hello
+hello
+zz> /rules
+RULES
+ Scope kernel
+  stat -> echo
+  stat -> say ident^alfa
+  stat -> echo^s
+
+zz> /c=12 
+zz> /stat -> say ident^c {/print c} 
+*** SYNTAX ERROR ***... 
+</screen>
+
+<para>The third kind of variable (thread variable) is made up in the following way:</para>
+
+<!-- FIXME : this part of the example doesn't work -->
+<screen>
+zz> /$arg -> alfa : return 154 
+zz> /print alfa 
+154
+</screen>
+
+<para>$arg is a predefined syntagma used in all the expression to match the arguments; if a new thread (say: alfa) is assigned to it when it matches (say met alfa) the returned value of $arg is the value returned by the action (here: 154).  This kind of variables are global, of course it is possible to introduce a friendly interface to declare them:</para>
+
+<screen>
+zz> /stat -> let ident^name "=" int^val { 
+.. /$arg -> name {/return val } 
+.. } 
+zz> let goofie = 3 !!goofie is now a global $arg 
+zz> /print goofie 
+3 
+</screen>
+
+</sect2>
+
+
+<sect2><title>Syntax Extensions Scope (scope of the rules)</title>
+
+<para>Syntax Extensions are organized in levels.  All the levels have a name and they are organized in a stack.  New rules are inserted by default in the current level, the top of the stack at startup.  There default scope (level) is called the "kernel" scope.</para>
+
+<para>A new scope is created by typing:</para>
+
+<userinput>
+/push scope scope_name 
+</userinput>
+
+<para>At this point scope_name is the current scope at the top of the stack and all the new rules inserted from now on will be assigned by default to this scope.</para>
+
+<para>The current scope can be removed from the stack typing:</para>
+
+<userinput>
+/pop scope
+</userinput>
+
+<para>The scope is not lost.  It is only inactive and it can be restored typing again</para>
+
+<userinput>
+/push scope scope_name 
+</userinput>
+
+<para>To delete a scope it is necessary to type:</para>
+
+<userinput>
+/delete scope scope_name 
+</userinput>
+
+<para>All the rules that belong to that scope are lost.  To insert a rule in a scope which is not the current top of stack the following syntax should be used:</para>
+
+<userinput>
+/(scope_name)stat > myrule {...} 
+</userinput>
+
+<para>The stack implies a hierarchy among the scopes.  The parser in fact attempts to reduce a rule in the topmost level and, failing that, in the deeper active levels (inactive levels are not considered).  If a rule is found at a certain level the parser ignores deeper levels.  Within the same level Zz is not able to resolve an ambiguity.  Newly created rules can hide rules in deeper levels, meaning that among rules with the same thread but different actions Zz will reduce the rule in the shallowest level.</para>
+
+<para>If there are rules declared within <literal>scope_name</literal> with the clause <emphasis>/when delete scope</emphasis> the specified actions are executed (see in the following).</para>
+
+<para>It is also possible to empty a scope using the following syntax:</para>
+
+<userinput>
+/delpush scope scope_name 
+</userinput>
+
+<para>That will delete and repush the scope scope_name.</para>
+
+</sect2>
+
+
+<sect2><title>When Change Action or Exit Scope</title>
+
+<para>It is possible to specify an action to be executed when the action associated to a thread is modified.  The syntax is the following:</para>
+
+<userinput>
+/when change action {action_a } 
+</userinput>
+
+<para>Please note that the simplest statement to change a syntax is:</para>
+
+<userinput>
+/syntagma -> thread {action_b } 
+</userinput>
+
+<para>But usually the user introduces some statement to modify automatically the syntax: of course at some deepest level the statement is the simplest one.</para>
+
+<para>The action action_a is executed if the action_b associated to the rule <literal>/syntagma -> thread</literal> is changed.</para>
+
+</sect2>
+
+</sect1>

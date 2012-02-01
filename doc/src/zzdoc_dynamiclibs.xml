@@ -1,0 +1,387 @@
+
+<para>There are two ways to extend Zz by adding in external procedures written in C: recompiling the Zz library or interactive component(zzi.c), or by building external libraries and then loading them dynamically.  The first method is described in the section titled "Semantic Interface".</para>
+
+<para>We will explore the second method in this section in a series of examples.</para>
+
+<section><title>Basic Example</title>
+
+<para>To begin well will start with a most basic example that only serves to demonstrate the dynamic loading/linking process.  First we need a C program that we will compile into a shared object library:</para>
+
+<example><title>Basic Test Program</title>
+<programlisting>
+void zz_ext_init() {
+  printf("Inside lib zz_ext_init().\n");
+}
+</programlisting>
+</example>
+
+<para>After saving that in a file called "test.c", we can compile it using the following command (on Linux in our case):</para>
+
+<screen>$ <userinput>gcc -shared test.c -o test.so</userinput></screen>
+
+<para>The <literal>"-shared"</literal> flag to the compiler indicates that the output is a library and that the internal references do not need to resolve at compile time - they will link during the dynamic loading process.</para>
+
+<para>We should now have a shared object file ready for loading:</para>
+
+<screen>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>ls -l test.*</userinput>
+-rw-r--r--   1 brooks   apedevel       56 Jan 22 13:50 test.c
+-rwxr-xr-x   1 brooks   apedevel     5893 Jan 22 13:50 test.so
+/apona/home1/homedirs/brooks/openzz/src>
+</screen>
+
+<para>Now we can launch Zz and load the library:</para>
+
+<screen>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>./zz</userinput>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz> <userinput>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</userinput>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+Inside lib zz_ext_init().
+zz>
+</screen>
+
+<para>So we can see that we have confirmation that our library was
+loaded and moreover that the <literal>zz_ext_init()</literal> function
+was called.  <literal>zz_ext_init()</literal> is a special function in
+that it will be executed when the library is loaded if it is present -
+<literal>zz_ext_init()</literal> is optional.</para>
+
+<para>A fairly simple example but it gets us started.</para>
+
+</section>
+
+
+<section><title>Grammar Extending Example</title>
+
+<para>In this example we will build a C library which we will then
+load into Zz dynamically in order to extend its grammar.  The library
+will provide a simple new command "echo" which will just echo its
+argument back to the console in a detailed format.  This program
+demonstrates two useful items: how to extend the Zz grammar, and how
+to pass parameters to C-Procedures.</para>
+
+<para>First, the program:</para>
+
+<example><title>Extending the Grammar</title>
+<programlisting>
+#include &lt;stdlib.h&gt; <co id="echo_example.includes"/>
+#include "zlex.h"
+#include "kernel.h"
+
+
+s_echo_args<co id="echo_example.handler"/>(argc,argv,ret<co id="echo_example.return"/>)
+     int argc;
+     struct s_content argv[], *ret;
+{
+  int i;
+
+  printf("'echo' syntagma called with %d arguments.\n", argc);
+
+  printf("Arg 0 type: %s\n", argv[0].tag->name);
+
+  printf("Arg 0 value: %s\n", s_content_svalue(argv[0]));
+}
+
+
+void zz_ext_init() {
+  OPEN(stat) M("/echo") GSB(string_e) PROC(s_echo_args) END  <co id="echo_example.syntagma"/>
+}
+</programlisting>
+</example>
+
+
+<para>Let's examine this program in a little detail:</para>
+
+
+<calloutlist>
+
+<callout arearefs="echo_example.includes">
+<para>First off we need some headers: &lt;stdlib.h&gt;, "zlex.h",
+"kernel.h".  These provide the marcos and structures required to get
+our library to compile.</para>
+</callout>
+
+<callout arearefs="echo_example.handler">
+<para><literal>s_echo_args</literal> is the "event handler" function
+that performs the action of our command: since a command may be called
+with a variable number of arguments, the architecture to handle a
+function call also needs to deal with a variable number of arguments.
+The solution is to use an argument count and array similar to the
+<literal>C main()</literal> function.</para>
+
+<para>The first param, <literal>argc</literal> tells us how many
+arguments are contained in the <literal>argv</literal> array.
+<literal>argv</literal> then has that many items, of the type
+<literal>s_content</literal>.</para>
+
+<para><literal>s_content</literal> is defined in
+<literal>zlex.h</literal> and is a <literal>C struct</literal> which
+provides a 'data value' and an associated 'type' field.  Note that
+although you can write code that accesses the internals of the
+s_content variables, it is preferable to use the macros (also in
+<literal>zlex.h</literal>) designed for this purpose.  For
+example:</para>
+
+<programlisting>
+s_content_svalue(argv[0])])
+</programlisting>
+
+<para>Note however that when we wanted to access the <literal>tag</literal> attribute of the<literal>s_content</literal> struct we did go for it dirrectly:</para>
+
+<programlisting>
+printf("Arg 0 type: %s\n", argv[0].tag->name);
+</programlisting>
+
+<para>All <literal>s_content</literal> structures share a common pool
+of tags - meaning that if <emphasis>S1</emphasis> is of type
+<emphasis>int</emphasis> and <emphasis>S2</emphasis> is of type
+<emphasis>int</emphasis>, then <emphasis>(S1.tag ==
+S2.tag)</emphasis>.</para>
+
+</callout>
+
+<callout arearefs="echo_example.return">
+<para>The return value <literal>s_content *ret</literal> is not
+important to us in this example because our new syntagma
+"<literal>/echo</literal>" has been created with a statement type tag
+of '<literal>stat</literal>'(the arg to the <literal>OPEN()</literal>
+macro) which mean it has no return value.  Return values are the
+subject of the next example.</para>
+</callout>
+
+<callout arearefs="echo_example.syntagma">
+<para>Finally let's look inside the <literal>zz_ext_init()</literal>
+function:</para> <screen>OPEN(stat) M("/echo") GSB(string_e)
+PROC(s_echo_args) END</screen> <para>Here we find the macro commands
+that actually extend the Zz grammar to recognize our new command.  In
+particular a command needs the following:</para>
+ <itemizedlist>
+    <listitem><literal>OPEN(&lt;tag&gt;)</literal> - This begins the process of adding a command to the grammar.</listitem>
+    <listitem>&lt;Some syntax to match&gt; - Here you specify the syntax for Zz to match against.</listitem>
+    <listitem><literal>PROC(&lt;action&gt;)</literal> - Specification of what to do when Zz matches this command.</listitem>
+    <listitem><literal>END</literal> - Close the definition of the command.</listitem>
+ </itemizedlist>
+
+<para>For the complete list (it's very tiny actually) of grammar
+extension macros that can be used, look in
+<literal>kernel.h</literal>.</para>
+</callout>
+
+</calloutlist>
+
+<para>Lets compile this example using the same compilation command from the first example:</para>
+
+<screen>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>gcc -shared test.c -o test.so</userinput>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>ls -l test.*</userinput>
+-rw-r--r--   1 brooks   apedevel      403 Jan 22 15:51 test.c
+-rwxr-xr-x   1 brooks   apedevel     6995 Jan 22 15:58 test.so
+/apona/home1/homedirs/brooks/openzz/src>
+</screen>
+
+<para>... and then we can execute our test in Zz:</para>
+
+<screen>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>./zz</userinput>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz> <userinput>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</userinput>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+zz> <userinput>/echo "an arg"</userinput>
+'echo' syntagma called with 1 arguments.
+Arg 0 type: qstring
+Arg 0 value: an arg
+zz>
+</screen>
+
+<para>Here we see that we have added the new command to Zz <literal>"echo"</literal> and after using it we get some information about the parameter that we called it with.</para>
+
+</section>
+
+
+<section><title>Grammar Extending Example with Return Type</title>
+
+<para>We have seen how to extend Zz by adding new commands from dynamically loaded libraries, and we looked at an example of how to access the parameters that were passed to such commands.  Now let's consider how data can be passed back to the Zz program environment from the execution of a command.</para>
+
+<para>We will start by talking a little more about the syntax of the command declaration (macro) statement.  For variety let's look at another command defined in <literal>kernel.c</literal>:</para>
+
+<screen>
+OPEN(<co id="dynlibs_return.syntagma"/>float) <co id="dynlibs_return.match"/>M("cast_to_float") M("(") GSB(double) M(")") <co id="dynlibs_return.proc"/>PROC(zz_doubletofloat) END
+</screen>
+
+<para>We talked about each of these parts in a previous example but here we'll focus in on some details:</para>
+
+<calloutlist>
+
+<callout arearefs="dynlibs_return.syntagma">
+<para>As mentioned before the argument to the<literal>OPEN()</literal> macro specifies the resulting value of the new command.  We used the type <literal>"stat"</literal> in our previous example because our simple test command didn't have a return value(our following example will).</para>
+
+<para>The <literal>cast_to_float()</literal> command does return a value - a float, and this is specified in the <literal>OPEN()</literal> macro.  See the section titled "The Lexical Analyzer" for a list of nativly supported types.</para>
+
+<para>In general, to create a command that returns some value, select a <literal>syntagma</literal> type that is understood by Zz and also set a valid value in the <literal>ret</literal> param of the action providing C-Procedure.  More on this in our example.</para>
+</callout>
+
+<callout arearefs="dynlibs_return.match">
+<para>For the parser to recognize a command it must know the syntax for its <literal>thread</literal>.  The macros available for this are very basic (defined in <literal>"kernel.h"</literal> and give the ability to match fixed and variable items:</para>
+
+<itemizedlist>
+<listitem>
+<para><literal>M()</literal>: Match fixed text.  Using "<literal>M("foo") M("(")</literal>" is more flexible than using "<literal>M("foo(")</literal>" for example.  Text matched by the <literal>M()</literal> macro is not passed into the handler(C-Procedure).</para>
+</listitem>
+<listitem>
+<para><literal>GSB()</literal>: This macro matches source text that is to be passed into the handler(C-Procedure) for processing.  For its arguments, use the syntagma type that suites your needs.</para>
+</listitem>
+</itemizedlist>
+
+</callout>
+
+<callout arearefs="dynlibs_return.proc">
+<para>Finally, <literal>PROC()</literal> identifies the name of the C-Procedure to execute when this <literal>thread</literal> is matched.  You'll see other kinds of handlers defined in <literal>kernel.h</literal> but the basic <literal>PROC()</literal> is the preferred one to use if you want a function to be called for your command.  Note that sometimes you may want other actions to occur instead, for example appending a substructure to a structure (use <literal>PASS</literal> and <literal>APPEND</literal> for this).  This can get a little complex and we're going to consider it outside the scope of this tutorial.</para>
+
+<para>Outside of this tutorial the best way to really understand this part of Zz is to look at <literal>kernel.c</literal> and see how the standard functions are implemented.</para>
+</callout>
+
+</calloutlist>
+
+
+<para>Before we set you free to dissect Zz, let's finish with our example.  We would like to demonstrate returning a value from a C-Procedure, and to do this we'll create a library function <literal>lcase()</literal> that converts its <literal>string</literal> argument to lowercase.</para>
+
+<example><title>lcase() - Convert Arguments to Lowercase.</title>
+<programlisting>
+#include &lt;stdlib.h&gt;
+#include "zlex.h"
+#include "kernel.h"
+#include "err.h"   <co id="dynlibs_fullexample.includes"/>
+
+
+s_lcase(argc,argv,ret)
+     int argc;
+     struct s_content argv[], *ret;
+{
+  int i, len;
+  char *s_tmp, *src;
+
+  // Set a reasonable default for the return value
+  ret->tag = tag_qstring;   <co id="dynlibs_fullexample.default"/>
+  s_content_svalue(*ret) = NULL;
+
+  // Test that command arguments are valid
+  if (argc != 1) {
+    zz_error(ERROR, \
+      "s_lcase() called with incorrect # of params(%d), expecting 1.", \
+      argc);
+    return 0;
+  }
+
+  if (argv[0].tag != tag_qstring) {
+    zz_error(ERROR, \
+      "s_lcase() called with param type(%s), expected 'tag_qstring'.", \
+      argv[0].tag->name);
+    return 0;
+  }
+
+  // Make an alias for the input string - keeps things clean
+  src = s_content_svalue(argv[0]);
+
+  len = strlen(src);
+
+  // Allocate a temp buffer to create new string in
+  s_tmp = malloc(len + 1);
+
+  // Ensure malloc succeeded
+  if (!s_tmp) {
+    zz_error(ERROR, \
+      "s_lcase() system error while executing 'malloc'.");
+    return 0;
+  }
+
+  // Copy and convert the contents of our source string to buffer
+  for (i=0; i&lt;len; i++)
+    s_tmp[i] = tolower(src[i]);
+
+  // Bring over the string terminator symbol
+  s_tmp[len] = '\0';
+
+  // Use the internal 'zlex_strsave' function to make
+  //  a canonical copy - important!
+  s_content_svalue(*ret) = zlex_strsave(s_tmp);   <co id="dynlibs_fullexample.zlex_strsave"/>
+
+  // Free up the temporary buffer storage
+  free (s_tmp);
+
+  return 1;   <co id="dynlibs_fullexample.func_return"/>
+}
+
+
+void zz_ext_init() {
+  OPEN(qstring) M("lcase") M("(") GSB(qstring) M(")") PROC(s_lcase) END
+}
+</programlisting>
+</example>
+
+<para>Being that this is a more realistic example it has grown somewhat.  Since the code is commented we'll just talk about the new additions since the last example:</para>
+
+<calloutlist>
+<callout arearefs="dynlibs_fullexample.includes">
+<para>With the C-Procedure we are now implementing some strict type checking - the error codes used to report errors are defined in the <literal>err.h</literal> header.</para>
+</callout>
+
+<callout arearefs="dynlibs_fullexample.default">
+<para>Since our parameter checking routines can cause our C-Function to prematurely terminate, it's good practice to initialize a default value for the return value.  Another reasonable alternative, since these error conditions imply a Zz program or library design flaw and not a user/source syntax error, would be to report the error and then terminate the program with the usual C <literal>exit(0);</literal>.</para>
+
+<para>The reason we say these errors are a design flaw is that if the user did try to activate our test program by issuing the <literal>lcase() thread</literal> with the wrong number of parameters, the lexer would catch that and report the error elsewhere (because it knows the correct syntax from the <literal>thread</literal> definition macros).  This C-Procedure would never be executed in that case.</para>
+</callout>
+
+<callout arearefs="dynlibs_fullexample.zlex_strsave">
+<para>Zz maintains an internal (canonical) list of tokens and strings, and for it to recognize equality between such items, both must be registered in this internal structure.  The way to do that is by using <literal>zlex_strsave(s)</literal>.  This function copies its contents if necessary and returns a pointer to the internal value - always use this when adjusting or storing values within Zz.</para>
+</callout>
+
+<callout arearefs="dynlibs_fullexample.func_return">
+<para>Generally speaking, Zz C-Procedures return <literal>1</literal> to signify successful execution, and <literal>0</literal> to signify some failure.  These values are not directly used by the Zz internal framework but some <literal>s_foo()</literal> handlers are chained to use others and some of those do depend on the return value.  We recommend continuing this convention.</para>
+</callout>
+
+</calloutlist>
+
+<para>Let's now compile and run our test:</para>
+
+<screen>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>gcc -shared test.c -o test.so</userinput>
+/apona/home1/homedirs/brooks/openzz/src> <userinput>ls -l test.*</userinput>
+-rw-r--r--   1 brooks   apedevel     1499 Jan 23 16:09 test.c
+-rwxr-xr-x   1 brooks   apedevel     7757 Jan 23 17:17 test.so
+/apona/home1/homedirs/brooks/openzz/src> <userinput>./zz</userinput>
+Zz 32-bit Version 7.0 with Dynamic Lexical Analyzer
+APE Group INFN (March 1998), modified at DESY (April 2000)
+interactive session
+zz> <userinput>/load_lib "/apona/home1/homedirs/brooks/openzz/src/test.so"</userinput>
+Library '/apona/home1/homedirs/brooks/openzz/src/test.so' Loaded.
+zz> <userinput>/lcase ("teST")</userinput>
++ **** SYNTAX ERROR ****
+| got: '('
+| expected one of:  '=' '-' ':' int
+| /lcase ("teST")
+|        ^
+| line 13 of stdin
+</screen>
+
+<para>OK!  First thing to notice here is that when you specify that a function is of a certain syntagma type other than <literal>stat</literal>, Zz is expecting you to use it as an "R-Value", or in other words you need to assign or use the result of this function somewhere.  Let's continue:</para>
+
+<screen>
+zz> <userinput>/s = lcase ("teST")</userinput>
+zz> <userinput>/print "s=" &amp; s</userinput>
+s=test
+zz> <userinput>/print lcase("This Was An InitCapped String.")</userinput>
+this was an initcapped string.
+zz>
+</screen>
+
+<para>Ahh... much better!</para>
+
+</section>
+
+
+<para>Having demonstrated passing of data to and from C-Procedures we'll conclude our library examples here.  There's certainly quite a lot more to learn: take a look at <literal>kernel.c</literal> for the <literal>thread</literal> syntax definitions and also look in <literal>sys.c</literal> to see how their handlers are implemented.</para>

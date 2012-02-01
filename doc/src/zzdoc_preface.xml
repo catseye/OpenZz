@@ -1,0 +1,39 @@
+
+<sect1><title>Motivation</title>
+
+<para>The Zz language was designed within the APE100 team of INFN to serve as the basic tool to develop compilers for the Ape100 parallel computers.  One of the aims of the APE100 group is the realization of a supercomputer specifically designed to solve specific numerical problem arising from the QCD community, but suitable also for other applications.  The great necessity of custom compilers and interpreters suggests us the need to design the tool described in this document.</para>
+
+<para>Hence two major reasons to develop Zz were:</para>
+<itemizedlist>
+ <listitem>To simplify the job of compiler and interpreter implementation.</listitem>
+ <listitem>To produce new highly readable custom languages</listitem>
+</itemizedlist>
+
+<para>Given its flexibility, Zz has been also used for a variety of system software, including the symbolic debugger DBQ and the machine description compiler.</para>
+
+</sect1>
+
+
+<sect1><title>About this document</title>
+
+<para>This document has to be read with a little bit of tolerance.  There are certainly some errors; but nevertheless we have done our best to ensure its quality.  We assume that the reader has general familiarity with computer terminology.</para>
+
+<para>The first part is intended to lead the novice user to the comprehension of the fundamental Zz concepts
+
+<footnote><para>The theory of dynamic parsing is described in: S.Cabasino, P.S.Paolucci, G.M.Todesco, "Dynamic Parsers and Evolving Grammars", published on the November issue of <citetitle>ACM SIGPLAN Notices (1992)</citetitle></para></footnote>
+
+.  To learn these concepts we suggest you try all the examples because sometimes the results can be quite surprising.  This tutorial guide should be read sequentially because we have introduced the terminology in a progressive fashion.</para>
+
+<para>The second part is a quite detailed reference guide, which is useful to develop a real application.  This reference guide is something more than a list of statements, but does not explain the concepts.</para>
+
+<para>The third part is a guide to tailor Zz to fit your needs.</para>
+
+<para>This documents is concluded with some examples of advanced Zz use and a glossary.</para>
+
+<para>When a character plays a special role, it is highlighted, like this dollar: $.  When something is optional we use the notation [ ... ].</para>
+
+<para>Usually keywords are bold.</para>
+
+<para>Zz is a dynamic language you will expand its vocabulary as you use it.  However the Kernel is also evolving, so we hope to continually produce new releases of Zz and of this document.  Stay in tune with the latest developments by monitoring the website listed in the resources section of this document.</para>
+
+</sect1>
