@@ -6,9 +6,10 @@
 /src/Makefile
 /stamp-h
 /testsuite/Makefile
-/src/.libs/
-/src/libozz.la
-/src/libozzi.la
-/src/ozz
+libozz.la
+libozzi.la
+libtagdtor.la
+ozz
+.libs
 *.o
 *.lo
