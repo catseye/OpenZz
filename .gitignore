@@ -1,0 +1,14 @@
+/Makefile
+/config.*
+/doc/Makefile
+/doc/src/Makefile
+/libtool
+/src/Makefile
+/stamp-h
+/testsuite/Makefile
+/src/.libs/
+/src/libozz.la
+/src/libozzi.la
+/src/ozz
+*.o
+*.lo
