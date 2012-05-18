@@ -80,7 +80,6 @@ void zz_set_output(filename)
     zz_chanout = fopen(filename,"w");
 
     if(!zz_chanout) {
-      int __errno=errno;
       printf("zz: unable to open output file %s (%s)\n",filename, strerror(errno));
       zz_chanout=stdout;
     }

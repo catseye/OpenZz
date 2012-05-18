@@ -35,7 +35,6 @@
 #include <stdint.h>
 #include <ctype.h>
 #include <stdarg.h>
-#include <printf.h>
 #include "avl.h"
 #include "zlex.h"
 #include "mem.h"
