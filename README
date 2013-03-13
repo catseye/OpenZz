@@ -1,7 +1,34 @@
+This is a fork of the original OpenZz distribution.  The original README
+follows after the first line of equals signs in this file.
+
+This fork was made because development on OpenZz was stalled, I have a
+project which requires it ( http://catseye.tc/node/Zzrk.html ), and I
+needed to make changes to the sources to get them to build on the latest
+version of gcc.
+
+Shortly thereafter, upgrades to (apparently) libtool(?) caused automake
+to generate Makefiles which went into infinite loops at the shell level
+(`pstree` showed what looked like an infinite tree of `sed` and `bash`)
+which would take down my laptop quite readily.
+
+So, I added a simple script `build.sh` to build the `ozz` executable
+directly, without messing around with libraries or anything.  It works
+on Ubuntu, and will (I'm sure) work on other flavours of Linux with only
+minor modifications.
+
+Running `build.sh` is recommended.  Run `autogen.sh` and `configure` at
+your own risk.
+
+-Chris
+
+===============================================================================
                  Zz - Dynamic Lexical Parser README File
 ===============================================================================
 
-Zz is a dynamic parser which is currently being developed as a front end to gcc to implement compilation of new languages (ie. TAO and others), for APE systems.  These are custom build parallel processing computers used for LQCD physics research.
+Zz is a dynamic parser which is currently being developed as a front end to
+gcc to implement compilation of new languages (ie. TAO and others), for APE
+systems.  These are custom build parallel processing computers used for LQCD
+physics research.
 
 See:
   http://chimera.roma1.infn.it/ape.html
@@ -13,10 +40,13 @@ UPDATES
 
 LICENSE
  The Zz library is released under the GNU Lesser GPL (LGPL).
- Parts of Zz are released under the GPL - see the "COPYING" file in the project root.
+ Parts of Zz are released under the GPL - see the "COPYING" file in the
+   project root.
 
 DOCUMENTATION
  See the "doc" subdirectory
 
 APE
- Whence the name "APE"?  "Ape" is the Italian word for "bee", the mascot of the APE project. (INFN, the funder of the project is based in Italy and the software is primarily developed there).
+ Whence the name "APE"?  "Ape" is the Italian word for "bee", the mascot of
+ the APE project. (INFN, the funder of the project is based in Italy and the
+ software is primarily developed there).

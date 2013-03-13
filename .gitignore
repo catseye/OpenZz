@@ -1,4 +1,5 @@
 /Makefile
+/configure
 /config.*
 /doc/Makefile
 /doc/src/Makefile
@@ -6,6 +7,7 @@
 /src/Makefile
 /stamp-h
 /testsuite/Makefile
+/autom4te.cache
 libozz.la
 libozzi.la
 libtagdtor.la
