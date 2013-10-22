@@ -15,3 +15,5 @@ ozz
 .libs
 *.o
 *.lo
+*.zz.diff
+*.err

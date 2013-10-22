@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 
 # Zz Test Script
 # James Brooks, Feb/2002
@@ -178,8 +178,9 @@ if [ $FAILURE_COUNT -ne 0 ];
 then
   echo "ERRORS: The following "$FAILURE_COUNT" file(s) produced output other than expected during tests:"
   echo $FAILURE_LIST
+  echo
+  exit 1
 else
   echo "SUCCESS! All tests successful."
+  echo
 fi
-
-echo
