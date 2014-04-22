@@ -70,8 +70,8 @@ struct s_content *cnt;
     {printf("Internal error - delete_list; argument must be LIST\n");exit(1);}
   lst = (struct s_list *) s_content_value(*cnt);
   list_mem -= sizeof(*lst) +lst->size*sizeof(struct s_content);
-  cfree(lst->array);
-  cfree(lst);
+  free(lst->array);
+  free(lst);
   cnt->tag=0;
   s_content_value(*cnt)=0;
 }
