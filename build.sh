@@ -30,19 +30,21 @@ zzi
 
 LREADLINE=
 DREADLINE=
-if [ -z $WITH_READLINE ]; then
-  cat >temp.c <<EOF
+cat >temp.c <<EOF
 #include <readline/readline.h>
 int main() { return 0; }
 EOF
-  if gcc temp.c -o temp; then
-    WITH_READLINE=yes
+if gcc temp.c -o temp; then
+  DREADLINE='-DUSE_READLINE'
+  LREADLINE='-lreadline'
+  if gcc temp.c -o temp -ledit; then
+    LREADLINE='-ledit'
   fi
 fi
 rm -f temp.c temp.o temp
-if [ ! -z $WITH_READLINE ]; then
-  LREADLINE='-lreadline'
-  DREADLINE='-DUSE_READLINE'
+if [ ! -z $WITHOUT_READLINE ]; then
+  LREADLINE=
+  DREADLINE=
 fi
 
 LDL=
