@@ -25,6 +25,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #ifdef USE_READLINE
@@ -110,8 +111,8 @@ void next_token_tt(cur_source)
       if (*line_read) {
 
 	if (strlen(line_read) >= MAX_INPUT_LINE_LENGTH) {
-	  printf("ERROR: Input line (len=%i) exceeded max length, truncated at %i(max) chars.\n", 
-		 strlen(line_read), MAX_INPUT_LINE_LENGTH);
+	  printf("ERROR: Input line (len=%lu) exceeded max length, truncated at %i(max) chars.\n", 
+		 (unsigned long)strlen(line_read), MAX_INPUT_LINE_LENGTH);
 	  line_read[MAX_INPUT_LINE_LENGTH]='\0';
 	}
 

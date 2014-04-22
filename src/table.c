@@ -32,6 +32,7 @@
 
 ==============================================================================*/
 #include <stdint.h>
+#include <stdlib.h>
 #include "zlex.h"
 #include "rule.h"
 #include "err.h"
