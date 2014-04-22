@@ -27,8 +27,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
+#ifdef USE_READLINE
+  #include <readline/readline.h>
+  #include <readline/history.h>
+#endif
 
 #include "zz.h"
 #include "zlex.h"
@@ -82,6 +84,10 @@ void next_token_tt(cur_source)
   static char *line_read = (char *)NULL;       // Tmp ptr for gnu libreadline
   char *s;
 
+#ifndef USE_READLINE
+  line_read = malloc(300);
+#endif
+
   if(!cur_source->src.tt.s) {                  /* NEED TO READ A NEW LINE OF DATA */
     zz_trace("reading new line...\n");
    
@@ -92,8 +98,12 @@ void next_token_tt(cur_source)
 
     s = cur_source->src.tt.row;
 
+#ifdef USE_READLINE
     // Read a line from tty input using gnu libreadline
     line_read = readline(cur_source->src.tt.prompt);
+#else
+    (void)fgets(line_read, 250, stdin);
+#endif
 
     // If some non-empty input was read, store it in the history
     if (line_read) {
@@ -105,7 +115,9 @@ void next_token_tt(cur_source)
 	  line_read[MAX_INPUT_LINE_LENGTH]='\0';
 	}
 
+#ifdef USE_READLINE
 	add_history (line_read);
+#endif
 
 	if (strlen(line_read) >= 250) {
 	  exit(0);
