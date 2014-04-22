@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/sh
 
 # Zz Test Script
 # James Brooks, Feb/2002
@@ -35,7 +35,7 @@ fi
 
 
 # Brief help output
-function showusage()
+showusage()
 {
   echo "Usage: $0 [-h] [-d <path>] [<testfile>]"
   echo "  -h print short help"
@@ -66,7 +66,7 @@ else
           showusage;
           exit 0;;
       --)
-          shift;
+          #shift;    ???
           break;;
     esac
   done
@@ -87,7 +87,7 @@ fi
 
 
 # Function for padding output for columns
-function paddit()
+paddit()
 {
   TEMP=$1
   LEN=`echo "$TEMP" | wc -L`
@@ -102,7 +102,7 @@ function paddit()
 }
 
 
-function compare_temp_files()
+compare_temp_files()
 {
   F1=$1
   F2=$2

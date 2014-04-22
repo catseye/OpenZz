@@ -30,7 +30,17 @@ zzi
 
 LREADLINE=
 DREADLINE=
-if [ ! x$WITH_READLINE = x ]; then
+if [ -z $WITH_READLINE ]; then
+  cat >temp.c <<EOF
+#include <readline/readline.h>
+int main() { return 0; }
+EOF
+  if gcc temp.c -o temp; then
+    WITH_READLINE=yes
+  fi
+fi
+rm -f temp.c temp.o temp
+if [ ! -z $WITH_READLINE ]; then
   LREADLINE='-lreadline'
   DREADLINE='-DUSE_READLINE'
 fi
