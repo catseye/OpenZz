@@ -112,9 +112,9 @@ compare_temp_files()
 #  set -x 
   if [ -n "$IGNORE_LINE_PATTERN" ]; then
 #    diff --ignore-matching-lines="$PROC_CMD_STR" $F1 $F2 >$TEMP_DIFFFILE
-    diff --ignore-matching-lines="$IGNORE_LINE_PATTERN" $F1  $F2 >$TEMP_DIFFFILE
+    diff -u --ignore-matching-lines="$IGNORE_LINE_PATTERN" $F1  $F2 >$TEMP_DIFFFILE
   else
-    diff $F1 $F2 >$TEMP_DIFFFILE
+    diff -u $F1 $F2 >$TEMP_DIFFFILE
 #    cmp -s $TEMP_FILE1 $TEMP_FILE2
   fi
 
