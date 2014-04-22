@@ -31,7 +31,7 @@
 !!+ **** LEXICAL ERROR: too long integer constant /212312321322/ truncated ****
 !!| /num2=212312321322
 !!|       ^
-!!| line 63 of numerictypes.zz
+!!| line 63 of .//numerictypes.zz
 !!2123123213
 !!next should be ok
 !!23232323
@@ -48,7 +48,7 @@
 !!next should be ok
 !!212312321322
 !!1 lexical error(s)
-!!listed in numerictypes.err
+!!listed in .//numerictypes.err
 !! END OUTPUT
 
 

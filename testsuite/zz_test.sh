@@ -18,7 +18,7 @@ REMOVE_TMP_FILES=0
 TESTDIR="./"
 TEMP_DIFFFILE="/tmp/zztest.diff"
 ZZ=ozz
-#IGNORE_LINE_PATTERN='(^\| +line|^listed)'
+IGNORE_LINE_PATTERN='(^\| +line|^listed|reg_var:[A-Z|0-9]*$)'
 
 # Regular expression for 'sed' to begin extracting test results from files.
 REF_RANGE="/[Rr][Ee][Ff][Ee][Rr][Ee][Nn][Cc][Ee].[Oo][Uu][Tt]/,/[Ee][Nn][Dd].[Oo][Uu][Tt]/p"
