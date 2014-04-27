@@ -54,7 +54,7 @@ fi
 
 OBJECTS=""
 for SOURCE in $SOURCES; do
-  gcc -DVERSION='"1.0.4"' $DREADLINE -c $SOURCE.c -o $SOURCE.o || exit 1
+  gcc -DVERSION='"1.0.4-4ce1"' $DREADLINE -c $SOURCE.c -o $SOURCE.o || exit 1
   OBJECTS="$OBJECTS $SOURCE.o"
 done
 

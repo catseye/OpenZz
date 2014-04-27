@@ -1,5 +1,6 @@
-This is a fork of the original OpenZz distribution.  The original README
-follows after the first line of equals signs in this file.
+This is OpenZz 1.0.4-4ce1, a fork of the original OpenZz distribution
+based on version 1.0.4-4.  The original README can be found below, following
+the first line of equals signs in this file.
 
 This fork was made because development on OpenZz was stalled, I have a
 project which requires it ( http://catseye.tc/node/Zzrk.html ), and I
@@ -13,8 +14,8 @@ which would take down my laptop quite readily.
 
 So, I added a simple script `build.sh` to build the `ozz` executable
 directly, without messing around with libraries or anything.  It works
-on Ubuntu, and will (I'm sure) work on other flavours of Linux with only
-minor modifications.
+on Ubuntu and NetBSD, and will (I'm sure) work on other flavours of Linux
+and other BSDs with only minor modifications.
 
 Running `build.sh` is recommended.  Run `autogen.sh` and `configure` at
 your own risk.
