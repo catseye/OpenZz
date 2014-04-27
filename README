@@ -19,14 +19,24 @@ minor modifications.
 Running `build.sh` is recommended.  Run `autogen.sh` and `configure` at
 your own risk.
 
-Also note: several of the tests fail, although the core semantics seem
-OK, so these tests have been skipped.  The failures are:
+Also note: several of the tests now fail.  The core semantics seem alright,
+so these tests have been skipped.  The specific failures are:
     
 *   deref_param.zz: failure of the test suite; it shouldn't be caring about
     an internal address, which isn't stable from run to run
 *   double.zz: using floating-point values segfaults
 *   list_in_cond.zz: the syntax "a.b" seems to be a syntax error
+*   numerictypes.zz: 64-bit values wrap to 32 bits on a 32-bit archiecture
 *   tagdtor.xx: can't open the specified .so file
+
+The verdict is that this version of OpenZz does not support:
+
+*   floating-point values
+*   64-bit integer values
+*   the "a.b" syntax (whatever that means exactly)
+*   loading ".so" files
+
+Which is fine by me so long as it can still play Zzrk.
 
 -Chris
 

@@ -31,10 +31,16 @@
 !!+ **** LEXICAL ERROR: too long integer constant /212312321322/ truncated ****
 !!| /num2=212312321322
 !!|       ^
-!!| line 63 of .//numerictypes.zz
+!!| line 66 of .//numerictypes.zz
 !!2123123213
 !!next should be ok
 !!23232323
+!!1 lexical error(s)
+!!listed in .//numerictypes.err
+!! END OUTPUT
+
+
+!! SKIPPED due to no longer supporting 64-bit
 !!next should be ok
 !!212312321322
 !!switching on int64 default
@@ -47,9 +53,6 @@
 !!23232323
 !!next should be ok
 !!212312321322
-!!1 lexical error(s)
-!!listed in .//numerictypes.err
-!! END OUTPUT
 
 
 /print "switching off int64 default"
@@ -67,29 +70,30 @@
 /num1=23232323i
 /print num1
 
-/print "next should be ok"
-/num2=212312321322l
-/print num2
-
-/print "switching on int64 default"
-/zlex_set_default_integer_as_int64 1i
-/num1=212312321322
-/print num1
-
-/print "next should be ok"
-/num1=23232323
-/print num1
-
-/print "next should be ok"
-/num2=212312321322
-/print num2
-
-/print "next should be ok"
-/num1=23232323i
-/print num1
-
-/print "next should be ok"
-/num2=212312321322l
-/print num2
+!! SKIPPED due to no longer supporting 64-bit
+!! /print "next should be ok"
+!! /num2=212312321322l
+!! /print num2
+!! 
+!! /print "switching on int64 default"
+!! /zlex_set_default_integer_as_int64 1i
+!! /num1=212312321322
+!! /print num1
+!! 
+!! /print "next should be ok"
+!! /num1=23232323
+!! /print num1
+!! 
+!! /print "next should be ok"
+!! /num2=212312321322
+!! /print num2
+!! 
+!! /print "next should be ok"
+!! /num1=23232323i
+!! /print num1
+!! 
+!! /print "next should be ok"
+!! /num2=212312321322l
+!! /print num2
 
 
