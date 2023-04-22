@@ -63,6 +63,7 @@ fi
 #   sudo dpkg --add-architecture i386
 #   sudo apt update
 #   sudo apt install libc6:i386 libedit-dev:i386
+# ---> For more info, see, e.g., https://askubuntu.com/q/454253
 
 CFLAGS=-m32
 
