@@ -1,0 +1,96 @@
+!!
+!!  Zz Dynamic Parser Library
+!!  Copyright (C) 1989 - I.N.F.N - S.Cabasino, P.S.Paolucci, G.M.Todesco
+!!
+!!  The Zz Library is free software; you can redistribute it and/or
+!!  modify it under the terms of the GNU Lesser General Public
+!!  License as published by the Free Software Foundation; either
+!!  version 2.1 of the License, or (at your option) any later version.
+!!
+!!  The testsuite test scripts are distributed with Zz as part of it,
+!!  also under the LGPL.
+!!
+!!  The Zz Library is distributed in the hope that it will be useful,
+!!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+!!  Lesser General Public License for more details.
+!!
+!!  You should have received a copy of the GNU Lesser General Public
+!!  License along with this library; if not, write to the Free Software
+!!  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+!!
+
+!!
+!! basic test for numeric type in both lexer settings
+!!
+!! REFERENCE OUTPUT
+!!switching off int64 default
+!!next should be ok
+!!23232323
+!!next should give a lexical error
+!!+ **** LEXICAL ERROR: too long integer constant /212312321322/ truncated ****
+!!| /num2=212312321322
+!!|       ^
+!!| line 63 of .//numerictypes.zz
+!!2123123213
+!!next should be ok
+!!23232323
+!!next should be ok
+!!212312321322
+!!switching on int64 default
+!!212312321322
+!!next should be ok
+!!23232323
+!!next should be ok
+!!212312321322
+!!next should be ok
+!!23232323
+!!next should be ok
+!!212312321322
+!!1 lexical error(s)
+!!listed in .//numerictypes.err
+!! END OUTPUT
+
+
+/print "switching off int64 default"
+/zlex_set_default_integer_as_int64 0i
+
+/print "next should be ok"
+/num1=23232323
+/print num1
+
+/print "next should give a lexical error"
+/num2=212312321322
+/print num2
+
+/print "next should be ok"
+/num1=23232323i
+/print num1
+
+/print "next should be ok"
+/num2=212312321322l
+/print num2
+
+/print "switching on int64 default"
+/zlex_set_default_integer_as_int64 1i
+/num1=212312321322
+/print num1
+
+/print "next should be ok"
+/num1=23232323
+/print num1
+
+/print "next should be ok"
+/num2=212312321322
+/print num2
+
+/print "next should be ok"
+/num1=23232323i
+/print num1
+
+/print "next should be ok"
+/num2=212312321322l
+/print num2
+
+
+
