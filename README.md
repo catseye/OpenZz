@@ -60,12 +60,33 @@ forked project.
 ### 1.0.4-4ce2
 
 In 1.0.4-4ce2, I made some changes to the build script to force
-compilation as a 32-bit executable.  For more details, see the
-comments in the `build.sh` script.
+compilation as a 32-bit executable.
 
-The `double.zz` test now passes.
+This is done by passing the `-m32` flag to `gcc`.  For more information,
+see e.g. [this StackOverflow question](https://stackoverflow.com/q/3501878)
 
-WHich is fine by me, as it still runs Zzrk.
+For this to be successful, 32-bit headers must be installed on the system.
+On Ubuntu, this can be accomplished with:
+
+    sudo apt install gcc-multilib
+
+For more information, see e.g.
+[this StackOverflow question](https://stackoverflow.com/q/54082459)
+
+This will also require 32-bit versions of the libraries that `ozz`
+links to.  Under Ubuntu, they can be installed with:
+
+    sudo dpkg --add-architecture i386
+    sudo apt update
+    sudo apt install libc6:i386 libedit-dev:i386
+
+For more information, see e.g.
+[this StackOverflow question](https://askubuntu.com/q/454253)
+
+Also, under the recent 32-bit build that I made using these
+modifications, for whatever reason, the `double.zz` test now passes.
+
+Which is fine by me, as it still runs Zzrk.
 
 -Chris
 
