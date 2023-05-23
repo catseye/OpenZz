@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh -ex
 
 cd src
 
@@ -52,12 +52,16 @@ if [ `uname -s` = 'Linux' ]; then
     LDL='-ldl'
 fi
 
+# ozz doesn't work as a 64-bit executable, so we build it as 32-bit.
+# Note, this requires 32-bit headers and libraries be present on the system.
+CFLAGS=-m32
+
 OBJECTS=""
 for SOURCE in $SOURCES; do
-  gcc -DVERSION='"1.0.4-4ce1"' $DREADLINE -c $SOURCE.c -o $SOURCE.o || exit 1
+  gcc $CFLAGS -DVERSION='"1.0.4-4ce1"' $DREADLINE -c $SOURCE.c -o $SOURCE.o || exit 1
   OBJECTS="$OBJECTS $SOURCE.o"
 done
 
-gcc $OBJECTS -o ozz $LDL $LREADLINE
+gcc $CFLAGS $OBJECTS -o ozz $LDL $LREADLINE
 
 cd ..
