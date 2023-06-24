@@ -32,6 +32,7 @@
 /*PROTOTYPES*/
 int next_token(struct s_content *);
 void syntax_error(int (*info_routine)());
+void action(struct s_rule *rule, struct s_content stack[], struct s_content *ret);
 
 /*---------------------------------------------------------------------------*/
 

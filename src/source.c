@@ -213,9 +213,7 @@ int source_pipe(void)
 
 /*--------------------------------------------------------------------*/
 
-int source_list(list,id)
-     struct s_content *list;
-     void *id;
+int source_list(struct s_content *list, void *id)
 {
   if(list->tag!=tag_list)
     {
@@ -237,7 +235,6 @@ int source_list(list,id)
 /*--------------------------------------------------------------------*/
 /*
   blocca lo stream di input. un successivo next_token ritornera' EOF
-  (UNUSED)
 */
 void stop_source(void)
 {

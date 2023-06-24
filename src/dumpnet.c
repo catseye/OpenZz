@@ -19,10 +19,15 @@
 
 
 #include <stdint.h>
+#include <string.h>
+
 #include "zlex.h"
 #include "rule.h"
 #include "avl.h"
 #include "err.h"
+
+/*PROTOTYPES*/
+int do_dumpnet(struct s_nt *);
 
 static struct s_dot *hd_dot=0;
 
@@ -36,8 +41,7 @@ static int nt_n=0;
 
 /*----------------------------------------------------------------------------*/
 
-static dump_tran(string)
-char *string;
+static void dump_tran(char *string)
 {
 int i,tab;
 char buffer[256];
@@ -151,8 +155,7 @@ dump_tran(buffer);
 
 /*----------------------------------------------------------------------------*/
 
-static dump_rule(rule)
-struct s_rule *rule;
+static void dump_rule(struct s_rule *rule)
 {
   char buffer[256];
   printz(buffer,"reduce: %r", rule);
@@ -161,8 +164,7 @@ struct s_rule *rule;
 
 /*----------------------------------------------------------------------------*/
 
-dumpnet(ntname)
-char *ntname;
+void dumpnet(char *ntname)
 {
 int i;
 struct s_nt *nt;
@@ -178,8 +180,7 @@ for(i=0;i<nt_n;i++)
 
 /*----------------------------------------------------------------------------*/
 
-do_dumpnet(nt)
-struct s_nt *nt;
+int do_dumpnet(struct s_nt *nt)
 {
 int i;
 struct s_dot *dot;
