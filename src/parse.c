@@ -19,6 +19,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "zz.h"
 #include "zlex.h"
 #include "rule.h"
@@ -26,12 +29,15 @@
 #include "avl.h"
 #include "trace.h"
 
+/*PROTOTYPES*/
+int next_token(struct s_content *);
+void syntax_error(int (*info_routine)());
 
 /*---------------------------------------------------------------------------*/
 
 extern struct s_nt *nt_any,*nt_param,*nt_gparam;
 static char *first_prompt="";
-static max_dot=0,tot_dot=0,ndot=0,max_sp=0;
+static int max_dot=0,tot_dot=0,ndot=0,max_sp=0;
 static int reduction_count=0;
 #define EXPECTED_SIZE 30
 static struct s_content expected[EXPECTED_SIZE];
@@ -1008,8 +1014,7 @@ if(cur_token.is_param)
 
 /*------------------------------------------------------------------*/
 
-parse(start_nt)
-     struct s_nt *start_nt;
+int parse(struct s_nt *start_nt)
 {
   int ret;
   struct s_cur_token old_token;
@@ -1036,10 +1041,10 @@ parse(start_nt)
       if(ret>0) break;
       if(ret==0) syntax_error(print_expected);
       if(!recovery())
-	{
-	  zz_error(FATAL_ERROR,"unrecoverable error");
-	  break;
-	}
+        {
+          zz_error(FATAL_ERROR,"unrecoverable error");
+          break;
+        }
     }
 
   cur_lrenv = old_lrenv;

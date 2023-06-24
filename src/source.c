@@ -36,6 +36,12 @@
 #include "list.h"
 #include "trace.h"
 #include "source.h"
+#include "rule.h"
+
+/*PROTOTYPES*/
+int parse(struct s_nt *);
+void get_extension(char *, char *);
+int change_extension(char *, const char *);
 
 int (*find_prompt_proc)()=0;
 int (*source_line_routine)()=0;
@@ -207,7 +213,7 @@ int source_pipe(void)
 
 /*--------------------------------------------------------------------*/
 
-source_list(list,id)
+int source_list(list,id)
      struct s_content *list;
      void *id;
 {
@@ -231,8 +237,9 @@ source_list(list,id)
 /*--------------------------------------------------------------------*/
 /*
   blocca lo stream di input. un successivo next_token ritornera' EOF
+  (UNUSED)
 */
-stop_source()
+void stop_source(void)
 {
   if(cur_source) 
     cur_source->eof = 1;
@@ -244,8 +251,7 @@ stop_source()
 /**
  * Read the next token
 */
-next_token(token)
-     struct s_content *token;
+int next_token(struct s_content *token)
 {
   int status;
 
@@ -499,7 +505,7 @@ int source_line(source)
 /*--------------------------------------------------------------------*/
 
 
-get_current_line()
+int get_current_line(void)
 {
 struct s_source *source;
 int sp;
@@ -690,16 +696,16 @@ set_cont_prompt()
 /*--------------------------------------------------------------------*/
 
 
-pretend_eof()
+int pretend_eof(void)
 {
 if(cur_source) cur_source->eof=1;
+return 0;
 }
 
 
 /*--------------------------------------------------------------------*/
 
-read_once_only(id)
-     char *id;
+int read_once_only(char *id)
 {
 struct node {char *id;} *p; 
 static TREE *tree=0;
@@ -716,6 +722,7 @@ else
   {
    if(cur_source) cur_source->eof=1;
   }
+return 0;
 }
 
 /*---------------------------------------------------------------------*/

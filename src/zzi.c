@@ -37,7 +37,10 @@
 #include "zlex.h"
 #include "trace.h"
 #include "source.h"
+#include "rule.h"
 
+/*PROTOTYPES*/
+int parse(struct s_nt *);
 void next_token_tt(struct s_source *src);
 
 /*--------------------------------------------------------------------*/
@@ -45,7 +48,7 @@ void next_token_tt(struct s_source *src);
 /**
  * Initialization function for using zz with interactive tty interface:
  */
-source_tt()
+void source_tt(void)
 {
   struct s_source *src = new_source(next_token_tt);
 
@@ -53,8 +56,6 @@ source_tt()
   src->src.tt.prompt = zz_get_prompt();
   src->src.tt.old = src->src.tt.s = 0;
   src->src.tt.row[0]='\0';
-
-  return 1;
 }
 
 
@@ -62,7 +63,7 @@ source_tt()
 
 
 
-zz_parse_tt()
+int zz_parse_tt(void)
 {
   /* really necessary... hope it doesn't come first in the calling sequence..
      if(!zz_chanout)

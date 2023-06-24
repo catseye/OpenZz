@@ -38,6 +38,10 @@ extern struct s_content zz_ret_value;
 /*PROTOTYPES*/
 char *get_source_name(void);
 int get_source_line(void);
+void error_token(struct s_content *);
+void error_head(int);
+void error_tail_1(void);
+int parse(struct s_nt *);
 
 const char* zz_includes = "";
 
@@ -156,8 +160,7 @@ s_print(list)
 
 /*---------------------------------------------------------------------------*/
 
-s_error(list)
-     struct s_list *list;
+int s_error(struct s_list *list)
 {
   int i;
   error_head(2);
@@ -1756,7 +1759,7 @@ get_extension(char *fullfilename,char *filetype) {
 */
 /*---------------------------------------------------------------------------*/
 
-int change_extension(char *fullfilename,char *filetype) {
+int change_extension(char *fullfilename, const char *filetype) {
   char tmp[256],*r,*s,*t;
   int i;
   if(*filetype=='.') filetype++;

@@ -282,8 +282,7 @@ check_error_max_number();
 
 /*---------------------------------------------------------------------------*/
 
-void error_token(cnt)
-struct s_content *cnt;
+void error_token(struct s_content *cnt)
 {
 fprintz(stderr,"%z ",cnt);
 if(err_chan) fprintz(err_chan,"%z ",cnt);
@@ -319,8 +318,7 @@ return lexical_error_n+error_n+fatal_error_n+unknown_error_n+internal_error_n;
 
 /*---------------------------------------------------------------------------*/
 
-void syntax_error(info_routine)
-int (*info_routine)();
+void syntax_error(int (*info_routine)())
 {
 open_err_file();
 fprintz(stderr,"+ **** SYNTAX ERROR ****\n");
@@ -357,14 +355,13 @@ if(++count>=max_error_n)
   }
 }
 
-set_max_error_n(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int set_max_error_n(int argc, struct s_content argv[], struct s_content *ret)
 {
   int n;
-  if(argc!=1) return;
+  if(argc!=1) return -1;
   n=(int)s_content_value(argv[0]);
   max_error_n=n;
+  return 0;
 }
 
 int zz_get_error_number()

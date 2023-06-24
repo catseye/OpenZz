@@ -24,7 +24,7 @@
 #include "sys.h"
 
 
-kernel()
+void kernel(void)
 {
 struct s_tag *tag;
 extern int max_error_n;
