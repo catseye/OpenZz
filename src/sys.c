@@ -35,6 +35,9 @@
 extern FILE *zz_chanout;
 extern struct s_content zz_ret_value;
 
+/*PROTOTYPES*/
+char *get_source_name(void);
+int get_source_line(void);
 
 const char* zz_includes = "";
 
@@ -1515,7 +1518,7 @@ if(argc==1)
   printz("** %z **    ",&argv[0]);
 else
   printf("** %d **    ",count++);
-s=(char*)get_source_name();
+s=get_source_name();
 line_n=get_source_line();
 printf("TIME %4.2fs    FILE %s   LINE %d\n",sec,s,line_n);
 return 1;

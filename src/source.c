@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 
 #include "avl.h"
@@ -142,7 +144,7 @@ struct s_source *new_source(next_token_function)
 
 /*--------------------------------------------------------------------*/
 
-pop_source()
+void pop_source(void)
 {
 struct s_source *next;
 if(!cur_source) return;
@@ -167,7 +169,7 @@ else
 /*--------------------------------------------------------------------*/
 
 // Initialization function for file source:
-source_file(filename)
+int source_file(filename)
      char *filename;
 {
   FILE *chan;
@@ -190,7 +192,7 @@ source_file(filename)
 /*--------------------------------------------------------------------*/
 
 
-source_pipe()
+int source_pipe(void)
 {
   new_source(next_token_file);
 
@@ -487,7 +489,7 @@ return s;
 /*--------------------------------------------------------------------*/
 
 
-source_line(source)
+int source_line(source)
      struct s_source *source;
 {
   return source->line_n;
@@ -517,7 +519,7 @@ return source->line_n;
 
 /*--------------------------------------------------------------------*/
 
-char *get_source_name()
+char *get_source_name(void)
 {
   if(!cur_source) 
     return "NOSOURCE";
@@ -529,7 +531,7 @@ char *get_source_name()
 /*--------------------------------------------------------------------*/
 
 
-get_source_line()
+int get_source_line(void)
 {
   if(!cur_source) 
     return 0;
@@ -539,7 +541,7 @@ get_source_line()
 
 /*--------------------------------------------------------------------*/
 
-get_source_file(buffer)
+void get_source_file(buffer)
 char *buffer;
 {
 int i;
@@ -596,7 +598,7 @@ int zz_parse_file(filename)
 /*--------------------------------------------------------------------*/
 
 
-fprint_source_position(chan,print_action_flag)
+void fprint_source_position(chan,print_action_flag)
      FILE *chan;
      int print_action_flag;
 {

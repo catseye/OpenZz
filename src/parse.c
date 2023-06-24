@@ -994,7 +994,7 @@ printf("%d dots used\n",cur_lrenv.b);
 
 /*------------------------------------------------------------------*/
 
-fprint_param(chan)
+void fprint_param(chan)
 FILE *chan;
 {
 if(cur_token.is_param)
