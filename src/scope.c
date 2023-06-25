@@ -21,6 +21,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "zz.h"
 #include "avl.h"
 #include "rule.h"
@@ -28,14 +31,20 @@
 #include "err.h"
 #include "trace.h"
 
+/*PROTOTYPES*/
+int parse(struct s_nt *);
+void pop_source(void);
+int source_list(struct s_content *, void *);
+/*FORWARD*/
+void delete_scope(char *name);
+
 struct s_scope {
         char enabled;
-	char *name;
-	TREE *rules;
+        char *name;
+        TREE *rules;
         struct s_scope *previous,*next;
-	};
-	
-	
+      };
+
 static struct s_scope *top_scope=0,*cur_scope=0;
 static TREE *scope_tree=0;
 static int link_flag=0;
@@ -78,8 +87,7 @@ return scope;
 
 /*---------------------------------------------------------------------------*/
 
-zz_push_scope(scope_name)
-char *scope_name;
+void zz_push_scope(char *scope_name)
 {
 struct s_scope *scope,*new_scope;
 new_scope = find_scope(scope_name);
@@ -96,16 +104,16 @@ top_scope->enabled=1;
 }
 
 /*---------------------------------------------------------------------------*/
-delete_and_push_scope(scope_name)
-char *scope_name;
+int delete_and_push_scope(char *scope_name)
 {
 delete_scope(scope_name);
-zz_push_scope(scope_name); 
+zz_push_scope(scope_name);
+return 0;
 }
 
 /*---------------------------------------------------------------------------*/
 
-zz_pop_scope()
+void zz_pop_scope(void)
 {
 struct s_scope *scope;
 if(!top_scope || !top_scope->previous)
@@ -236,7 +244,7 @@ if(oldrule)
 
    if(oldrule->when_change_action.tag==tag_list)
      {
-      source_list(&oldrule->when_change_action);  
+      source_list(&oldrule->when_change_action, NULL);
       parse(find_nt("root"));
       pop_source();
      }
@@ -309,8 +317,7 @@ else
 
 /*---------------------------------------------------------------------------*/
 
-delete_scope(name)
-char *name;
+void delete_scope(char *name)
 {
 int i,j;
 /*void free_rule();*/
@@ -428,13 +435,12 @@ if(Uchan)
 /*---------------------------------------------------------------------------*/
 
 
-write_rules(filename)
-char *filename;
+int write_rules(char *filename)
 {
 struct s_scope *scope;
 int i;
 Uchan = fopen(filename,"a");
-if(!Uchan) {zz_error(ERROR,"Unable to write %s\n",filename);return;}
+if(!Uchan) {zz_error(ERROR,"Unable to write %s\n",filename);return 1;}
 printf("RULES segment %d -> (%s)\n",cur_segment_id,filename);
 scope = top_scope;
 while(scope)
@@ -449,6 +455,7 @@ fprintf(Uchan,"\n");
 fclose(Uchan);
 Uchan=0;
 cur_segment_id++;
+return 0;
 }
 
 /*---------------------------------------------------------------------------*/
