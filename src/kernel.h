@@ -35,6 +35,8 @@ void append_t_bead(struct s_content *);
 void append_nt_bead(char *, char *);
 void set_recovery(char *, char *);
 void set_nt_prompt(char *, const char *);
+void open_rule(char *);
+struct s_rule *close_rule(void);
 
 #define OPEN(S) {INIT_ZLEX open_rule(zlex_strsave( #S ));}
 #define GSB(S)  append_nt_bead(zlex_strsave( #S),0);

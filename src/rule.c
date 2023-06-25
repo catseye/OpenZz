@@ -57,6 +57,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "avl.h"
 #include "rule.h"
 #include "list.h"
@@ -65,6 +68,12 @@
 #include "trace.h"
 #include "table.h"
 #include "printz.h"
+
+/*PROTOTYPES*/
+int param_substitute();  /* signature int param_substitute(struct s_content *token,char **paramname) in param.h is incompatible */
+int parse(struct s_nt *);
+int source_list();  /* signature int source_list(struct s_content *, void *); is incompatible */
+void pop_source(void);
 
 static int nt_mem=0;
 static int rule_mem=0;
