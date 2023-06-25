@@ -828,8 +828,7 @@ else
   Associa una lista di termini di recovery ad un non-terminale
 
 */
-set_recovery(ntname,termlist)
-char *ntname,*termlist;
+void set_recovery(char *ntname, char *termlist)
 {
 struct s_nt *nt;
 int i;
@@ -896,8 +895,7 @@ return 0;
 
 */
 
-set_nt_prompt(ntname,prompt)
-char *ntname,*prompt;
+void set_nt_prompt(char *ntname, const char *prompt)
 {
 struct s_nt *nt;
 if(ntname)

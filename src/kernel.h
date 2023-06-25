@@ -20,6 +20,22 @@
 #ifndef __KERNEL_H__
 #define __KERNEL_H__
 
+/*PROTOTYPES*/
+void init_zlex(void);
+void setaction_exesproc(int (*sproc)(), struct s_tag *tag);
+void setaction_exeproc(int (*proc)(), struct s_tag *tag);
+void setaction_pass(void);
+void setaction_merge();
+void setaction_merge_all();
+void setaction_list();
+void setaction_append();
+void setaction_return(struct s_content *, char *);
+void insert_rule();  /* actual signature is: void insert_rule(char *, struct s_rule *); */
+void append_t_bead(struct s_content *);
+void append_nt_bead(char *, char *);
+void set_recovery(char *, char *);
+void set_nt_prompt(char *, const char *);
+
 #define OPEN(S) {INIT_ZLEX open_rule(zlex_strsave( #S ));}
 #define GSB(S)  append_nt_bead(zlex_strsave( #S),0);
 #define M(S)    {struct s_content cnt;cnt.tag=tag_qstring;\
