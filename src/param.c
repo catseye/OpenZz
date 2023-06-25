@@ -338,7 +338,7 @@ return 1;
 /*------------------------------------------------------------------------*/
 
 
-list_params()
+int list_params(void)
 {
 struct s_param_pair *pair;
 int i,lev;
@@ -370,9 +370,10 @@ int zz_get_param_stack_depth()
 
 /*---------------------------------------------------------------------------*/
 
-show_param_memory()
+int show_param_memory(void)
 {
 PRINTMEM("param",param_mem)
+return 0;
 }
 
 

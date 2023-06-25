@@ -48,7 +48,7 @@ struct s_rule {
 
 struct s_nt {
 	char *name;
-	char *prompt;
+	const char *prompt;
 	struct s_dot *first_dot;
 	};
 
