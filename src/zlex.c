@@ -450,7 +450,7 @@ static void init_print_zlex()
 }
 #endif
 
-init_zlex()
+void init_zlex(void)
 {
 if(init_zlex_done) return;
 init_zlex_done=1;

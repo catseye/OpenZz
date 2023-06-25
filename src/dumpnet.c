@@ -25,6 +25,7 @@
 #include "rule.h"
 #include "avl.h"
 #include "err.h"
+#include "printz.h"
 
 /*PROTOTYPES*/
 int do_dumpnet(struct s_nt *);

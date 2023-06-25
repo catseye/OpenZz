@@ -213,9 +213,7 @@ else
 
 /*---------------------------------------------------------------------------*/
 
-insert_rule(scope_name,rule)
-char *scope_name;
-struct s_rule *rule;
+void insert_rule(char *scope_name, struct s_rule *rule)
 {
 struct s_scope *scope,*dst_scope;
 struct s_rule *oldrule,*r;
@@ -285,26 +283,26 @@ else
       flag=1;
       while(scope)
         {
-	 oldrule = avl_locate(scope->rules,rule);
-	 if(oldrule) break;
-	 scope=scope->previous;
+          oldrule = avl_locate(scope->rules,rule);
+          if(oldrule) break;
+          scope=scope->previous;
         }
       if(oldrule)
         {
-	 /* rule oscura oldrule */
-	 rule->table_backptr=oldrule->table_backptr;
-	 *(rule->table_backptr) = rule;
-	 oldrule->table_backptr = 0;
-	 oldrule->next_rule = rule;
-	 rule->next_rule = 0;
-	 rule->prev_rule = oldrule;
-	}
+          /* rule oscura oldrule */
+          rule->table_backptr=oldrule->table_backptr;
+          *(rule->table_backptr) = rule;
+          oldrule->table_backptr = 0;
+          oldrule->next_rule = rule;
+          rule->next_rule = 0;
+          rule->prev_rule = oldrule;
+        }
       else
-	{
-	 /* rule e' nuova */
-	 if(dst_scope->enabled)
-	   link_rule(rule);
-	}
+        {
+          /* rule e' nuova */
+          if(dst_scope->enabled)
+            link_rule(rule);
+        }
      }
   }
 }
