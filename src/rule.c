@@ -184,7 +184,7 @@ void open_rule(char *ntname)
   ntname = (char*)s_content_value(tmp1);
   if(!init_rule_done) init_rule();
   if(cur_rule)
-    free_rule(cur_rule);   
+    free_rule(cur_rule, NULL);
   cur_rule = (struct s_rule *)calloc(1,sizeof(struct s_rule));
   rule_mem += sizeof(struct s_rule);
   cur_rule->bead_n=1;
@@ -530,7 +530,7 @@ if(rule->when_exit_scope.tag==tag_list)
   }
 }
 
-void free_rule(void *_rule /*, void *dummy_param*/)
+void free_rule(void *_rule, void *dummy_param)
 {
   struct s_rule *rule = (struct s_rule *)_rule;
   do_delete_scope_action(rule);

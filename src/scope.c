@@ -37,6 +37,7 @@ void pop_source(void);
 int source_list(struct s_content *, void *);
 /*FORWARD*/
 void delete_scope(char *name);
+void do_list_rules(char *sintname, int kflag);
 
 struct s_scope {
         char enabled;
@@ -383,16 +384,14 @@ printz("  %r\n",rule);
 /*---------------------------------------------------------------------------*/
 
 
-list_all_rules() {do_list_rules(0,0);}
-list_all_krules() {do_list_rules(0,1);}
-list_rules(s)char*s; {do_list_rules(s,0);}
-list_krules(s)char*s; {do_list_rules(s,1);}
+int list_all_rules(void) {do_list_rules(0,0); return 0;}
+int list_all_krules(void) {do_list_rules(0,1); return 0;}
+int list_rules(char *s) {do_list_rules(s,0); return 0;}
+int list_krules(char *s) {do_list_rules(s,1); return 0;}
 
 /*---------------------------------------------------------------------------*/
 
-do_list_rules(sintname,kflag)
-char *sintname;
-int kflag;
+void do_list_rules(char *sintname, int kflag)
 {
 struct s_scope *scope;
 int i;

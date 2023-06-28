@@ -45,6 +45,7 @@ int init_zlex_done=0;
 extern int init_zlex_done;
 #endif
 
+void init_zlex(void);
 #define INIT_ZLEX {if(!init_zlex_done)init_zlex();}
 
 
