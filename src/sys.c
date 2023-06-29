@@ -46,6 +46,7 @@ void error_tail_1(void);
 int parse(struct s_nt *);
 void show_zlex_memory(void);
 void show_rule_memory(void);
+int source_file(char *);
 
 const char* zz_includes = "";
 
@@ -178,9 +179,7 @@ int s_error(struct s_list *list)
 
 /*---------------------------------------------------------------------------*/
 
-s_dump(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_dump(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i;
   fprintz(zz_chanout,"argc=%d\n",argc);
@@ -192,9 +191,7 @@ s_dump(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-int s_param_assign(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_param_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content value;
   value=argv[1];
@@ -207,7 +204,7 @@ struct s_content argv[],*ret;
 
 /*---------------------------------------------------------------------------*/
 
-s_param_g_assign(int argc, struct s_content *argv , struct s_content*ret)
+int s_param_g_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content value;
   value=argv[1];
@@ -220,7 +217,7 @@ s_param_g_assign(int argc, struct s_content *argv , struct s_content*ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_param_gn_assign(int argc, struct s_content argv[], struct s_content *ret)
+int s_param_gn_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   int delta;
   struct s_content value;
@@ -236,9 +233,7 @@ s_param_gn_assign(int argc, struct s_content argv[], struct s_content *ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_dumpnet(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_dumpnet(int argc, struct s_content argv[], struct s_content* ret)
 {
 if(argc<=0 || argv[0].tag!=tag_ident)
   {
@@ -252,7 +247,7 @@ return 1;
 /*--------------------------------------------------------------------------*/
 
 
-s_trace(trace)
+int s_trace(trace)
      int trace;
 {
   zztrace = trace;
@@ -262,7 +257,7 @@ s_trace(trace)
 /*---------------------------------------------------------------------------*/
 
 
-s_eq(int argc, struct s_content argv[], struct s_content* ret)
+int s_eq(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -290,9 +285,7 @@ s_eq(int argc, struct s_content argv[], struct s_content* ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_ne(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_ne(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_eq(argc,argv,ret)) {
     s_content_value(*ret) = ! (int)s_content_value(*ret);
@@ -304,9 +297,7 @@ s_ne(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_ge(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_ge(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -326,9 +317,7 @@ s_ge(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_gt(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_gt(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -348,9 +337,7 @@ s_gt(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_le(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_le(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_gt(argc,argv,ret)) {
     s_content_value(*ret) = ! (int)s_content_value(*ret);
@@ -362,9 +349,7 @@ s_le(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_lt(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_lt(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_ge(argc,argv,ret)) {
     s_content_value(*ret) = !s_content_value(*ret);
@@ -376,9 +361,7 @@ s_lt(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_add(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_add(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -411,9 +394,7 @@ s_add(argc,argv,ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_boolean_and(argc, argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_boolean_and(int argc, struct s_content argv[], struct s_content* ret)
 {
   if (argc != 2) {
     zz_error(ERROR, "Error in s_boolean_and: wrong number of arguments(%i)", argc);
@@ -444,9 +425,7 @@ s_boolean_and(argc, argv, ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_boolean_or(argc, argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_boolean_or(int argc, struct s_content argv[], struct s_content* ret)
 {
   if (argc != 2) {
     zz_error(ERROR, "Error in s_boolean_or: wrong number of arguments(%i)", argc);
@@ -477,9 +456,7 @@ s_boolean_or(argc, argv, ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_sub(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_sub(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -505,9 +482,7 @@ s_sub(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_mult(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_mult(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -532,9 +507,7 @@ s_mult(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-s_div(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_div(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -565,9 +538,8 @@ s_div(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-s_chs(argc,argv,ret)         /* s_chs - change of sign */
-     int argc;
-     struct s_content argv[],*ret;
+/* s_chs - change of sign */
+int s_chs(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(argc!=1) {
     zz_error(ERROR,"chs: bad argument number");
@@ -607,9 +579,7 @@ s_chs(argc,argv,ret)         /* s_chs - change of sign */
 
 /*--------------------------------------------------------------------------*/
 
-s_strcat(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_strcat(int argc, struct s_content argv[], struct s_content* ret)
 {
 char buffer[256];
 char *w,*s;
@@ -665,9 +635,7 @@ return 1;
 
 /*----------------------------------------------------------------------------*/
 
-s_return(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_return(int argc, struct s_content argv[], struct s_content* ret)
 {
   zz_ret_value=argv[0];
 
@@ -681,9 +649,7 @@ struct s_content argv[],*ret;
 
 /*----------------------------------------------------------------------------*/
 
-s_exec(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_exec(int argc, struct s_content argv[], struct s_content* ret)
 {
 source_list(&argv[0]);
 parse(find_nt("root"));
@@ -693,10 +659,7 @@ return 1;
 
 /*----------------------------------------------------------------------------*/
 
-s_dumplist(argc,argv,ret)
-int argc;
-struct s_content argv[];
-int ret;
+int s_dumplist(int argc, struct s_content argv[], struct s_content* ret)
 {
 int i;
 struct s_list *lst;
@@ -710,9 +673,7 @@ return 1;
 
 /*--------------------------------------------------------------------------*/
 
-s_foreach(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_foreach(int argc, struct s_content argv[], struct s_content* ret)
 {
 int i,created,rr;
 char *paramname;
@@ -739,9 +700,7 @@ if(created) unset_param(paramname);
 
 /*--------------------------------------------------------------------------*/
 
-s_for(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_for(int argc, struct s_content argv[], struct s_content* ret)
 {
   int from,to,step,i,created,rr;
   char *paramname;
@@ -789,9 +748,7 @@ s_for(argc,argv,ret)
  */
 
 /* Echo back an argument surrounded by parens as a list (with parens) */
-s_condecho_passparens(argc,argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_passparens(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content tmp;
 
@@ -812,9 +769,7 @@ s_condecho_passparens(argc,argv, ret)
 }
 
 
-s_condecho_chs(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_chs(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content tmp;
 
@@ -865,86 +820,62 @@ s_condecho(argc,argv, action, ret)
   return 1;
 }
 
-s_condecho_and(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_and(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "&&", ret);
 }
 
-s_condecho_or(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_or(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "||", ret);
 }
 
-s_condecho_add(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_add(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "+", ret);
 }
 
-s_condecho_sub(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_sub(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "-", ret);
 }
 
-s_condecho_mult(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_mult(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "*", ret);
 }
 
-s_condecho_div(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_div(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "/", ret);
 }
 
-s_condecho_eq(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_eq(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "==", ret);
 }
 
-s_condecho_ne(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_ne(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "!=", ret);
 }
 
-s_condecho_ge(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_ge(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, ">=", ret);
 }
 
-s_condecho_gt(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_gt(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, ">", ret);
 }
 
-s_condecho_le(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_le(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "<=", ret);
 }
 
-s_condecho_lt(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_lt(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "<", ret);
 }

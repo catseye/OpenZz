@@ -175,8 +175,7 @@ else
 /*--------------------------------------------------------------------*/
 
 // Initialization function for file source:
-int source_file(filename)
-     char *filename;
+int source_file(char *filename)
 {
   FILE *chan;
   chan = fopen(filename,"r");
@@ -544,8 +543,7 @@ int get_source_line(void)
 
 /*--------------------------------------------------------------------*/
 
-void get_source_file(buffer)
-char *buffer;
+void get_source_file(char *buffer)
 {
 int i;
 struct s_source *source;
