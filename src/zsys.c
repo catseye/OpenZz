@@ -87,11 +87,13 @@ return 1;
 
 /*---------------------------------------------------------------------------*/
 
+void do_z_link_rule(char *, char *);
+
 /* inserisce una regola nello scope di default */
 
 int z_link_rule_default(int argc, struct s_content argv[], struct s_content *ret)
 {
-do_z_link_rule(s_content_value(argv[0]),0);
+do_z_link_rule(s_content_svalue(argv[0]), NULL);
 return 1;
 }
 
@@ -101,21 +103,20 @@ return 1;
 
 int z_link_rule(int argc, struct s_content argv[], struct s_content *ret)
 {
-do_z_link_rule(s_content_value(argv[1]),s_content_value(argv[0]));
+do_z_link_rule(s_content_svalue(argv[1]), s_content_svalue(argv[0]));
 return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-do_z_link_rule(sint_name,scope_name)
-char *sint_name,*scope_name;
+void do_z_link_rule(char *sint_name, char *scope_name)
 {
 int i;
 struct s_rule *rule;
 open_rule(zlex_strsave(sint_name));
 for(i=0;i<bead_n;i++)
   if(beads[i].name)
-    append_nt_bead(s_content_value(beads[i].bead),beads[i].name);
+    append_nt_bead(s_content_svalue(beads[i].bead),beads[i].name);
   else
     append_t_bead(&beads[i].bead);
 bead_n=0;
@@ -145,7 +146,6 @@ insert_rule(scope_name,rule);
 cur_action.cnt.tag=tag_none;
 s_content_value(cur_action.cnt)=0;
 cur_action.is_return=0;
-return 1;
 }
 
 /*---------------------------------------------------------------------------*/
