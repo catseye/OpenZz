@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
+#include <ctype.h>
+
 #include "zlex.h"
 #include "list.h"
 #include "rule.h"
@@ -42,6 +44,8 @@ void error_token(struct s_content *);
 void error_head(int);
 void error_tail_1(void);
 int parse(struct s_nt *);
+void show_zlex_memory(void);
+void show_rule_memory(void);
 
 const char* zz_includes = "";
 
@@ -948,16 +952,12 @@ s_condecho_lt(argc,argv,ret)
 /*--------------------------------------------------------------------------*/
 
 
-s_do(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_do(int argc, struct s_content argv[], struct s_content* ret)
 {
   s_do_while_loops(argc,argv,&ret,0);
 }
 
-s_while(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_while(int argc, struct s_content argv[], struct s_content* ret)
 {
   s_do_while_loops(argc,argv,&ret,1);
 }
@@ -1094,9 +1094,7 @@ s_do_while_loops(argc,argv,ret,while_loop)
 /*--------------------------------------------------------------------------*/
 
 
-s_if(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_if(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i,flag;
   char *paramname;
@@ -1115,9 +1113,7 @@ s_if(argc,argv,ret)
 
 /*--------------------------------------------------------------------------*/
 
-s_ifelse(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_ifelse(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i,flag;
   char *paramname;
@@ -1152,9 +1148,7 @@ return s;
 
 /*--------------------------------------------------------------------------*/
 
-s_include(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_include(int argc, struct s_content argv[], struct s_content* ret)
 {
   char filename[FILENAME_MAX],type[40];
 
@@ -1199,9 +1193,7 @@ s_include(argc,argv,ret)
 
 /*--------------------------------------------------------------------------*/
 
-s_add_includedir(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_add_includedir(int argc, struct s_content argv[], struct s_content* ret)
 {
   zz_assert(argc==1);
   if (zz_num_includedirs == MAX_INCLUDEDIRS-1) {
@@ -1215,9 +1207,7 @@ struct s_content argv[],*ret;
 
 /*--------------------------------------------------------------------------*/
 
-s_print_includedirs(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_print_includedirs(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i;
   fprintf(zz_chanout, "Default Include Directories:\n");
@@ -1228,9 +1218,7 @@ struct s_content argv[],*ret;
 
 /*--------------------------------------------------------------------------*/
 
-s_include_default(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_include_default(int argc, struct s_content argv[], struct s_content* ret)
 {
   char filename[512],type[40];
   int i;
@@ -1334,7 +1322,7 @@ int s_load_lib(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-dump_memory_usage()
+int dump_memory_usage(void)
 {
 char cmd[256];
 strcpy(cmd,"ps -u");
@@ -1348,9 +1336,7 @@ return 1;
 /*---------------------------------------------------------------------------*/
 
 
-s_extract(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_extract(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content *cnt;
   struct s_content *list_extract();
@@ -1368,9 +1354,7 @@ s_extract(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_list_length(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_list_length(int argc, struct s_content argv[], struct s_content* ret)
 {
 struct s_content *cnt;
 struct s_content *list_extract();
@@ -1380,7 +1364,8 @@ return 1;
 }
 
 /*----------------------------------------------------------------------------*/
-s_string_length(int argc, struct s_content argv[], struct s_content* ret)
+
+int s_string_length(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content *cnt;
   ret->tag = tag_int;
@@ -1392,9 +1377,7 @@ s_string_length(int argc, struct s_content argv[], struct s_content* ret)
 /*----------------------------------------------------------------------------*/
 
 // Implement split function for zz simillar to strtok() c function.
-s_split(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_split(int argc, struct s_content argv[], struct s_content* ret)
 {
   char *pch;
   char *srcstr;
@@ -1445,7 +1428,7 @@ s_split(argc,argv,ret)
 /*----------------------------------------------------------------------------*/
 
 
-show_sys_memory()
+void show_sys_memory(void)
 {
 PRINTMEM("sys.qstring",sys_qstring_mem)
 }
@@ -1465,7 +1448,7 @@ tagson->param_off = tagparent->param_off;
 
 /*---------------------------------------------------------------------------*/
 
-show_memory()
+void show_memory(void)
 {
 printf("Memory usage\n");
 show_zlex_memory();
@@ -1488,14 +1471,14 @@ static struct tbuffer
 
 
 
-init_time()
+void init_time(void)
 {
 times (&Time);
 Start_Time = Time.proc_user_time;
 }
 
 
-get_time()
+int get_time(void)
 {
 int t;
 times (&Time);
@@ -1506,15 +1489,13 @@ return t; /* centesimi di secondo */
 
 
 
-proc_beep(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int proc_beep(int argc, struct s_content argv[], struct s_content *ret)
 {
 char *s;
 int line_n;
 int time;
 float sec;
-static count=0;
+static int count=0;
 time = get_time();
 sec = (float)time*0.01;
 if(argc==1)
@@ -1533,9 +1514,7 @@ static int bra_ket_defined = 0;
 static struct s_content bra,ket;
 
 
-s_append_bra(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_append_bra(int argc, struct s_content argv[], struct s_content *ret)
 {
 if(argc!=1 || argv[0].tag!=tag_list) 
   {printf("error - s_append_bra; bad parameters\n");exit(1);}
@@ -1554,9 +1533,7 @@ return 1;
 
 /*---------------------------------------------------------------------------*/
 
-s_append_ket(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_append_ket(int argc, struct s_content argv[], struct s_content *ret)
 {
 if(argc!=1 || argv[0].tag!=tag_list) 
   {printf("error - s_append_ket; bad parameters\n");exit(1);}
@@ -1617,7 +1594,7 @@ int zz_qtoi(char* q)
 int zz_inttohex(int i)
 { 
   char* q=calloc(20,sizeof(char));
-  sprintf(q,"0x%x\0",i);
+  sprintf(q,"0x%x",i);
   return (int)q;
 }
 
