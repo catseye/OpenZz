@@ -118,7 +118,7 @@ char *buffer;
 struct s_content *cnt;
 {
   //zz_assert(cnt && s_content_tag(*cnt)==tag_qstring);
-  strcpy(buffer,(char*)s_content_value(*cnt));
+  strcpy(buffer, s_content_svalue(*cnt));
 }
 
 int fprint_string(chan,cnt)
@@ -126,7 +126,7 @@ FILE *chan;
 struct s_content *cnt;
 {
   //zz_assert(cnt && s_content_tag(*cnt)==tag_qstring);
-  fprintf(chan,"%s",s_content_value(*cnt));
+  fprintf(chan,"%s", s_content_svalue(*cnt));
 }
 
 /*----------------------------------------------------------------------------*/
@@ -610,7 +610,7 @@ static int fprint_zlex_image(FILE *chan, void *_cnt)
 /*----------------------------------------------------------------------------*/
 
 
-zlex_set_precedence(cnt,prec,left_assoc)
+void zlex_set_precedence(cnt,prec,left_assoc)
 struct s_content *cnt;
 int prec,left_assoc;
 {
@@ -694,8 +694,7 @@ return term->name;
 
 /*----------------------------------------------------------------------------*/
 
-std_len(cnt)
-struct s_content *cnt;
+int std_len(struct s_content *cnt)
 {
   //return strlen(cnt->tag->name)+9;
   zz_assert(!"any use????");
@@ -1157,7 +1156,7 @@ switch(**ptr)
 
 /*----------------------------------------------------------------------------*/
 
-show_zlex_memory()
+void show_zlex_memory(void)
 {
 PRINTMEM("zlex.qstring.mex",zlex_qstring_mem)
 PRINTMEM("zlex.strsaved.mem",zlex_strsaved_mem)
@@ -1200,7 +1199,7 @@ int zlex_set_default_integer_as_int64(peol)
 /*------------------------------------------------------------------------*/
 
 
-ignore_block()
+void ignore_block(void)
 {
 ignore_block_flag = 1;
 braket_level = 0;
