@@ -47,6 +47,10 @@ int parse(struct s_nt *);
 void show_zlex_memory(void);
 void show_rule_memory(void);
 int source_file(char *);
+void pop_source(void);
+void dumpnet(char *);
+int change_extension(char *, const char *);
+int source_list(struct s_content *list, void *id);
 
 const char* zz_includes = "";
 
@@ -149,8 +153,7 @@ struct s_tag *s_target_type(argc, argv)
 
 /*----------------------------------------------------------------------------*/
 
-s_print(list)
-     struct s_list *list;
+int s_print(struct s_list *list)
 {
   int i;
 
@@ -239,7 +242,7 @@ if(argc<=0 || argv[0].tag!=tag_ident)
   {
    zz_error(ERROR,"dumpnet: bad argument");return 0;
   }
-dumpnet(s_content_value(argv[0]));
+dumpnet(s_content_svalue(argv[0]));
 return 1;
 }
 
@@ -651,7 +654,7 @@ int s_return(int argc, struct s_content argv[], struct s_content* ret)
 
 int s_exec(int argc, struct s_content argv[], struct s_content* ret)
 {
-source_list(&argv[0]);
+source_list(&argv[0], NULL);
 parse(find_nt("root"));
 pop_source();
 return 1;
@@ -690,7 +693,7 @@ for(i=0;i<lst->n;i++)
   {
    rr=set_param(paramname,lst->array+i);
    if(i==0) created=rr;
-   source_list(&blk);
+   source_list(&blk, NULL);
    parse(find_nt("root"));
    pop_source();
   }
@@ -728,7 +731,7 @@ int s_for(int argc, struct s_content argv[], struct s_content* ret)
       s_content_value(paramval)=i;
       rr=set_param(paramname,&paramval);
       if(i==from) created=rr;
-      source_list(&blk);
+      source_list(&blk, NULL);
       parse(find_nt("root"));
       pop_source();
     }
@@ -790,7 +793,7 @@ int s_condecho_chs(int argc, struct s_content argv[], struct s_content* ret)
    Called by unary and binary loop operations 
    to relect arguments while retaining operators.
 */
-s_condecho(argc,argv, action, ret)
+int s_condecho(argc,argv, action, ret)
      int argc;
      char *action;
      struct s_content argv[], *ret;
@@ -900,7 +903,7 @@ int s_while(int argc, struct s_content argv[], struct s_content* ret)
  *  while loop for each pass of the loop (different from 'for' loop
  *  where interpretation is only done at parse of loop).
  */
-s_do_while_loops(argc,argv,ret,while_loop)
+int s_do_while_loops(argc,argv,ret,while_loop)
      int argc;
      struct s_content argv[], *ret;
      int while_loop;
@@ -990,7 +993,7 @@ s_do_while_loops(argc,argv,ret,while_loop)
     while ( loop_control_flag )
       {
 	// Execute the code block of the loop
-	source_list(&blk);
+	source_list(&blk, NULL);
 
 	// If there is a parse error in the loop body break out of loop
 	if (!parse(find_nt("root"))) {
@@ -1035,7 +1038,7 @@ int s_if(int argc, struct s_content argv[], struct s_content* ret)
 
   if(s_content_value(argv[0]))
     {
-      source_list(&blk);
+      source_list(&blk, NULL);
       parse(find_nt("root"));
       pop_source();
     }
@@ -1058,7 +1061,7 @@ int s_ifelse(int argc, struct s_content argv[], struct s_content* ret)
     {
       blk = argv[2];
     }
-  source_list(&blk);
+  source_list(&blk, NULL);
   parse(find_nt("root"));
   pop_source();
 }
@@ -1366,8 +1369,7 @@ PRINTMEM("sys.qstring",sys_qstring_mem)
 
 /*---------------------------------------------------------------------------*/
 
-subtag(tagson_name,tagparent_name)
-char *tagson_name,*tagparent_name;
+int subtag(char *tagson_name, char *tagparent_name)
 {
 struct s_tag *tagson,*tagparent;
 tagson = find_tag(tagson_name);
@@ -1375,6 +1377,7 @@ tagparent = find_tag(tagparent_name);
 tagson->delete = tagparent->delete;
 tagson->param_on = tagparent->param_on;
 tagson->param_off = tagparent->param_off;
+return 0;
 }
 
 /*---------------------------------------------------------------------------*/
