@@ -94,8 +94,15 @@ While a few remain, the bulk of them have been eliminated.
 (Many were simply due to `gcc` wanting to see an explicit return
 type, instead of defaulting to `int`, and missing prototypes.)
 
-Also includes an MS-DOS batchfile to build `ozz.exe` under
-MS-DOS usind DJGPP.
+Also includes an MS-DOS batchfile for building `ozz.exe` under
+DOS using DJGPP.
+
+The goal of both of these enhancements was to build an
+instance of `ozz` that runs in a DOS emulator running in
+a web browser, such as `em-dosbox`.
+
+Which is fine by me, as now we can all
+[play Zzrk on the Internet Archive](https://archive.org/details/zzrk_adventure)!
 
 -Chris
 
