@@ -1,7 +1,7 @@
-OpenZz 1.0.4-4ce2
+OpenZz 1.0.4-4ce3
 =================
 
-This is OpenZz 1.0.4-4ce2, a fork of the original
+This is OpenZz 1.0.4-4ce3, a fork of the original
 [OpenZz distribution](https://openzz.sourceforge.net/),
 based on OpenZz version 1.0.4-4.  The original README can be found at the
 end of this Markdown file, encased in a preformatted text block.
@@ -86,6 +86,16 @@ Also, under the recent 32-bit build that I made using these
 modifications, for whatever reason, the `double.zz` test now passes.
 
 Which is fine by me, as long as it can still play [Zzrk](http://catseye.tc/node/Zzrk.html).
+
+### 1.0.4-4ce3
+
+Includes many changes to the code to address compiler warnings.
+While a few remain, the bulk of them have been eliminated.
+(Many were simply due to `gcc` wanting to see an explicit return
+type, instead of defaulting to `int`, and missing prototypes.)
+
+Also includes an MS-DOS batchfile to build `ozz.exe` under
+MS-DOS usind DJGPP.
 
 -Chris
 
