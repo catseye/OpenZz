@@ -30,6 +30,9 @@ by Simone Cabasino
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "zlex.h"
 #include "list.h"
 #include "mem.h"

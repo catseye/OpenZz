@@ -21,7 +21,7 @@
 #include "zlex.h"
 #include "kernel.h"
 
-zkernel()
+void zkernel(void)
 {
 /* redefinition of the syntax */
 

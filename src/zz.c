@@ -30,6 +30,10 @@
 
 #include "zz.h"
 
+/*PROTOYPES*/
+void print_error_count(void);
+void print_usage(void);
+
 int main(argc,argv,env)
      int argc;
      char *argv[];
@@ -165,7 +169,7 @@ int main(argc,argv,env)
 /*---------------------------------------------------------------------*/
 
 
-print_usage() {
+void print_usage(void) {
   fprintf(stderr, 
 	  "usage: ozz [params] [filein [fileout]]\n"
 	  "  -q        quiet\n"

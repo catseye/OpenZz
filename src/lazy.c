@@ -18,6 +18,9 @@
 */
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "rule.h"
 
 
@@ -78,7 +81,7 @@ return node;
 /*----------------------------------------------------------------*/
 
 
-lazy_rec(dots,len)
+void lazy_rec(dots,len)
 struct s_dot *dots[];
 int len;
 {
@@ -95,7 +98,7 @@ printf("--> set%d\n",node->id);
 /*----------------------------------------------------------------*/
 
 
-print_lazy_report()
+int print_lazy_report()
 {
 struct s_l_node *node;
 int k,i,count,flag;
@@ -125,6 +128,7 @@ if(sets[i])
       node=node->next;
      }
   }
+  return 0;
 }
 static char sccsid[]="@(#)lazy.c	6.1\t9/7/94";
 static char rcsid[] = "$Id: lazy.c,v 1.3 2002/01/11 11:52:02 brooks Exp $ ";

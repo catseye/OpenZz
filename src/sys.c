@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
+#include <ctype.h>
+
 #include "zlex.h"
 #include "list.h"
 #include "rule.h"
@@ -35,6 +37,20 @@
 extern FILE *zz_chanout;
 extern struct s_content zz_ret_value;
 
+/*PROTOTYPES*/
+char *get_source_name(void);
+int get_source_line(void);
+void error_token(struct s_content *);
+void error_head(int);
+void error_tail_1(void);
+int parse(struct s_nt *);
+void show_zlex_memory(void);
+void show_rule_memory(void);
+int source_file(char *);
+void pop_source(void);
+void dumpnet(char *);
+int change_extension(char *, const char *);
+int source_list(struct s_content *list, void *id);
 
 const char* zz_includes = "";
 
@@ -137,8 +153,7 @@ struct s_tag *s_target_type(argc, argv)
 
 /*----------------------------------------------------------------------------*/
 
-s_print(list)
-     struct s_list *list;
+int s_print(struct s_list *list)
 {
   int i;
 
@@ -153,8 +168,7 @@ s_print(list)
 
 /*---------------------------------------------------------------------------*/
 
-s_error(list)
-     struct s_list *list;
+int s_error(struct s_list *list)
 {
   int i;
   error_head(2);
@@ -168,9 +182,7 @@ s_error(list)
 
 /*---------------------------------------------------------------------------*/
 
-s_dump(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_dump(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i;
   fprintz(zz_chanout,"argc=%d\n",argc);
@@ -182,9 +194,7 @@ s_dump(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-int s_param_assign(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_param_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content value;
   value=argv[1];
@@ -197,7 +207,7 @@ struct s_content argv[],*ret;
 
 /*---------------------------------------------------------------------------*/
 
-s_param_g_assign(int argc, struct s_content *argv , struct s_content*ret)
+int s_param_g_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content value;
   value=argv[1];
@@ -210,7 +220,7 @@ s_param_g_assign(int argc, struct s_content *argv , struct s_content*ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_param_gn_assign(int argc, struct s_content argv[], struct s_content *ret)
+int s_param_gn_assign(int argc, struct s_content argv[], struct s_content* ret)
 {
   int delta;
   struct s_content value;
@@ -226,15 +236,13 @@ s_param_gn_assign(int argc, struct s_content argv[], struct s_content *ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_dumpnet(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_dumpnet(int argc, struct s_content argv[], struct s_content* ret)
 {
 if(argc<=0 || argv[0].tag!=tag_ident)
   {
    zz_error(ERROR,"dumpnet: bad argument");return 0;
   }
-dumpnet(s_content_value(argv[0]));
+dumpnet(s_content_svalue(argv[0]));
 return 1;
 }
 
@@ -242,7 +250,7 @@ return 1;
 /*--------------------------------------------------------------------------*/
 
 
-s_trace(trace)
+int s_trace(trace)
      int trace;
 {
   zztrace = trace;
@@ -252,7 +260,7 @@ s_trace(trace)
 /*---------------------------------------------------------------------------*/
 
 
-s_eq(int argc, struct s_content argv[], struct s_content* ret)
+int s_eq(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -280,9 +288,7 @@ s_eq(int argc, struct s_content argv[], struct s_content* ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_ne(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_ne(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_eq(argc,argv,ret)) {
     s_content_value(*ret) = ! (int)s_content_value(*ret);
@@ -294,9 +300,7 @@ s_ne(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_ge(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_ge(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -316,9 +320,7 @@ s_ge(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_gt(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_gt(int argc, struct s_content argv[], struct s_content* ret)
 {
   ret->tag=tag_int;
 
@@ -338,9 +340,7 @@ s_gt(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_le(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_le(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_gt(argc,argv,ret)) {
     s_content_value(*ret) = ! (int)s_content_value(*ret);
@@ -352,9 +352,7 @@ s_le(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_lt(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_lt(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(s_ge(argc,argv,ret)) {
     s_content_value(*ret) = !s_content_value(*ret);
@@ -366,9 +364,7 @@ s_lt(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_add(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_add(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -401,9 +397,7 @@ s_add(argc,argv,ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_boolean_and(argc, argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_boolean_and(int argc, struct s_content argv[], struct s_content* ret)
 {
   if (argc != 2) {
     zz_error(ERROR, "Error in s_boolean_and: wrong number of arguments(%i)", argc);
@@ -434,9 +428,7 @@ s_boolean_and(argc, argv, ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_boolean_or(argc, argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_boolean_or(int argc, struct s_content argv[], struct s_content* ret)
 {
   if (argc != 2) {
     zz_error(ERROR, "Error in s_boolean_or: wrong number of arguments(%i)", argc);
@@ -467,9 +459,7 @@ s_boolean_or(argc, argv, ret)
 /*----------------------------------------------------------------------------*/
 
 
-s_sub(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_sub(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -495,9 +485,7 @@ s_sub(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_mult(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_mult(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -522,9 +510,7 @@ s_mult(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-s_div(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_div(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_tag *targetType = s_target_type(argc, argv);
 
@@ -555,9 +541,8 @@ s_div(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-s_chs(argc,argv,ret)         /* s_chs - change of sign */
-     int argc;
-     struct s_content argv[],*ret;
+/* s_chs - change of sign */
+int s_chs(int argc, struct s_content argv[], struct s_content* ret)
 {
   if(argc!=1) {
     zz_error(ERROR,"chs: bad argument number");
@@ -597,9 +582,7 @@ s_chs(argc,argv,ret)         /* s_chs - change of sign */
 
 /*--------------------------------------------------------------------------*/
 
-s_strcat(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_strcat(int argc, struct s_content argv[], struct s_content* ret)
 {
 char buffer[256];
 char *w,*s;
@@ -655,9 +638,7 @@ return 1;
 
 /*----------------------------------------------------------------------------*/
 
-s_return(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_return(int argc, struct s_content argv[], struct s_content* ret)
 {
   zz_ret_value=argv[0];
 
@@ -671,11 +652,9 @@ struct s_content argv[],*ret;
 
 /*----------------------------------------------------------------------------*/
 
-s_exec(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_exec(int argc, struct s_content argv[], struct s_content* ret)
 {
-source_list(&argv[0]);
+source_list(&argv[0], NULL);
 parse(find_nt("root"));
 pop_source();
 return 1;
@@ -683,10 +662,7 @@ return 1;
 
 /*----------------------------------------------------------------------------*/
 
-s_dumplist(argc,argv,ret)
-int argc;
-struct s_content argv[];
-int ret;
+int s_dumplist(int argc, struct s_content argv[], struct s_content* ret)
 {
 int i;
 struct s_list *lst;
@@ -700,9 +676,7 @@ return 1;
 
 /*--------------------------------------------------------------------------*/
 
-s_foreach(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_foreach(int argc, struct s_content argv[], struct s_content* ret)
 {
 int i,created,rr;
 char *paramname;
@@ -719,7 +693,7 @@ for(i=0;i<lst->n;i++)
   {
    rr=set_param(paramname,lst->array+i);
    if(i==0) created=rr;
-   source_list(&blk);
+   source_list(&blk, NULL);
    parse(find_nt("root"));
    pop_source();
   }
@@ -729,9 +703,7 @@ if(created) unset_param(paramname);
 
 /*--------------------------------------------------------------------------*/
 
-s_for(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_for(int argc, struct s_content argv[], struct s_content* ret)
 {
   int from,to,step,i,created,rr;
   char *paramname;
@@ -759,7 +731,7 @@ s_for(argc,argv,ret)
       s_content_value(paramval)=i;
       rr=set_param(paramname,&paramval);
       if(i==from) created=rr;
-      source_list(&blk);
+      source_list(&blk, NULL);
       parse(find_nt("root"));
       pop_source();
     }
@@ -779,9 +751,7 @@ s_for(argc,argv,ret)
  */
 
 /* Echo back an argument surrounded by parens as a list (with parens) */
-s_condecho_passparens(argc,argv, ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_passparens(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content tmp;
 
@@ -802,9 +772,7 @@ s_condecho_passparens(argc,argv, ret)
 }
 
 
-s_condecho_chs(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_chs(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content tmp;
 
@@ -825,7 +793,7 @@ s_condecho_chs(argc,argv,ret)
    Called by unary and binary loop operations 
    to relect arguments while retaining operators.
 */
-s_condecho(argc,argv, action, ret)
+int s_condecho(argc,argv, action, ret)
      int argc;
      char *action;
      struct s_content argv[], *ret;
@@ -855,86 +823,62 @@ s_condecho(argc,argv, action, ret)
   return 1;
 }
 
-s_condecho_and(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_and(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "&&", ret);
 }
 
-s_condecho_or(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_or(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "||", ret);
 }
 
-s_condecho_add(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_add(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "+", ret);
 }
 
-s_condecho_sub(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_sub(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "-", ret);
 }
 
-s_condecho_mult(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_mult(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "*", ret);
 }
 
-s_condecho_div(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_div(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "/", ret);
 }
 
-s_condecho_eq(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_eq(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "==", ret);
 }
 
-s_condecho_ne(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_ne(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "!=", ret);
 }
 
-s_condecho_ge(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_ge(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, ">=", ret);
 }
 
-s_condecho_gt(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_gt(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, ">", ret);
 }
 
-s_condecho_le(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_le(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "<=", ret);
 }
 
-s_condecho_lt(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_condecho_lt(int argc, struct s_content argv[], struct s_content* ret)
 {
   return s_condecho(argc, argv, "<", ret);
 }
@@ -942,16 +886,12 @@ s_condecho_lt(argc,argv,ret)
 /*--------------------------------------------------------------------------*/
 
 
-s_do(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_do(int argc, struct s_content argv[], struct s_content* ret)
 {
   s_do_while_loops(argc,argv,&ret,0);
 }
 
-s_while(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_while(int argc, struct s_content argv[], struct s_content* ret)
 {
   s_do_while_loops(argc,argv,&ret,1);
 }
@@ -963,7 +903,7 @@ s_while(argc,argv,ret)
  *  while loop for each pass of the loop (different from 'for' loop
  *  where interpretation is only done at parse of loop).
  */
-s_do_while_loops(argc,argv,ret,while_loop)
+int s_do_while_loops(argc,argv,ret,while_loop)
      int argc;
      struct s_content argv[], *ret;
      int while_loop;
@@ -1053,7 +993,7 @@ s_do_while_loops(argc,argv,ret,while_loop)
     while ( loop_control_flag )
       {
 	// Execute the code block of the loop
-	source_list(&blk);
+	source_list(&blk, NULL);
 
 	// If there is a parse error in the loop body break out of loop
 	if (!parse(find_nt("root"))) {
@@ -1088,9 +1028,7 @@ s_do_while_loops(argc,argv,ret,while_loop)
 /*--------------------------------------------------------------------------*/
 
 
-s_if(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_if(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i,flag;
   char *paramname;
@@ -1100,7 +1038,7 @@ s_if(argc,argv,ret)
 
   if(s_content_value(argv[0]))
     {
-      source_list(&blk);
+      source_list(&blk, NULL);
       parse(find_nt("root"));
       pop_source();
     }
@@ -1109,9 +1047,7 @@ s_if(argc,argv,ret)
 
 /*--------------------------------------------------------------------------*/
 
-s_ifelse(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_ifelse(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i,flag;
   char *paramname;
@@ -1125,7 +1061,7 @@ struct s_content argv[],*ret;
     {
       blk = argv[2];
     }
-  source_list(&blk);
+  source_list(&blk, NULL);
   parse(find_nt("root"));
   pop_source();
 }
@@ -1146,9 +1082,7 @@ return s;
 
 /*--------------------------------------------------------------------------*/
 
-s_include(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_include(int argc, struct s_content argv[], struct s_content* ret)
 {
   char filename[FILENAME_MAX],type[40];
 
@@ -1193,9 +1127,7 @@ s_include(argc,argv,ret)
 
 /*--------------------------------------------------------------------------*/
 
-s_add_includedir(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_add_includedir(int argc, struct s_content argv[], struct s_content* ret)
 {
   zz_assert(argc==1);
   if (zz_num_includedirs == MAX_INCLUDEDIRS-1) {
@@ -1209,9 +1141,7 @@ struct s_content argv[],*ret;
 
 /*--------------------------------------------------------------------------*/
 
-s_print_includedirs(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_print_includedirs(int argc, struct s_content argv[], struct s_content* ret)
 {
   int i;
   fprintf(zz_chanout, "Default Include Directories:\n");
@@ -1222,9 +1152,7 @@ struct s_content argv[],*ret;
 
 /*--------------------------------------------------------------------------*/
 
-s_include_default(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_include_default(int argc, struct s_content argv[], struct s_content* ret)
 {
   char filename[512],type[40];
   int i;
@@ -1328,7 +1256,7 @@ int s_load_lib(argc,argv,ret)
 
 /*----------------------------------------------------------------------------*/
 
-dump_memory_usage()
+int dump_memory_usage(void)
 {
 char cmd[256];
 strcpy(cmd,"ps -u");
@@ -1342,9 +1270,7 @@ return 1;
 /*---------------------------------------------------------------------------*/
 
 
-s_extract(argc,argv,ret)
-     int argc;
-     struct s_content argv[],*ret;
+int s_extract(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content *cnt;
   struct s_content *list_extract();
@@ -1362,9 +1288,7 @@ s_extract(argc,argv,ret)
 
 /*---------------------------------------------------------------------------*/
 
-s_list_length(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_list_length(int argc, struct s_content argv[], struct s_content* ret)
 {
 struct s_content *cnt;
 struct s_content *list_extract();
@@ -1374,7 +1298,8 @@ return 1;
 }
 
 /*----------------------------------------------------------------------------*/
-s_string_length(int argc, struct s_content argv[], struct s_content* ret)
+
+int s_string_length(int argc, struct s_content argv[], struct s_content* ret)
 {
   struct s_content *cnt;
   ret->tag = tag_int;
@@ -1386,9 +1311,7 @@ s_string_length(int argc, struct s_content argv[], struct s_content* ret)
 /*----------------------------------------------------------------------------*/
 
 // Implement split function for zz simillar to strtok() c function.
-s_split(argc,argv,ret)
-     int argc;
-     struct s_content argv[], *ret;
+int s_split(int argc, struct s_content argv[], struct s_content* ret)
 {
   char *pch;
   char *srcstr;
@@ -1439,15 +1362,14 @@ s_split(argc,argv,ret)
 /*----------------------------------------------------------------------------*/
 
 
-show_sys_memory()
+void show_sys_memory(void)
 {
 PRINTMEM("sys.qstring",sys_qstring_mem)
 }
 
 /*---------------------------------------------------------------------------*/
 
-subtag(tagson_name,tagparent_name)
-char *tagson_name,*tagparent_name;
+int subtag(char *tagson_name, char *tagparent_name)
 {
 struct s_tag *tagson,*tagparent;
 tagson = find_tag(tagson_name);
@@ -1455,11 +1377,12 @@ tagparent = find_tag(tagparent_name);
 tagson->delete = tagparent->delete;
 tagson->param_on = tagparent->param_on;
 tagson->param_off = tagparent->param_off;
+return 0;
 }
 
 /*---------------------------------------------------------------------------*/
 
-show_memory()
+void show_memory(void)
 {
 printf("Memory usage\n");
 show_zlex_memory();
@@ -1482,14 +1405,14 @@ static struct tbuffer
 
 
 
-init_time()
+void init_time(void)
 {
 times (&Time);
 Start_Time = Time.proc_user_time;
 }
 
 
-get_time()
+int get_time(void)
 {
 int t;
 times (&Time);
@@ -1500,22 +1423,20 @@ return t; /* centesimi di secondo */
 
 
 
-proc_beep(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int proc_beep(int argc, struct s_content argv[], struct s_content *ret)
 {
 char *s;
 int line_n;
 int time;
 float sec;
-static count=0;
+static int count=0;
 time = get_time();
 sec = (float)time*0.01;
 if(argc==1)
   printz("** %z **    ",&argv[0]);
 else
   printf("** %d **    ",count++);
-s=(char*)get_source_name();
+s=get_source_name();
 line_n=get_source_line();
 printf("TIME %4.2fs    FILE %s   LINE %d\n",sec,s,line_n);
 return 1;
@@ -1527,9 +1448,7 @@ static int bra_ket_defined = 0;
 static struct s_content bra,ket;
 
 
-s_append_bra(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_append_bra(int argc, struct s_content argv[], struct s_content *ret)
 {
 if(argc!=1 || argv[0].tag!=tag_list) 
   {printf("error - s_append_bra; bad parameters\n");exit(1);}
@@ -1548,9 +1467,7 @@ return 1;
 
 /*---------------------------------------------------------------------------*/
 
-s_append_ket(argc,argv,ret)
-int argc;
-struct s_content argv[],*ret;
+int s_append_ket(int argc, struct s_content argv[], struct s_content *ret)
 {
 if(argc!=1 || argv[0].tag!=tag_list) 
   {printf("error - s_append_ket; bad parameters\n");exit(1);}
@@ -1611,7 +1528,7 @@ int zz_qtoi(char* q)
 int zz_inttohex(int i)
 { 
   char* q=calloc(20,sizeof(char));
-  sprintf(q,"0x%x\0",i);
+  sprintf(q,"0x%x",i);
   return (int)q;
 }
 
@@ -1753,7 +1670,7 @@ get_extension(char *fullfilename,char *filetype) {
 */
 /*---------------------------------------------------------------------------*/
 
-int change_extension(char *fullfilename,char *filetype) {
+int change_extension(char *fullfilename, const char *filetype) {
   char tmp[256],*r,*s,*t;
   int i;
   if(*filetype=='.') filetype++;
