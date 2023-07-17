@@ -48,7 +48,7 @@ struct s_rule {
 
 struct s_nt {
 	char *name;
-	char *prompt;
+	const char *prompt;
 	struct s_dot *first_dot;
 	};
 
@@ -82,7 +82,8 @@ struct s_dot
 struct s_nt
 	*find_nt();
 
-void free_rule(void * rule_param/*, void* dummy_param*/);
+void open_rule(char *);
+void free_rule(void *, void *);
 void init_rule();
 struct s_rule *close_rule();
 struct s_dot *find_nt_tran(),*find_term_tran();

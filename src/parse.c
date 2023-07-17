@@ -19,6 +19,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "zz.h"
 #include "zlex.h"
 #include "rule.h"
@@ -26,12 +29,23 @@
 #include "avl.h"
 #include "trace.h"
 
+/*PROTOTYPES*/
+int next_token(struct s_content *);
+void syntax_error(int (*info_routine)());
+void action(struct s_rule *rule, struct s_content stack[], struct s_content *ret);
+int get_error_number(void);
+int errprintf(char *fmt,...);
+int param_substitute(struct s_content *token,char **paramname);
+/*FORWARD*/
+int check_reduce(int, struct s_rule *);
+void lr_reduce(struct s_rule *, int, struct s_content *);
+void dump_stack(void);
 
 /*---------------------------------------------------------------------------*/
 
 extern struct s_nt *nt_any,*nt_param,*nt_gparam;
-static char *first_prompt="";
-static max_dot=0,tot_dot=0,ndot=0,max_sp=0;
+static const char *first_prompt="";
+static int max_dot=0,tot_dot=0,ndot=0,max_sp=0;
 static int reduction_count=0;
 #define EXPECTED_SIZE 30
 static struct s_content expected[EXPECTED_SIZE];
@@ -179,7 +193,7 @@ static void compute_expected_from_set(int set_index);
 static long int setid=0;
 
 /* calcola la chiusura del work set */
-make_closure()
+void make_closure(void)
 {
   void lr_add_nt();
   int i,a=cur_lrenv.a,b=cur_lrenv.b;
@@ -222,8 +236,7 @@ if((dot = tran->nt->first_dot) && dot->set!=setid)
    
  */
 
-try_shift(set_index)
-int set_index;
+void try_shift(int set_index)
 {
 struct s_term_tran *ttran;
 struct s_nt_tran *nttran;
@@ -289,8 +302,7 @@ if(cur_lrenv.b>=cur_lrenv.a)
 /*----------------------------------------------------------------------*/
 
 /* ritorna 1 se lo shift e' ammissibile */
-check_shift(set_index)
-int set_index;
+int check_shift(int set_index)
 {
 struct s_term_tran *ttran;
 struct s_nt_tran *nttran;
@@ -320,9 +332,7 @@ return 0;
   
   */
 
-try_reduce(set_index,rule)
-int set_index;
-struct s_rule *rule;
+int try_reduce(int set_index, struct s_rule *rule)
 {
 LRENV oldenv;
 int oldset,i,j,k,a,b,curset,ret,length,base;
@@ -384,9 +394,7 @@ return ret;
 
 /*----------------------------------------------------------------------*/
 
-check_reduce(set_index,rule)
-int set_index;
-struct s_rule *rule;
+int check_reduce(int set_index, struct s_rule *rule)
 {
 int oldset,i,j,k,a,b,curset,ret,length,base;
 struct s_nt *nt;
@@ -435,8 +443,7 @@ return ret;
 /*----------------------------------------------------------------------*/
 
 
-lr_loop(main_nt)
-     struct s_nt *main_nt;
+int lr_loop(struct s_nt *main_nt)
 {
   struct s_content ret_token,shift_token;
   int i,j,dst,a,b,newa,newb,olda,oldb,is_param;
@@ -553,10 +560,7 @@ lr_loop(main_nt)
 
 /*----------------------------------------------------------------------*/
 
-lr_reduce(rule,set_index,ret_token)
-struct s_rule *rule;
-int set_index;
-struct s_content *ret_token;
+void lr_reduce(struct s_rule *rule, int set_index, struct s_content *ret_token)
 {
 int i,length;
 reduction_count++;
@@ -578,7 +582,7 @@ if(zz_trace_mask()&TRACE_REDUCE)
 
 /*----------------------------------------------------------------------*/
 
-static add_expected(tag,value)
+static int add_expected(tag,value)
 struct s_tag *tag;
 long value;
 {
@@ -608,7 +612,7 @@ return 1;
 
 /*----------------------------------------------------------------------*/
 
-static compute_expected_from_reduction(set_index,rule)
+static int compute_expected_from_reduction(set_index,rule)
 int set_index;
 struct s_rule *rule;
 {
@@ -675,7 +679,7 @@ for(i=a;i<=b;i++)
 
 /*----------------------------------------------------------------------*/
 
-static void print_expected()
+static int print_expected()
 {
 char buffer[256];
 int i,j,k;
@@ -708,11 +712,12 @@ else
    
    if(j>0) errprintf("| %s\n",buffer);
   }
+  return 0;
 }
 
 /*----------------------------------------------------------------------*/
 
-recovery()
+int recovery(void)
 {
 struct {struct s_content cnt; struct s_nt *nt;int lrset;} 
   tmpterm,termlist[1000];
@@ -821,8 +826,7 @@ else
   Associa una lista di termini di recovery ad un non-terminale
 
 */
-set_recovery(ntname,termlist)
-char *ntname,*termlist;
+void set_recovery(char *ntname, char *termlist)
 {
 struct s_nt *nt;
 int i;
@@ -889,8 +893,7 @@ return 0;
 
 */
 
-set_nt_prompt(ntname,prompt)
-char *ntname,*prompt;
+void set_nt_prompt(char *ntname, const char *prompt)
 {
 struct s_nt *nt;
 if(ntname)
@@ -906,9 +909,7 @@ else
 /*----------------------------------------------------------------------*/
 
 
-dump_dot(dot,off)
-struct s_dot *dot;
-int off;
+void dump_dot(struct s_dot *dot, int off)
 {
 int length;
 struct s_term_tran *ttran;
@@ -930,7 +931,7 @@ for(ttran=avl_first(dot->termtree);ttran;ttran=avl_next(dot->termtree))
 
 /*----------------------------------------------------------------------*/
 
-dump_stack()
+void dump_stack(void)
 {
 #define IMAGE_SIZE 10
 int image[IMAGE_SIZE],image_n;
@@ -958,8 +959,7 @@ printf("\n");
 
 /*----------------------------------------------------------------------*/
 
-dump_set(set_index)
-int set_index;
+void dump_set(int set_index)
 {
 int i,a,b;
 a=lrstack[set_index].a;
@@ -975,7 +975,7 @@ printf("\n");
 
 /*----------------------------------------------------------------------*/
 
-write_dot_stat()
+void write_dot_stat(void)
 {
 printf("dot n.: max=%d, mean=%d\n",max_dot,ndot==0?0:tot_dot/ndot);
 printf("lr sp: max=%d\n",max_sp);
@@ -983,7 +983,7 @@ printf("lr sp: max=%d\n",max_sp);
 
 /*------------------------------------------------------------------*/
 
-print_report()
+void print_report(void)
 {
 static int old_reduction_count=0;
 printf("%d reductions done (%+d)\n",
@@ -994,7 +994,7 @@ printf("%d dots used\n",cur_lrenv.b);
 
 /*------------------------------------------------------------------*/
 
-fprint_param(chan)
+void fprint_param(chan)
 FILE *chan;
 {
 if(cur_token.is_param)
@@ -1008,8 +1008,7 @@ if(cur_token.is_param)
 
 /*------------------------------------------------------------------*/
 
-parse(start_nt)
-     struct s_nt *start_nt;
+int parse(struct s_nt *start_nt)
 {
   int ret;
   struct s_cur_token old_token;
@@ -1036,10 +1035,10 @@ parse(start_nt)
       if(ret>0) break;
       if(ret==0) syntax_error(print_expected);
       if(!recovery())
-	{
-	  zz_error(FATAL_ERROR,"unrecoverable error");
-	  break;
-	}
+        {
+          zz_error(FATAL_ERROR,"unrecoverable error");
+          break;
+        }
     }
 
   cur_lrenv = old_lrenv;

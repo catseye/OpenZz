@@ -57,6 +57,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "avl.h"
 #include "rule.h"
 #include "list.h"
@@ -65,6 +68,12 @@
 #include "trace.h"
 #include "table.h"
 #include "printz.h"
+
+/*PROTOTYPES*/
+int param_substitute();  /* signature int param_substitute(struct s_content *token,char **paramname) in param.h is incompatible */
+int parse(struct s_nt *);
+int source_list();  /* signature int source_list(struct s_content *, void *); is incompatible */
+void pop_source(void);
 
 static int nt_mem=0;
 static int rule_mem=0;
@@ -175,7 +184,7 @@ void open_rule(char *ntname)
   ntname = (char*)s_content_value(tmp1);
   if(!init_rule_done) init_rule();
   if(cur_rule)
-    free_rule(cur_rule);   
+    free_rule(cur_rule, NULL);
   cur_rule = (struct s_rule *)calloc(1,sizeof(struct s_rule));
   rule_mem += sizeof(struct s_rule);
   cur_rule->bead_n=1;
@@ -521,7 +530,7 @@ if(rule->when_exit_scope.tag==tag_list)
   }
 }
 
-void free_rule(void *_rule /*, void *dummy_param*/)
+void free_rule(void *_rule, void *dummy_param)
 {
   struct s_rule *rule = (struct s_rule *)_rule;
   do_delete_scope_action(rule);

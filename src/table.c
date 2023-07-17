@@ -39,6 +39,10 @@
 #include "mem.h"
 #include "table.h"
 
+/*FORWARDS*/
+void remove_dot(struct s_dot *);
+void print_rule(struct s_rule *);
+
 static int table_mem=0;
 extern struct s_nt *nt_any,*nt_param,*nt_gparam;
 
@@ -47,10 +51,11 @@ extern struct s_nt *nt_any,*nt_param,*nt_gparam;
 
 /* CONFRONTO DI T-TRAN */
 
-ttrancmp(p1,p2)
-struct s_term_tran *p1,*p2;
+int ttrancmp(void *vp1, void *vp2)
 {
 struct s_content *t1,*t2;
+struct s_term_tran *p1 = vp1;
+struct s_term_tran *p2 = vp2;
 t1 = &(p1->term);
 t2 = &(p2->term);
 if(t1->tag<t2->tag) return -1;
@@ -68,8 +73,7 @@ else
 
 /*----------------------------------------------------------------------------*/
 
-struct s_dot *create_dot(nt)
-struct s_nt *nt;
+struct s_dot *create_dot(struct s_nt *nt)
 {
 static int dot_count=0;
 struct s_dot *dot;
@@ -111,8 +115,7 @@ free(tran);
 
 /*----------------------------------------------------------------------------*/
 
-remove_dot(dot)
-struct s_dot *dot;
+void remove_dot(struct s_dot *dot)
 {
 if(!dot)return;
 avl_release(dot->termtree,remove_term_tran);
@@ -284,8 +287,7 @@ return 0;
 
 /*---------------------------------------------------------------------------*/
 
-link_rule(rule)
-struct s_rule *rule;
+int link_rule(struct s_rule *rule)
 {
 int bead_n;
 struct s_bead *bead;
@@ -314,13 +316,13 @@ if(dot->rule)
 dot->rule = rule;
 dot->rule_count++;
 rule->table_backptr = &(dot->rule);
+return 0;
 }
 
 
 /*----------------------------------------------------------------------------*/
 
-unlink_rule(rule)
-struct s_rule *rule;
+int unlink_rule(struct s_rule *rule)
 {
 int bead_n;
 struct s_bead *bead;
@@ -354,17 +356,18 @@ if(dot)
    else if(dot->rule != 0) /* work around for popvoidrule bug */
      {                     /* why can dot->rule be null ??? */
       zz_error(INTERNAL_ERROR,"unlink_rule: rule mismatch");
-      printf("|  old rule is (0x%x)",dot->rule);print_rule(dot->rule);//printf(" (%p)\n", dot->rule);
+      printf("|  old rule is (0x%x)",(int)dot->rule);print_rule(dot->rule);//printf(" (%p)\n", dot->rule);
       printf("|  unlinking rule is ");print_rule(rule);printf("\n");      
       abort();
      }
   }
+return 0;
 }
 
 
 /*----------------------------------------------------------------------------*/
 
-show_table_mem()
+void show_table_mem(void)
 {
 PRINTMEM("table",table_mem)
 }

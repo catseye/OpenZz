@@ -35,6 +35,13 @@
 #include "trace.h"
 #include "sys.h"
 
+/*PROTOTYPES*/
+void pop_source(void);
+int source_list(struct s_content *list, void *id);
+void kernel(void);
+void zkernel(void);
+int parse(struct s_nt *start_nt);
+
 static const char *std_prompt = "ozz> ";                // Default prompt
 
 static const char* ozz_version=VERSION;

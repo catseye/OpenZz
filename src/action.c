@@ -28,6 +28,11 @@
 #include "param.h"
 #include "trace.h"
 
+/*PROTOTYPES*/
+int parse(struct s_nt *);
+void pop_source(void);
+int source_list(struct s_content *, void *);
+
 struct s_content zz_ret_value = {0,0};
 
 /*--------------------------------------------------------------------------*/
@@ -41,9 +46,7 @@ struct s_content* zz_bind_get_ret_value()
 
 #define MAX_ARGV 100
 
-action(rule,stack,ret)
-struct s_rule *rule;
-struct s_content stack[],*ret;
+void action(struct s_rule *rule, struct s_content stack[], struct s_content *ret)
 {
   struct s_content cnt,old_zz_ret_value;
   struct s_content argv [MAX_ARGV]; /* allocation issue */
@@ -198,7 +201,7 @@ struct s_content stack[],*ret;
         push_param_scope();
         for(i=0;i<argc;i++)
           set_param(namev[i],&argv[i]);        
-        source_list(&rule->action);
+        source_list(&rule->action, NULL);
         if(!root_nt) root_nt=find_nt("root");
 	if(zz_trace_mask()&TRACE_ZZACTION)
 	  {
@@ -289,7 +292,7 @@ struct s_content stack[],*ret;
 
 }
 
-fprint_action(action)
+void fprint_action(action)
 struct content *action;
 {
 
